@@ -1,0 +1,54 @@
+@import "../../App.css";
+
+.heroContainer {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background-image: linear-gradient(to bottom, var(--cor5) 30%, rgba(255, 189, 66, 0.7));
+    height: 502px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 100px;
+    justify-content: center;
+}
+
+.heroContainer > h1 {
+    text-align: center;
+    font-size: 2.8em;
+}
+
+.bigFoodContainer {
+    padding: 60px 0px;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    justify-content: space-between;
+}
+
+.inviteToActionContainer {
+    width: 100%;
+}
+
+.mostLikedPostsContainer {
+    margin: 3rem 0px;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 3rem;
+    text-align: center;
+    flex-direction: column;
+}
+
+.mostLikedPostsContainer > h2 {
+    font-size: 2.7em;
+}
+
+.mostLikedPostsList {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+

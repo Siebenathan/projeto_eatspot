@@ -1,0 +1,69 @@
+@import '../../App.css';
+
+.navContainer {
+    display: flex;
+    background-color: var(--cor1);
+    width: 100%;
+    justify-content: space-around;
+    align-items: center;
+    height: 100px;
+}
+
+.titleContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+}
+
+.titleContainerTitle {
+    color: var(--cor4);
+}
+
+.titleContainerTitle > span {
+    color: var(--cor5);
+}
+
+.navigationList {
+    list-style-type: none;
+    display: flex;
+    justify-content: space-around;
+    width: 650px;
+}
+
+.navigationListItem {
+    background-color: #46484E;
+    color: var(--cor3);
+    display: flex;
+    text-decoration: none;
+    align-items: center;
+    justify-content: center;
+    height: 50px;
+    width: 190px;
+    border-radius: 10px;
+}
+
+.userContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.userContainer > img {
+    height: 60px;
+}
+
+.userContainer > p {
+    color: var(--cor3);
+}
+
+.dropDownIcon {
+    background-image: url(../../img/icones/icons8-ordem-descendente-60.png);
+    background-size: cover;
+    background-color: var(--cor1);
+    border: none;
+    width: 20px;
+    height: 20px;
+}
+
+

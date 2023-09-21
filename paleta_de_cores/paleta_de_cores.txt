@@ -1,0 +1,12 @@
+Paleta 1:
+
+#EBEA3F / Amarelo
+#57EB8A / Verde limão
+#EBA63F / Laranja
+#A260EA / Roxo:Lilás
+#EB251E / Vermelho
+
+Paleta 2:
+
+
+

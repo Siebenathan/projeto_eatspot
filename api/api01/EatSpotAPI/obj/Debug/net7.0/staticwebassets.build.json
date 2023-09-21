@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "RPImSnWdtiSpxaqyVbeDrYYIwymlDy+cxWSgyAeehLw=",
+  "Source": "EatSpotAPI",
+  "BasePath": "_content/EatSpotAPI",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}
