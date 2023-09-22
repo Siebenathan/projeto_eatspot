@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Button from "../../forms/Button";
-import { getUsuarios } from "../../services/firebase";
+import { getUsuarios, postUser } from "../../services/firebase";
 
 interface Country {
   name: string;
@@ -18,9 +18,12 @@ export default function AdminPage() {
       .catch((err) => console.log(err));
   }, []);
 
-  function handleSubmit(e: any) {
+  async function handleSubmit(e: any) {
     e.preventDefault();
-    console.log(`${name}, ${email}`);
+    await postUser({ name: name, email: email });
+    getUsuarios()
+      .then((users) => setUsers(users))
+      .catch((err) => console.log(err));
   }
 
   // async function handleSetCountry() {
