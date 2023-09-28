@@ -5,6 +5,8 @@ import { Link } from "react-router-dom";
 import Input from "../forms/Input";
 import Button from "../forms/Button";
 import { useState } from "react";
+import { signIn } from "../services/firebase/firebaseAuth";
+import useLocalStorage from "../hooks/useLocalStorage";
 
 export default function LoginPage() {
   const buttonSubmitStyle = {
@@ -15,10 +17,12 @@ export default function LoginPage() {
 
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [value, setValue] = useLocalStorage("userId", "");
 
-  function handleSubmit(e: any) {
+  async function handleSubmit(e: any) {
     e.preventDefault();
-    //TO DO
+    const userUid = await signIn(password, email);
+    setValue(userUid);
   }
 
   return (
@@ -44,6 +48,7 @@ export default function LoginPage() {
                 type="email"
                 name="email"
                 value={email}
+                autocomplete={true}
                 placeholder="Insira seu email..."
                 onChange={(e) => setEmail(e.target.value)}
               ></Input>
@@ -53,6 +58,7 @@ export default function LoginPage() {
                 labelText="Senha: "
                 type="password"
                 name="password"
+                autocomplete={true}
                 value={password}
                 placeholder="Insira sua senha..."
                 onChange={(e) => setPassword(e.target.value)}

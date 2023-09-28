@@ -11,6 +11,7 @@ interface InputProps {
   customClass?: string | null;
   styleLabel?: {};
   stylePlaceholder?: {};
+  autocomplete?: boolean;
 }
 
 export default function Input(props: InputProps) {
@@ -28,6 +29,7 @@ export default function Input(props: InputProps) {
         placeholder={props.placeholder}
         onChange={props.onChange}
         required={props.required}
+        autoComplete={props.autocomplete ? "on" : "off"}
       />
     </div>
   );

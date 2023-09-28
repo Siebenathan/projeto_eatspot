@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Button from "../../forms/Button";
-import { getUsuarios, postUser } from "../../services/firebase";
+
 
 interface Country {
   name: string;
@@ -12,19 +12,13 @@ export default function AdminPage() {
   const [email, setEmail] = useState("");
   const [users, setUsers] = useState<any>([]);
 
-  useEffect(() => {
-    getUsuarios()
-      .then((users) => setUsers(users))
-      .catch((err) => console.log(err));
-  }, []);
-
-  async function handleSubmit(e: any) {
-    e.preventDefault();
-    await postUser({ name: name, email: email });
-    getUsuarios()
-      .then((users) => setUsers(users))
-      .catch((err) => console.log(err));
-  }
+  // async function handleSubmit(e: any) {
+  //   e.preventDefault();
+  //   await postUser({ name: name, email: email });
+  //   getUsuarios()
+  //     .then((users) => setUsers(users))
+  //     .catch((err) => console.log(err));
+  // }
 
   // async function handleSetCountry() {
   //   const countryData = await getCountrys();
@@ -70,7 +64,7 @@ export default function AdminPage() {
 
   return (
     <div>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={() => {}}>
         <input
           type="text"
           placeholder="Insira seu nome..."

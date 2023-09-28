@@ -1,0 +1,42 @@
+.mainContainer {
+    width: 100%;
+    max-width: 300px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    border-radius: 5px;
+}
+
+.imgFood {
+    max-width: 300px;
+    min-width: 150px;
+    border-radius: 5px;
+    transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+    overflow: hidden;
+}
+
+.textInsideImg {
+    opacity: 0;
+    position: absolute;
+    top: auto;
+    transition: all 0.6s ease;
+    backdrop-filter: blur(5px);
+    background-color: var(--cor4);
+}
+
+.textInsideImg:hover {
+    opacity: 1;
+}
+
+.imgFood:hover {
+    transform: scale(1.05);
+}
+
+.imgFood:hover + .textInsideImg {
+    opacity: 1;
+}
+

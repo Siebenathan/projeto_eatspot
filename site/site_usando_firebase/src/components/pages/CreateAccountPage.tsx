@@ -1,4 +1,5 @@
 import styles from "./CreateAccountPage.module.css";
+import { useNavigate } from "react-router-dom";
 import Container from "../layout/Container";
 import Input from "../forms/Input";
 import Button from "../forms/Button";
@@ -6,6 +7,7 @@ import Header from "../layout/Header";
 import { Link } from "react-router-dom";
 import { FormEvent, useEffect, useState } from "react";
 import SelectCountrys from "./../forms/SelectCountrys";
+import { postUser } from "../services/firebase/firebase";
 
 export default function CreateAccountPage() {
   const submitButtonStyle = {
@@ -18,17 +20,35 @@ export default function CreateAccountPage() {
     fontSize: "1.2em",
   };
 
+  const navigate = useNavigate();
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [rptPassword, setRptPassword] = useState<string>("");
   const [username, setUsername] = useState<string>("");
   const [dataNasc, setDataNasc] = useState<any>("");
-  const [nacionality, setNacionality] = useState<string>("Selecione sua nacionalidade...");
+  const [nacionality, setNacionality] = useState<string>(
+    "Selecione sua nacionalidade..."
+  );
   const [listNations, setListNations] = useState([]);
 
-  function handleSubmit(e: FormEvent) {
+  async function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    
+
+    //TODO: Fazer um Regex para verificar o nível de segurança da senha
+
+    const response = await postUser({
+      name: username,
+      bornDate: dataNasc,
+      email: email,
+      nacionality: nacionality,
+      password: password,
+    });
+
+    if (response === "Registro realizado com sucesso!") {
+      navigate("/login");
+    } else {
+      console.log(response);
+    }
   }
 
   useEffect(() => {
@@ -84,6 +104,7 @@ export default function CreateAccountPage() {
                 <Input
                   type="password"
                   name="password"
+                  autocomplete={true}
                   labelText="Senha: "
                   placeholder="Insira sua senha..."
                   value={password}
@@ -99,6 +120,7 @@ export default function CreateAccountPage() {
               <div className={styles.inputContainer}>
                 <Input
                   type="password"
+                  autocomplete={true}
                   name="rptpassword"
                   labelText="Repita sua senha: "
                   placeholder="Insira novamente sua senha..."

@@ -19,4 +19,9 @@
     height: 90vh;
 }
 
+@media screen and (max-width: 730px){
+    .container {
+        width: 100%;
+    }
+}
 
