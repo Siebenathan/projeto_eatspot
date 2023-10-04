@@ -1,5 +1,5 @@
 .container {
-    width: 100%;
+    width: 66.7%;
     max-width: 1280px;
     margin: 0 auto;
     padding: 0;
@@ -19,7 +19,7 @@
     height: 90vh;
 }
 
-@media screen and (max-width: 1280px){
+@media screen and (max-width: 730px){
     .container {
         width: 100%;
     }

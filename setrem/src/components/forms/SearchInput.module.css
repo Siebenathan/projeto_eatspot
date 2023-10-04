@@ -1,0 +1,38 @@
+.searchContainer {
+    display: flex;
+    align-items: center;
+    height: 122px;
+    width: 1024px;
+    
+}
+
+.searchingInput {
+    height: 100%;
+    border: none;
+    width: 87%;
+    font-size: 2.8em;
+    background-color: white;
+    display: inline-block;
+    border-radius: 30px 0px 0px 30px;
+    padding: 0px 20px;
+    box-shadow: 7px 4px 12px rgba(0, 0, 0, 0.334);
+}
+
+.searchingInput::placeholder {
+    text-align: center;
+    color: #B1A8A8;
+}
+
+.buttonSearch {
+    border: none;
+    background-color: var(--cor1);
+    width: 13%;
+    border-radius: 0px 20px 20px 0px;
+    height: 122px;
+    cursor: pointer;
+    background-image: url(../../img/icones/icons8-searching-48-branco.png);
+    background-repeat: no-repeat;
+    display: inline-block;
+    background-position: center center;
+    box-shadow: 7px 4px 12px rgba(0, 0, 0, 0.334);
+}

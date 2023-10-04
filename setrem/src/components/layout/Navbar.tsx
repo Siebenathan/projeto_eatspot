@@ -4,25 +4,12 @@ import logo from "../../img/EatSpot_semfundo-80px.png";
 import { FaUserSlash, FaUserCheck } from "react-icons/fa";
 import { BsFillArrowDownCircleFill } from "react-icons/bs";
 import useLocalStorage from "../hooks/useLocalStorage";
-import { auth } from "../services/firebase/firebase";
-import { onAuthStateChanged } from "firebase/auth";
-import { useState, useEffect } from "react";
-import { signOutUser } from "../services/firebase/firebaseAuth";
+import { GetUserAuth, singOut } from "../services/firebase/firebaseAuth";
+import { useState } from "react";
 
 export default function NavBar() {
   const [userId, setUserId] = useLocalStorage("userId", "");
-  const [isUserLogged, setIsUserLogged] = useState<boolean>(false);
-
-  useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
-      if(user?.uid == userId) {
-        setIsUserLogged(true);
-      } else {
-        setIsUserLogged(false);
-      }
-    });
-  }, [])
-  
+  const user = GetUserAuth();
   const navigate = useNavigate();
   const [active, setActive] = useState<boolean>(false);
 
@@ -52,7 +39,7 @@ export default function NavBar() {
         </li>
       </ul>
       <div className={styles.userContainer}>
-        {isUserLogged == false ? (
+        {user == null ? (
           <div className={styles.mainContainerDropDown} onClick={() => {navigate("/login")}}>
             <FaUserSlash className={styles.userIcon} />
             <span className={styles.dropDownSpan}>Usuário</span>
@@ -72,8 +59,8 @@ export default function NavBar() {
           </button>
           {active && (
             <ul className={styles.dropDownOptions}>
-              <li onClick={() => navigate("/perfil/meuperfil")}>Perfil</li>
-              <li onClick={() => {signOutUser()}}>Logout</li>
+              <li onClick={() => navigate("/perfil")}>Perfil</li>
+              <li onClick={() => {singOut()}}>Logout</li>
             </ul>
           )}
         </div>

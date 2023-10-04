@@ -1,0 +1,131 @@
+.mainForm {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.divTitleInput {
+  text-align: center;
+  width: 30%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding-bottom: 40px;
+}
+
+.divTitleInput > label {
+  color: white;
+  font-size: 2em;
+  padding-bottom: 5px;
+  display: block;
+}
+
+.divInputInsertImage {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 60%;
+  height: 100%;
+  padding-bottom: 40px;
+}
+
+.divInputInsertImage > .mainInputInsertLabel {
+  color: white;
+  padding-bottom: 10px;
+  font-size: 2em;
+}
+
+.divRecipeApresentation {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  width: 60%;
+  padding-bottom: 40px;
+}
+
+.divRecipeApresentation > label {
+  color: white;
+  font-size: 2em;
+  padding-bottom: 5px;
+}
+
+.divInsertIngredients {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    width: 60%;
+    padding-bottom: 40px;
+    text-align: center;
+}
+
+.divInsertIngredients > label {
+    color: white;
+    font-size: 2em;
+    padding-bottom: 5px;
+}
+
+.divInsertIngredients > label > span {
+    display: block;
+    font-size: 0.5em;
+    color: var(--cor5);
+    font-weight: bolder;
+}
+
+.divInsertIngredients > label > span > strong {
+    font: italic;
+    color: white;
+}
+
+.divLevelOfDificulty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    width: 60%;
+    padding-bottom: 40px;
+}
+
+.divLevelOfDificulty > p {
+    color: white;
+    font-size: 2em;
+}
+
+.divLevelOfDificulty > p > span {
+    color: var(--cor5);
+    font-weight: bolder;
+}
+
+.divLevelOfDificultyOptions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    gap: 20px;
+}
+
+.divLevelOfDificultyOptions > label {
+    height: 100px;
+    width: 100px;
+    border-radius: 100%;
+    background-color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.chefHatIcon {
+    width: 90%;
+    height: 90%;
+}
+
+.divLevelOfDificultyOptions input {
+    display: none;
+}
+

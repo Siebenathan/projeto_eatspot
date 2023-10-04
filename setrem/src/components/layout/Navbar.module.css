@@ -1,0 +1,123 @@
+@import '../../App.css';
+
+.navContainer {
+    display: flex;
+    background-color: var(--cor1);
+    width: 100%;
+    justify-content: space-around;
+    align-items: center;
+    height: 100px;
+}
+
+.titleContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+}
+
+.titleContainerTitle {
+    color: var(--cor4);
+}
+
+.titleContainerTitle > span {
+    color: var(--cor5);
+}
+
+.navigationList {
+    list-style-type: none;
+    display: flex;
+    justify-content: space-around;
+    width: 650px;
+}
+
+.navigationListItem {
+    background-color: #46484E;
+    color: white;
+    display: flex;
+    text-decoration: none;
+    align-items: center;
+    justify-content: center;
+    height: 50px;
+    width: 190px;
+    border-radius: 10px;
+}
+
+.userContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+}
+
+.userContainer > p {
+    color: white;
+}
+
+.userContainer > button {
+    border: none;
+    height: fit-content;
+    height: 25px;
+}
+
+.dropDownIcon {
+    color: white;
+    background-color: var(--cor1);
+    font-size: 2.5em;
+    height: 100%;
+}
+
+.userIcon {
+    color: white;
+    font-size: 2.3em;
+}
+
+.dropDownSpan {
+    color: white;
+}
+
+.mainContainerDropDown {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    gap: 3px;
+    cursor: pointer;
+}
+
+.buttonDropDown {
+   background-color: var(--cor1);
+   border: none;
+}
+
+.dropDownIcon {
+    font-size: 1.5em;
+    color: white;
+    cursor: pointer;
+}
+
+/* .spanDropDown {
+    color: white;
+} */
+
+.dropDownOptions {
+    list-style: none;
+    color: black;
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    right: -1px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    top: 35px;
+    min-width: 100px;
+    border-radius: 5px;
+    padding: 10px;
+    background-color: white;
+}
+
+.dropDownOptions li:hover {
+    scale: 1.05;
+    text-decoration: underline;
+}

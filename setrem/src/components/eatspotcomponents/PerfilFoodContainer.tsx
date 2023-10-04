@@ -1,9 +1,6 @@
 import { useState } from "react";
 import { FaHeart } from "react-icons/fa";
 import styles from "./PerfilFoodContainer.module.css";
-import { useNavigate } from "react-router-dom";
-
-
 
 interface PerfilFoodContainerProps {
   recipeName: string;
@@ -14,10 +11,10 @@ interface PerfilFoodContainerProps {
 
 export default function PefilFoodContainer(props: PerfilFoodContainerProps) {
   const [stylePhoto, setStylePhoto] = useState<any>();
-  const navigate = useNavigate();
+
 
   function onRecipeClick() {
-    navigate("/{nome da receita}");
+    
   }
 
   return (
@@ -25,7 +22,7 @@ export default function PefilFoodContainer(props: PerfilFoodContainerProps) {
       <img
         className={styles.imgFood}
         src={props.imageFoodUrl}
-        alt="Imagem da receita"
+        alt="food image"
         style={stylePhoto}
       />
       <div
@@ -39,13 +36,10 @@ export default function PefilFoodContainer(props: PerfilFoodContainerProps) {
             {props.likesAmount}
             <FaHeart className={styles.heartIcon} />
           </small>
-          <p>Por <span className={styles.authorNameSpan}>{props.authorName}</span></p>
-          <button
-            className={styles.buttonToAcessRecipe}
-            onClick={onRecipeClick}
-          >
-            Acessar
-          </button>
+          <p>Por {props.authorName}</p>
+          <button className={styles.buttonToAcessRecipe} onClick={() => {
+            //TODO
+          }}>Acessar</button>
         </div>
       </div>
     </div>

@@ -2,9 +2,11 @@ import { auth } from "./firebase";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  onAuthStateChanged,
   signOut
 } from "firebase/auth";
 import { User } from "./firebase";
+import { useState, useEffect } from "react";
 
 export async function createUserAuth(usuario: User): Promise<any> {
   try {
@@ -19,9 +21,24 @@ export async function createUserAuth(usuario: User): Promise<any> {
   }
 }
 
-export function signOutUser() {
+export function GetUserAuth() {
+  const [userAuth, setUserAuth] = useState<any>();
+
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUserAuth(user);
+      } else {
+        setUserAuth(null);
+      }
+    });
+  }, []);
+
+  return userAuth;
+}
+
+export function singOut() {
   signOut(auth);
-  localStorage.clear();
   console.log("Logout realizado com sucesso!");
 }
 
