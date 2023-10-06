@@ -9,14 +9,24 @@ import { useState } from "react";
 import InputFileWithPreview from "../forms/InputFileWithPreview";
 import TextArea from "../forms/TextArea";
 
+interface RecipeTimeProps {
+  period: string;
+  minutes?: number;
+  hours?: number;
+}
+
 export default function CreateRecipePage() {
   const [titleRecipe, setTitleRecipe] = useState<string>("");
   const [imageFile, setImageFile] = useState<any>();
   const [recipeDescription, setRecipeDescription] = useState<string>();
   const [recipeIngredients, setRecipeIngredients] = useState<string>();
   const [recipeDifficulty, setRecipeDifficulty] = useState<string>();
-
-  const [optionStyle, setOptionStyle] = useState<any>();
+  const [recipeCost, setRecipeCost] = useState<string>();
+  const recipeTimes: RecipeTimeProps[] = [
+    { period: "Tempo de preparo", minutes: undefined, hours: undefined },
+    { period: "Tempo de cozimento", minutes: undefined, hours: undefined },
+    { period: "Tempo de espera", minutes: undefined, hours: undefined },
+  ];
 
   const recipeDifficultyList = [
     "Muito fácil",
@@ -25,6 +35,33 @@ export default function CreateRecipePage() {
     "Difícil",
     "Muito difícil",
   ];
+
+  const recipeCostList = [
+    {
+      element: <GrMoney className={styles.costIconMoney} />,
+      value: "Custo Baixo",
+    },
+    {
+      element: <GiMoneyStack className={styles.costIconMoney} />,
+      value: "Custo Médio",
+    },
+    {
+      element: <TbMoneybag className={styles.costIconMoney} />,
+      value: "Custo Alto",
+    },
+  ];
+
+  const recipeTimesList = [
+    "Tempo de preparo",
+    "Tempo de cozimento",
+    "Tempo de espera",
+  ];
+
+  const hasPeriod = {
+    preparationTime: false,
+    cookTime: false,
+    waitTime: false,
+  };
 
   return (
     <Container
@@ -99,25 +136,84 @@ export default function CreateRecipePage() {
           </p>
           <div className={styles.divLevelOfDificultyOptions}>
             {recipeDifficultyList.map((difficulty) => (
-              <label htmlFor={difficulty} key={difficulty} style={optionStyle}>
+              <label htmlFor={difficulty} key={difficulty}>
                 <TbChefHat className={styles.chefHatIcon} />
                 <input
                   type="radio"
                   name="difficultyOptions"
                   id={difficulty}
                   value={difficulty}
-                  onClick={(e: any) => {
-                    if (e.target.checked) {
-                      e.target.style.backgroundColor = "green";
-                    } else {
-                      setOptionStyle({ backgroundColor: "white" });
-                    }
+                  required
+                  onChange={(e: any) => {
+                    const optionsQuery =
+                      document.getElementsByName("difficultyOptions");
+                    optionsQuery.forEach((option: any) => {
+                      option.parentNode.style.backgroundColor = "white";
+                    });
+                    e.target.parentNode.style.backgroundColor = "var(--cor5)";
                     setRecipeDifficulty(e.target.value);
                   }}
                 />
               </label>
             ))}
           </div>
+        </div>
+        <div className={styles.divRecipeCost}>
+          <p>
+            Custo médio da receita: <span>{recipeCost}</span>
+          </p>
+          <div className={styles.divRecipeCostOptions}>
+            {recipeCostList.map((cost) => (
+              <label htmlFor={cost.value} key={cost.value}>
+                {cost.element}
+                <input
+                  type="radio"
+                  name="recipeCost"
+                  id={cost.value}
+                  value={cost.value}
+                  required
+                  onChange={(e: any) => {
+                    const optionsQuery =
+                      document.getElementsByName("recipeCost");
+                    optionsQuery.forEach((option: any) => {
+                      option.parentNode.style.backgroundColor = "white";
+                    });
+                    e.target.parentNode.style.backgroundColor = "var(--cor5)";
+                    setRecipeCost(e.target.value);
+                  }}
+                />
+              </label>
+            ))}
+          </div>
+        </div>
+        <div className={styles.divRecipeTime}>
+          {recipeTimesList.map((time) => (
+            <div className={styles.divRecipeTimeOption} key={time}>
+              <p>{time}</p>
+              <label htmlFor={time}>
+                Minutos:
+                <input
+                  type="number"
+                  name={time}
+                  max={60}
+                  maxLength={2}
+                  min={1}
+                  onChange={(e: any) => {
+                    for (let i = 0; i < recipeTimes.length; i++) {
+                      if (recipeTimes[i].period == e.target.name) {
+                        recipeTimes[i].minutes = e.target.value;
+                      }
+                    }
+                    console.log(recipeTimes);
+                  }}
+                />
+              </label>
+              <label htmlFor={time}>
+                Horas:
+                <input type="number" name={time} />
+              </label>
+            </div>
+          ))}
         </div>
       </form>
     </Container>
