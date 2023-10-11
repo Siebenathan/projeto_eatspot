@@ -8,10 +8,6 @@ import Input from "../forms/Input";
 import { useState } from "react";
 import InputFileWithPreview from "../forms/InputFileWithPreview";
 import TextArea from "../forms/TextArea";
-import Button from "../forms/Button";
-import Modal from "../modal/Modal";
-import { ModalProps } from "../modal/Modal";
-import { unescape } from "querystring";
 
 interface RecipeTimeProps {
   period: string;
@@ -19,32 +15,14 @@ interface RecipeTimeProps {
   hours?: number;
 }
 
-interface RecipePhasesProps {
-  phaseText: string;
-  phaseNumber: number;
-}
-
 export default function CreateRecipePage() {
   const [titleRecipe, setTitleRecipe] = useState<string>("");
-  const [imageFile, setImageFile] = useState<any>(undefined);
+  const [imageFile, setImageFile] = useState<any>();
   const [recipeDescription, setRecipeDescription] = useState<string>();
   const [recipeIngredients, setRecipeIngredients] = useState<string>();
-  const [recipeDifficulty, setRecipeDifficulty] = useState<string>("");
-  const [recipeCost, setRecipeCost] = useState<string>("");
-  const [requiredRecipePhase, setRequiredRecipePhase] = useState<string>();
-  const [recipePhasesList, setRecipePhasesList] =
-    useState<RecipePhasesProps[]>();
-  const [modal, setModal] = useState<ModalProps>({
-    isOpen: false,
-    text: "",
-    type: "erro",
-    title: "",
-    setIsOpen() {},
-    textSecondButton: undefined,
-    secondButtonFunction: undefined,
-    styleSecondButton: undefined,
-  });
-  // const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [recipeDifficulty, setRecipeDifficulty] = useState<string>();
+  const [recipeCost, setRecipeCost] = useState<string>();
+  const [recipePhases, setRecipePhases] = useState<any>();
 
   const recipeTimes: RecipeTimeProps[] = [
     { period: "Tempo de preparo", minutes: undefined, hours: undefined },
@@ -81,69 +59,6 @@ export default function CreateRecipePage() {
     { period: "Tempo de espera", required: false },
   ];
 
-  function handleSubmit(e: any) {
-    e.preventDefault();
-    const settingsModal: ModalProps = {
-      isOpen: true,
-      setIsOpen() {
-        setModal({
-          isOpen: false,
-          setIsOpen() {},
-          text: "",
-          type: "erro",
-          title: "",
-        });
-      },
-      text: "",
-      title: "",
-      type: "erro",
-    };
-    if (recipeDifficulty == "") {
-      settingsModal.text = "Dificuldade da receita não foi selecionada!";
-      settingsModal.title = "ERRO";
-      settingsModal.type = "erro";
-      setModal(settingsModal);
-      return;
-    } else if (recipeCost == "") {
-      settingsModal.text = "Custo médio da receita não foi selecionado!";
-      settingsModal.title = "ERRO";
-      settingsModal.type = "erro";
-      setModal(settingsModal);
-      return;
-    } else if (imageFile == undefined) {
-      settingsModal.text =
-        "Nenhuma imagem foi selecionada para ser a capa da receita! Você precisa de pelo menos uma imagem para a sua receita.";
-      settingsModal.title = "ERRO";
-      settingsModal.type = "erro";
-      setModal(settingsModal);
-      return;
-    }
-
-    settingsModal.title = "SUCESSO!";
-    settingsModal.text =
-      "Sua receita está pronta para ser postada! Para concluir a postagem clique em confirmar.";
-    settingsModal.type = "sucesso";
-    settingsModal.secondButtonFunction = () => {
-      setModal({
-        isOpen: false,
-        setIsOpen() {},
-        text: "",
-        title: "",
-        type: "erro",
-      });
-    };
-    settingsModal.textSecondButton = "Confirmar";
-    settingsModal.styleSecondButton = {
-      backgroundColor: "var(--cor3)",
-      cursor: "pointer",
-      padding: "10px 20px",
-      color: "white",
-      borderRadius: "5px",
-    };
-    console.log(settingsModal);
-    setModal(settingsModal);
-  }
-
   return (
     <Container
       customClass={"flexMiddleCol"}
@@ -153,17 +68,7 @@ export default function CreateRecipePage() {
         padding: "30px 0px",
       }}
     >
-      <Modal
-        type={modal.type}
-        isOpen={modal.isOpen}
-        setIsOpen={modal.setIsOpen}
-        text={modal.text}
-        title={modal.title}
-        textSecondButton={modal.textSecondButton}
-        secondButtonFunction={modal.secondButtonFunction}
-        styleSecondButton={modal.styleSecondButton}
-      ></Modal>
-      <form className={styles.mainForm} onSubmit={(e: any) => handleSubmit(e)}>
+      <form className={styles.mainForm}>
         <div className={styles.divTitleInput}>
           <label htmlFor="recipeTitle">Título da receita</label>
           <Input
@@ -189,6 +94,7 @@ export default function CreateRecipePage() {
             imageFile={imageFile}
             setFile={setImageFile}
             spanText="Clique para inserir uma imagem..."
+            required
           />
         </div>
         <div className={styles.divRecipeApresentation}>
@@ -233,6 +139,7 @@ export default function CreateRecipePage() {
                   name="difficultyOptions"
                   id={difficulty}
                   value={difficulty}
+                  required
                   onChange={(e: any) => {
                     const optionsQuery =
                       document.getElementsByName("difficultyOptions");
@@ -260,6 +167,7 @@ export default function CreateRecipePage() {
                   name="recipeCost"
                   id={cost.value}
                   value={cost.value}
+                  required
                   onChange={(e: any) => {
                     const optionsQuery =
                       document.getElementsByName("recipeCost");
@@ -293,6 +201,7 @@ export default function CreateRecipePage() {
                         recipeTimes[i].minutes = e.target.value;
                       }
                     }
+                    console.log(recipeTimes);
                   }}
                 />
               </label>
@@ -320,61 +229,14 @@ export default function CreateRecipePage() {
           <p>Etapas de preparo</p>
           <div className={styles.divRecipePhase}>
             <p>Etapa 1*</p>
-            <textarea
+            <TextArea
               name="recipePhase"
-              placeholder={`Descreva a etapa 1...`}
+              defaultValue={""}
+              handleChange={() => {}}
+              placeholder={"Descreva a etapa 1..."}
               required
-              onChange={(e: any) => {
-                setRequiredRecipePhase(e.target.value);
-                if (recipePhasesList == null) {
-                  setRecipePhasesList([{ phaseText: "", phaseNumber: 2 }]);
-                }
-              }}
-              value={requiredRecipePhase}
-            ></textarea>
+            />
           </div>
-          {recipePhasesList &&
-            recipePhasesList.map((phase) => (
-              <div className={styles.divRecipePhase} key={phase.phaseNumber}>
-                <p>Etapa {phase.phaseNumber}</p>
-                <textarea
-                  name="recipePhase"
-                  placeholder={`Descreva a etapa ${phase.phaseNumber}...`}
-                  onChange={(e: any) => {
-                    let isTextFilled = true;
-                    recipePhasesList.forEach((phaseText) => {
-                      if (phaseText.phaseText == "") {
-                        isTextFilled = false;
-                      }
-                    });
-                    if (recipePhasesList[phase.phaseNumber - 1]) {
-                      phase.phaseText = e.target.value;
-                    } else if (!isTextFilled) {
-                      phase.phaseText = e.target.value;
-                      return;
-                    } else {
-                      setRecipePhasesList([
-                        ...recipePhasesList,
-                        { phaseText: "", phaseNumber: phase.phaseNumber + 1 },
-                      ]);
-                    }
-                  }}
-                ></textarea>
-              </div>
-            ))}
-        </div>
-        <div className={styles.divButtonSubmitForm}>
-          <Button
-            buttonText="Enviar receita"
-            type="submit"
-            style={{
-              backgroundColor: "var(--cor3)",
-              padding: "30px 0px",
-              fontSize: "1.5em",
-              color: "white",
-              cursor: "pointer",
-            }}
-          ></Button>
         </div>
       </form>
     </Container>
