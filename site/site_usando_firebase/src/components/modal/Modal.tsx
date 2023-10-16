@@ -18,19 +18,19 @@ export default function Modal(props: ModalProps) {
   const [textSecondButton, setTextSecondButton] = useState<string>();
 
   useEffect(() => {
-    if (props.type == "erro") {
+    if (props.type === "erro") {
       setModalStyle({ backgroundColor: "red", color: "white" });
-    } else if (props.type == "sucesso") {
+    } else if (props.type === "sucesso") {
       setModalStyle({ backgroundColor: "green", color: "white" });
     }
-    if(props.textSecondButton) {
+    if (props.textSecondButton) {
       setTextSecondButton(props.textSecondButton);
     } else {
       setTextSecondButton("");
     }
   }, [props.type, props.textSecondButton]);
 
-  if (props.isOpen) {
+  if (props.isOpen) { 
     return (
       <>
         <div className={styles.backgroundStyle}>
@@ -46,11 +46,11 @@ export default function Modal(props: ModalProps) {
                 <div>
                   <Button
                     onClick={() => {
-                      if(props.secondButtonFunction) {
+                      if (props.secondButtonFunction) {
                         props.secondButtonFunction();
                       }
                     }}
-                    buttonText={props.textSecondButton || ""} 
+                    buttonText={props.textSecondButton || ""}
                     type="button"
                     style={props.styleSecondButton}
                   ></Button>

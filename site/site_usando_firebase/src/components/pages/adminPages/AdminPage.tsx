@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
-import Button from "../../forms/Button";
-import Modal from "../../modal/Modal";
+import { useState, useEffect } from "react";
+import { getImageStorage } from "../../services/firebase/firebaseStorage";
 
 interface Country {
   name: string;
@@ -8,22 +7,22 @@ interface Country {
 }
 
 export default function AdminPage() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [users, setUsers] = useState<any>([]);
-  const [modal, setModal] = useState<boolean>(true);
+  const [image, setImage] = useState<any>();
+
+  async function getRecipeImage() {
+    const response = await getImageStorage(
+      "images/receitas/alessandro123/13/imagemPrincipal"
+    );
+    return response;
+  }
+
+  useEffect(() => {
+    const teste = getRecipeImage().then((response) => {return response} );
+  }, []);
 
   return (
-    <div style={{ height: "100vh" }}>
-      <Modal
-        type="erro"
-        isOpen={modal}
-        setIsOpen={() => {
-          setModal(!modal);
-        }}
-        text="teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste,teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste,teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste,teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste,teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste,teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste,teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste, teste,"
-        title="TESTE"
-      ></Modal>
+    <div>
+      <img src={image} alt="teste" />
     </div>
   );
 }

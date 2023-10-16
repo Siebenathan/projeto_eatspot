@@ -9,6 +9,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../services/firebase/firebase";
 import Loading from "../layout/Loading";
 import { Link } from "react-router-dom";
+import { getImageStorage } from "../services/firebase/firebaseStorage";
 
 interface objectSearchProps {
   key: string;
@@ -18,6 +19,8 @@ interface objectSearchProps {
 export default function PerfilPage() {
   const [isThePerfilOwner, setIsThePerfilOwner] = useState<boolean>(false);
   const [userData, setUserData] = useState<any>();
+  const [recipesData, setRecipeData] = useState<any>();
+  const [recipeImages, setRecipeImages] = useState<string[]>();
   const navigate = useNavigate();
   let { name } = useParams();
   const [userId, setUserId] = useLocalStorage("userId", "");
@@ -39,11 +42,6 @@ export default function PerfilPage() {
       if (userId) {
         objectSearch.key = "userId";
         objectSearch.searchParameter = userId;
-      } else {
-        //Direcionar para uma página de erro
-        console.log("Você não está logado!");
-        navigate("/");
-        return;
       }
     } else {
       name = name?.replace("@", "");
@@ -55,7 +53,7 @@ export default function PerfilPage() {
       "users",
       objectSearch.key,
       objectSearch.searchParameter
-    ).then((data) => {
+    ).then(async (data) => {
       if (data.empty) {
         //Mandar para uma página de erro 404 pois nada foi encontrado no banco de dados
         // navigate("/pagina_de_erro");
@@ -63,25 +61,42 @@ export default function PerfilPage() {
         return;
       }
 
-      console.log(data.docs[0].id);
-
       const userDataFirestore: any = data.docs.map((doc) => ({
+        ...doc.data(),
+        id: doc.id,
+      }))[0];
+
+      const recipeDataFirestore = await getDataFromCollection(
+        "recipes",
+        "userId",
+        userDataFirestore.userId
+      );
+
+      let recipeData: any = recipeDataFirestore.docs.map((doc) => ({
         ...doc.data(),
         id: doc.id,
       }));
 
-      if (userId == userDataFirestore[0].userId && name == "meuperfil") {
+      //Transforma em URL para o src da imagem
+      for (let i = 0; i < recipeData.length; i++) {
+        const url = await getImageStorage(recipeData[i].imagePath);
+        recipeData[i].imagePath = url;
+      }
+
+      setRecipeData(recipeData);
+
+      if (userId == userDataFirestore.userId && name == "meuperfil") {
         //Deu tudo certo
         console.log("Você está na sua página de perfil");
-        setUserData(userDataFirestore[0]);
-      } else if (userId == userDataFirestore[0].userId) {
+        setUserData(userDataFirestore);
+      } else if (userId == userDataFirestore.userId) {
         //Direcionar para o perfil do usuário caso ele esteja logado
         document.location.href = "/perfil/meuperfil";
       } else {
         console.log(
-          `Você está na página de perfil de ${userDataFirestore[0].name}`
+          `Você está na página de perfil de ${userDataFirestore.name}`
         );
-        setUserData(userDataFirestore[0]);
+        setUserData(userDataFirestore);
       }
     });
   }, []);
@@ -99,7 +114,7 @@ export default function PerfilPage() {
     "Pedro",
   ];
   let key = 0;
-  const urlFood = "https://source.unsplash.com/featured/300x300?food";
+  const urlFood = "https://source.unsplash.com/featured/400x300?food";
 
   return (
     <div>
@@ -117,7 +132,7 @@ export default function PerfilPage() {
             </h1>
             <img
               className={styles.divPerfilInformationImage}
-              src="https://source.unsplash.com/featured/200x200?person"
+              src="https://source.unsplash.com/featured/300x300?person"
               alt="user image"
             />
             <h3>
@@ -130,14 +145,15 @@ export default function PerfilPage() {
             </h3>
           </div>
           <div className={styles.gridContainerFood}>
-            {names.map((name) => {
+            {recipesData.map((r: any) => {
               key++;
               return (
                 <PerfilFoodContainer
-                  authorName={name}
-                  imageFoodUrl={urlFood}
-                  likesAmount={300}
-                  recipeName={name}
+                  authorName={r.recipeOwnerName}
+                  imageFoodUrl={r.imagePath}
+                  likesAmount={r.likes}
+                  recipeName={r.title}
+                  recipeUrl={r.recipeUrl}
                   key={key}
                 />
               );
@@ -145,7 +161,9 @@ export default function PerfilPage() {
           </div>
           {isThePerfilOwner && (
             <div className={styles.ownerFunctionalites}>
-              <Link className={styles.linkToCreateRecipe} to="/criar-receita">Criar uma nova receita</Link>
+              <Link className={styles.linkToCreateRecipe} to="/criar-receita">
+                Criar uma nova receita
+              </Link>
             </div>
           )}
         </Container>

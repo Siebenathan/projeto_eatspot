@@ -11,6 +11,7 @@ import CreateAccountPage from "./components/pages/CreateAccountPage";
 import PrivatePage from "./components/pages/PrivatePage";
 import AdminPage from "./components/pages/adminPages/AdminPage";
 import CreateRecipePage from "./components/pages/CreateRecipePage";
+import RecipePage from "./components/pages/RecipePage";
 
 const browser = createBrowserRouter([
   {
@@ -19,7 +20,8 @@ const browser = createBrowserRouter([
     children: [
       { path: "/", element: <HomePage /> },
       { path: "/perfil/:name", element: <PerfilPage /> },
-      {path: "/criar-receita", element: <CreateRecipePage />}
+      { path: "/criar-receita", element: <CreateRecipePage /> },
+      { path: "/receita/:recipeUrl", element: <RecipePage /> },
     ],
   },
   {

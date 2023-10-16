@@ -5,13 +5,23 @@ import { GrMoney } from "react-icons/gr";
 import { GiMoneyStack } from "react-icons/gi";
 import { TbMoneybag } from "react-icons/tb";
 import Input from "../forms/Input";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import InputFileWithPreview from "../forms/InputFileWithPreview";
 import TextArea from "../forms/TextArea";
 import Button from "../forms/Button";
 import Modal from "../modal/Modal";
 import { ModalProps } from "../modal/Modal";
-import { unescape } from "querystring";
+import { addItemToStorage } from "../services/firebase/firebaseStorage";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth, storage } from "../services/firebase/firebase";
+import useLocalStorage from "../hooks/useLocalStorage";
+import { useNavigate } from "react-router-dom";
+import { v4 as uuidv4 } from "uuid";
+import {
+  addDocument,
+  getDataFromCollection,
+  updateDocFirestore,
+} from "../services/firebase/firebaseFirestore";
 
 interface RecipeTimeProps {
   period: string;
@@ -25,13 +35,23 @@ interface RecipePhasesProps {
 }
 
 export default function CreateRecipePage() {
+  const [userId, setUserId] = useLocalStorage("userId", "");
+  const [userObject, setUserObject] = useState<any>();
+  const navigate = useNavigate();
   const [titleRecipe, setTitleRecipe] = useState<string>("");
   const [imageFile, setImageFile] = useState<any>(undefined);
+  const [imageUrl, setImageUrl] = useState<any>();
+  const [recipeTimes, setRecipeTimes] = useState<RecipeTimeProps[]>([
+    { period: "Tempo de preparo", minutes: 0, hours: 0 },
+    { period: "Tempo de cozimento", minutes: 0, hours: 0 },
+    { period: "Tempo de espera", minutes: 0, hours: 0 },
+  ]);
   const [recipeDescription, setRecipeDescription] = useState<string>();
   const [recipeIngredients, setRecipeIngredients] = useState<string>();
   const [recipeDifficulty, setRecipeDifficulty] = useState<string>("");
   const [recipeCost, setRecipeCost] = useState<string>("");
-  const [requiredRecipePhase, setRequiredRecipePhase] = useState<string>();
+  const [requiredRecipePhase, setRequiredRecipePhase] =
+    useState<RecipePhasesProps>();
   const [recipePhasesList, setRecipePhasesList] =
     useState<RecipePhasesProps[]>();
   const [modal, setModal] = useState<ModalProps>({
@@ -44,13 +64,30 @@ export default function CreateRecipePage() {
     secondButtonFunction: undefined,
     styleSecondButton: undefined,
   });
-  // const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
-  const recipeTimes: RecipeTimeProps[] = [
-    { period: "Tempo de preparo", minutes: undefined, hours: undefined },
-    { period: "Tempo de cozimento", minutes: undefined, hours: undefined },
-    { period: "Tempo de espera", minutes: undefined, hours: undefined },
-  ];
+  function redirectToLoginPage() {
+    navigate("/login", {
+      state: {
+        message:
+          "Ocorreu um erro na autenticação porfavor faça o seu login novamente!",
+        type: "error",
+      },
+    });
+  }
+
+  useEffect(() => {
+    if (userId == "") {
+      redirectToLoginPage();
+    }
+  }, []);
+
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      if (user.uid != userId) {
+        redirectToLoginPage();
+      }
+    }
+  });
 
   const recipeDifficultyList = [
     "Muito fácil",
@@ -98,19 +135,19 @@ export default function CreateRecipePage() {
       title: "",
       type: "erro",
     };
-    if (recipeDifficulty == "") {
+    if (recipeDifficulty === "") {
       settingsModal.text = "Dificuldade da receita não foi selecionada!";
       settingsModal.title = "ERRO";
       settingsModal.type = "erro";
       setModal(settingsModal);
       return;
-    } else if (recipeCost == "") {
+    } else if (recipeCost === "") {
       settingsModal.text = "Custo médio da receita não foi selecionado!";
       settingsModal.title = "ERRO";
       settingsModal.type = "erro";
       setModal(settingsModal);
       return;
-    } else if (imageFile == undefined) {
+    } else if (imageFile === undefined) {
       settingsModal.text =
         "Nenhuma imagem foi selecionada para ser a capa da receita! Você precisa de pelo menos uma imagem para a sua receita.";
       settingsModal.title = "ERRO";
@@ -124,6 +161,7 @@ export default function CreateRecipePage() {
       "Sua receita está pronta para ser postada! Para concluir a postagem clique em confirmar.";
     settingsModal.type = "sucesso";
     settingsModal.secondButtonFunction = () => {
+      postRecipe();
       setModal({
         isOpen: false,
         setIsOpen() {},
@@ -140,8 +178,61 @@ export default function CreateRecipePage() {
       color: "white",
       borderRadius: "5px",
     };
-    console.log(settingsModal);
     setModal(settingsModal);
+  }
+
+  async function postRecipe() {
+    const data = await getDataFromCollection("users", "userId", userId);
+    const userData: any = data.docs.map((doc) => ({
+      ...doc.data(),
+      id: doc.id,
+    }))[0];
+    const newNumberOfRecipes = parseInt(userData.numberOfRecipes) + 1;
+    const newUserData = {
+      bornDate: userData.bornDate,
+      createAccountDate: userData.createAccountDate,
+      nacionality: userData.nacionality,
+      name: userData.name,
+      numberOfRecipes: newNumberOfRecipes.toString(),
+      roles: userData.roles,
+      userId: userData.userId,
+    };
+    updateDocFirestore("users", data.docs[0].id, newUserData);
+
+    const storageImgURL = `images/receitas/${userData.name}/${newNumberOfRecipes}/imagemPrincipal`;
+    addItemToStorage(storageImgURL, imageUrl);
+
+    recipePhasesList?.push(
+      requiredRecipePhase
+        ? requiredRecipePhase
+        : { phaseNumber: 1, phaseText: "" }
+    );
+
+    const newRecipePhasesList = recipePhasesList?.filter(
+      (element) => element.phaseText != ""
+    );
+
+    let id = uuidv4();
+    let recipeUrl =
+      id.replaceAll("-", "") + "-" + titleRecipe.replaceAll(" ", "-");
+
+    const recipeData = {
+      recipeUrl: recipeUrl,
+      recipeTitle: titleRecipe,
+      imagePath: storageImgURL,
+      recipeDescription: recipeDescription,
+      recipeIngredients: recipeIngredients,
+      recipeDifficulty: recipeDifficulty,
+      recipeCost: recipeCost,
+      recipeTimes: recipeTimes,
+      userId: userId,
+      recipeOwnerName: userData.name,
+      likes: 0,
+      comments: [],
+      recipePhasesList: newRecipePhasesList,
+    };
+
+    addDocument("recipes", recipeData);
   }
 
   return (
@@ -189,6 +280,7 @@ export default function CreateRecipePage() {
             imageFile={imageFile}
             setFile={setImageFile}
             spanText="Clique para inserir uma imagem..."
+            setImageUrl={setImageUrl}
           />
         </div>
         <div className={styles.divRecipeApresentation}>
@@ -291,6 +383,7 @@ export default function CreateRecipePage() {
                     for (let i = 0; i < recipeTimes.length; i++) {
                       if (recipeTimes[i].period === e.target.name) {
                         recipeTimes[i].minutes = e.target.value;
+                        setRecipeTimes(recipeTimes);
                       }
                     }
                   }}
@@ -307,9 +400,9 @@ export default function CreateRecipePage() {
                     for (let i = 0; i < recipeTimes.length; i++) {
                       if (recipeTimes[i].period === e.target.name) {
                         recipeTimes[i].hours = e.target.value;
+                        setRecipeTimes(recipeTimes);
                       }
                     }
-                    console.log(recipeTimes);
                   }}
                 />
               </label>
@@ -325,12 +418,15 @@ export default function CreateRecipePage() {
               placeholder={`Descreva a etapa 1...`}
               required
               onChange={(e: any) => {
-                setRequiredRecipePhase(e.target.value);
+                setRequiredRecipePhase({
+                  phaseNumber: 1,
+                  phaseText: e.target.value,
+                });
                 if (recipePhasesList == null) {
                   setRecipePhasesList([{ phaseText: "", phaseNumber: 2 }]);
                 }
               }}
-              value={requiredRecipePhase}
+              value={requiredRecipePhase?.phaseText}
             ></textarea>
           </div>
           {recipePhasesList &&

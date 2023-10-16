@@ -2,7 +2,7 @@ import { auth } from "./firebase";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  signOut
+  signOut,
 } from "firebase/auth";
 import { User } from "./firebase";
 
@@ -28,6 +28,10 @@ export function signOutUser() {
 export let userAuth: any = null;
 
 export async function signIn(password: string, email: string) {
-  const singInUser = await signInWithEmailAndPassword(auth, email, password);
-  return singInUser.user.uid;
+  const singInUser = await signInWithEmailAndPassword(
+    auth,
+    email,
+    password
+  ).catch((err) => console.log(err));
+  return singInUser?.user.uid;
 }

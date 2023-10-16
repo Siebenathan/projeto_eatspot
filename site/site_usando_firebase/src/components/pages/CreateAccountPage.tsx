@@ -45,7 +45,13 @@ export default function CreateAccountPage() {
     });
 
     if (response === "Registro realizado com sucesso!") {
-      navigate("/login");
+      navigate("/login", {
+        state: {
+          message:
+            "Registro realizado com sucesso! Para acessar sua conta faça o seu login.",
+          type: "success"
+        },
+      });
     } else {
       console.log(response);
     }
