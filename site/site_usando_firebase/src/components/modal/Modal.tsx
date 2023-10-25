@@ -6,7 +6,7 @@ export interface ModalProps {
   title: string;
   text: string;
   isOpen: boolean;
-  type: "erro" | "sucesso";
+  type: "erro" | "sucesso" | "informacao";
   setIsOpen(): any;
   secondButtonFunction?(): any;
   textSecondButton?: string;
@@ -22,6 +22,8 @@ export default function Modal(props: ModalProps) {
       setModalStyle({ backgroundColor: "red", color: "white" });
     } else if (props.type === "sucesso") {
       setModalStyle({ backgroundColor: "green", color: "white" });
+    } else if (props.type === "informacao") {
+      setModalStyle({ backgroundColor: "var(--cor5)", color: "white" })
     }
     if (props.textSecondButton) {
       setTextSecondButton(props.textSecondButton);

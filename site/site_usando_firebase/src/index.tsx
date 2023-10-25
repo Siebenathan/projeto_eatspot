@@ -12,6 +12,7 @@ import PrivatePage from "./components/pages/PrivatePage";
 import AdminPage from "./components/pages/adminPages/AdminPage";
 import CreateRecipePage from "./components/pages/CreateRecipePage";
 import RecipePage from "./components/pages/RecipePage";
+import RecipesPage from "./components/pages/RecipesPage";
 
 const browser = createBrowserRouter([
   {
@@ -22,8 +23,9 @@ const browser = createBrowserRouter([
       { path: "/perfil/:name", element: <PerfilPage /> },
       { path: "/criar-receita", element: <CreateRecipePage /> },
       { path: "/receita/:recipeUrl", element: <RecipePage /> },
+      { path: "/receitas/:categoria?", element: <RecipesPage />}
     ],
-  },
+  },  
   {
     path: "/criar-conta",
     element: <CreateAccountPage />,

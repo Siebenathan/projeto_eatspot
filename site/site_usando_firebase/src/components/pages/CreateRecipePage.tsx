@@ -13,7 +13,7 @@ import Modal from "../modal/Modal";
 import { ModalProps } from "../modal/Modal";
 import { addItemToStorage } from "../services/firebase/firebaseStorage";
 import { onAuthStateChanged } from "firebase/auth";
-import { auth, storage } from "../services/firebase/firebase";
+import { auth } from "../services/firebase/firebase";
 import useLocalStorage from "../hooks/useLocalStorage";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
@@ -154,6 +154,31 @@ export default function CreateRecipePage() {
       settingsModal.type = "erro";
       setModal(settingsModal);
       return;
+    } else if (!recipeIngredients?.includes("\n")) {
+      settingsModal.text =
+        "Sua receita está pronta para ser enviada, porém revise se digitou os ingredientes da forma correta, e preciso digitar cada novo ingrediente em uma nova linha!";
+      settingsModal.title = "INFORMAÇÃO";
+      settingsModal.type = "informacao";
+      settingsModal.secondButtonFunction = () => {
+        postRecipe();
+        setModal({
+          isOpen: false,
+          setIsOpen() {},
+          text: "",
+          title: "",
+          type: "erro",
+        });
+      };
+      settingsModal.textSecondButton = "Confirmar";
+      settingsModal.styleSecondButton = {
+        backgroundColor: "var(--cor3)",
+        cursor: "pointer",
+        padding: "10px 20px",
+        color: "white",
+        borderRadius: "5px",
+      };
+      setModal(settingsModal);
+      return;
     }
 
     settingsModal.title = "SUCESSO!";
@@ -216,12 +241,14 @@ export default function CreateRecipePage() {
     let recipeUrl =
       id.replaceAll("-", "") + "-" + titleRecipe.replaceAll(" ", "-");
 
+    const recipeIngredientesFormated = recipeIngredients?.split("\n").filter(item => item != "");
+
     const recipeData = {
       recipeUrl: recipeUrl,
       recipeTitle: titleRecipe,
       imagePath: storageImgURL,
       recipeDescription: recipeDescription,
-      recipeIngredients: recipeIngredients,
+      recipeIngredients: recipeIngredientesFormated,
       recipeDifficulty: recipeDifficulty,
       recipeCost: recipeCost,
       recipeTimes: recipeTimes,

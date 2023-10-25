@@ -53,8 +53,8 @@
     padding-bottom: 30px;
     display: flex;
     gap: 10px;
-    align-items: end;
-    justify-content: end;
+    align-items: flex-end;
+    justify-content: flex-end;
 }
 
 

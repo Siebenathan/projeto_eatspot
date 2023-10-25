@@ -152,7 +152,7 @@ export default function PerfilPage() {
                   authorName={r.recipeOwnerName}
                   imageFoodUrl={r.imagePath}
                   likesAmount={r.likes}
-                  recipeName={r.title}
+                  recipeName={r.recipeTitle}
                   recipeUrl={r.recipeUrl}
                   key={key}
                 />

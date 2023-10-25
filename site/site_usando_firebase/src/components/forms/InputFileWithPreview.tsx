@@ -44,7 +44,7 @@ export default function InputFileWithPreview(props: InputFileWithPreviewProps) {
       />
       <span className={styles.picture_image}>
         {props.imageFile ? (
-          <img src={props.imageFile} className={styles.picture_img}></img>
+          <img src={props.imageFile} className={styles.picture_img} alt="foto do usuário"></img>
         ) : (
           props.spanText
         )}
