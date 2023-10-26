@@ -2,9 +2,12 @@ import { useParams } from "react-router-dom";
 import styles from "./Recipes.module.css";
 import { useState, useEffect } from "react";
 import Container from "../layout/Container";
-import { GiStalactites } from "react-icons/gi";
+import FoodContainerDescription from "../eatspotcomponents/FoodContainerDescription";
 
 export default function RecipesPage() {
+  const loremIpsum =
+    "Lorem ipsum dolor sit amet consectetur adipisicing elit. Perspiciatis aspernatur blanditiis facere odio saepe eius placeat, obcaecati esse maxime, alias est, ipsa iusto dignissimos totam dolore cum dolorem adipisci quidem.";
+
   const { categoria } = useParams();
   const recipesNames = [
     "Bolo de chocolate",
@@ -19,8 +22,6 @@ export default function RecipesPage() {
     "Frango empanado",
     "Ovo cozido",
   ];
-
-  const recipeUrl = "https://source.unsplash.com/featured/400x350?food";
 
   useEffect(() => {
     console.log(categoria);
@@ -39,17 +40,15 @@ export default function RecipesPage() {
       </h2>
       <div className={styles.recipesMainDiv}>
         {recipesNames.map((recipe) => (
-          <div className={styles.recipeDiv}>
-            <div className={styles.recipePhotoDiv}>
-              <img src={recipeUrl} alt="recipe photo" />
-            </div>
-            <h3 className={styles.recipeTitle}>{recipe}</h3>
-            <p className={styles.recipeDescription}>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Soluta
-              tempora maiores, dolor mollitia quos tempore libero id eaque
-              architecto ex itaque eius ab, voluptatum expedita nam porro rerum
-              blanditiis quo. Lorem ipsum, dolor sit amet consectetur adipisicing elit. Tempora, nobis aspernatur eum labore blanditiis ipsum, eos amet excepturi aperiam iure eveniet commodi quibusdam architecto? Illo ducimus necessitatibus possimus repellat illum.
-            </p>
+          <div key={recipe}>
+            <FoodContainerDescription
+              recipeDescription={loremIpsum}
+              recipeName={recipe}
+              recipeLikesAmount="300"
+              recipeUrl="aaa"
+              recipeId={recipe}
+              key={recipe}
+            />
           </div>
         ))}
       </div>
