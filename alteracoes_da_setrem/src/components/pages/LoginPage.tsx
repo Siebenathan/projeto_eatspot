@@ -1,12 +1,13 @@
 import Header from "../layout/Header";
 import styles from "./LoginPage.module.css";
 import Container from "../layout/Container";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import Input from "../forms/Input";
 import Button from "../forms/Button";
 import { useState } from "react";
 import { signIn } from "../services/firebase/firebaseAuth";
 import useLocalStorage from "../hooks/useLocalStorage";
+import Message from "../modal/Message";
 
 export default function LoginPage() {
   const buttonSubmitStyle = {
@@ -15,6 +16,9 @@ export default function LoginPage() {
     cursor: "pointer",
   };
 
+  const location = useLocation();
+  const message = location.state?.message;
+  const messageType = location.state?.type;
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [value, setValue] = useLocalStorage("userId", "");
@@ -28,6 +32,7 @@ export default function LoginPage() {
   return (
     <div className={styles.loginPageBody}>
       <Header />
+      {message && (<Message message={message} type={messageType}></Message>)}
       <Container customClass="flexForLoginAndRegister">
         <div className={styles.leftDivLogin}>
           <p className={styles.leftDivLoginText}>

@@ -15,7 +15,7 @@ export default function NavBar() {
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
-      if(user?.uid == userId) {
+      if(user?.uid === userId) {
         setIsUserLogged(true);
       } else {
         setIsUserLogged(false);
@@ -52,7 +52,7 @@ export default function NavBar() {
         </li>
       </ul>
       <div className={styles.userContainer}>
-        {isUserLogged == false ? (
+        {isUserLogged === false ? (
           <div className={styles.mainContainerDropDown} onClick={() => {navigate("/login")}}>
             <FaUserSlash className={styles.userIcon} />
             <span className={styles.dropDownSpan}>Usuário</span>

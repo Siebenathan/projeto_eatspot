@@ -8,6 +8,8 @@ interface Country {
 
 export default function AdminPage() {
   const [image, setImage] = useState<any>();
+  const [modalToChangePhotoOpen, setModalToChangePhotoOpen] =
+  useState<boolean>(true);
 
   async function getRecipeImage() {
     const response = await getImageStorage(
@@ -22,6 +24,10 @@ export default function AdminPage() {
 
   return (
     <div>
+
+          <button onClick={() => {
+            setModalToChangePhotoOpen(true);
+          }}>abrir</button>
       <img src={image} alt="teste" />
     </div>
   );

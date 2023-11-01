@@ -8,6 +8,22 @@
     padding: 45px 0px;
 }
 
+.divPerfilOwnerImage {
+    position: relative;
+}   
+
+.pencilEditPerfil {
+    position: absolute;
+    padding: 10px;
+    bottom: 10px;
+    border-radius: 10px;
+    color: white;
+    font-size: 4em;
+    background-color: var(--cor3);
+    right: 1px;
+    cursor: pointer;
+}
+
 .divPerfilTitleUserName {
     color: black;
 }
@@ -63,4 +79,8 @@
 
 .linkToCreateRecipe:hover {
     scale: 1.02;
+}
+
+.observerIntersection {
+    opacity: 0;
 }

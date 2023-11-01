@@ -3,13 +3,18 @@ import Container from "../layout/Container";
 import PerfilFoodContainer from "../eatspotcomponents/PerfilFoodContainer";
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { getDataFromCollection } from "../services/firebase/firebaseFirestore";
+import {
+  getDataFromCollection,
+  getDataWithWhereOrderLimitAndStartAfter,
+} from "../services/firebase/firebaseFirestore";
 import useLocalStorage from "../hooks/useLocalStorage";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../services/firebase/firebase";
 import Loading from "../layout/Loading";
 import { Link } from "react-router-dom";
 import { getImageStorage } from "../services/firebase/firebaseStorage";
+import { FaPencilAlt } from "react-icons/fa";
+import ModalToPutImage from "../modal/ModalToPutImage";
 
 interface objectSearchProps {
   key: string;
@@ -20,20 +25,14 @@ export default function PerfilPage() {
   const [isThePerfilOwner, setIsThePerfilOwner] = useState<boolean>(false);
   const [userData, setUserData] = useState<any>();
   const [recipesData, setRecipeData] = useState<any>();
-  const [recipeImages, setRecipeImages] = useState<string[]>();
+  const [getMoreRecipes, setGetMoreRecipes] = useState<any>();
+  const [latestRecipeSnapshot, setLatestRecipeSnapshot] = useState<any>();
+  const [ownerPhotoFileUrl, setOwnerPhotoFileUrl] = useState<any>();
   const navigate = useNavigate();
   let { name } = useParams();
+  const [modalToChangePhotoOpen, setModalToChangePhotoOpen] =
+    useState<boolean>(false);
   const [userId, setUserId] = useLocalStorage("userId", "");
-
-  onAuthStateChanged(auth, (user) => {
-    if (user && name === "meuperfil") {
-      if (user.uid !== userId) {
-        navigate("/");
-        return;
-      }
-      setIsThePerfilOwner(true);
-    }
-  });
 
   useEffect(() => {
     const objectSearch: objectSearchProps = { key: "", searchParameter: "" };
@@ -53,7 +52,7 @@ export default function PerfilPage() {
       "users",
       objectSearch.key,
       objectSearch.searchParameter
-    ).then(async (data) => {
+    ).then((data) => {
       if (data.empty) {
         //Mandar para uma página de erro 404 pois nada foi encontrado no banco de dados
         // navigate("/pagina_de_erro");
@@ -66,32 +65,21 @@ export default function PerfilPage() {
         id: doc.id,
       }))[0];
 
-      const recipeDataFirestore = await getDataFromCollection(
-        "recipes",
-        "userId",
-        userDataFirestore.userId
-      );
-
-      let recipeData: any = recipeDataFirestore.docs.map((doc) => ({
-        ...doc.data(),
-        id: doc.id,
-      }));
-
-      //Transforma em URL para o src da imagem
-      for (let i = 0; i < recipeData.length; i++) {
-        const url = await getImageStorage(recipeData[i].imagePath);
-        recipeData[i].imagePath = url;
-      }
-
-      setRecipeData(recipeData);
-
       if (userId == userDataFirestore.userId && name == "meuperfil") {
         //Deu tudo certo
         console.log("Você está na sua página de perfil");
+        onAuthStateChanged(auth, (user) => {
+          if (user && name === "meuperfil") {
+            if (user.uid !== userId) {
+              navigate("/");
+              return;
+            }
+            setIsThePerfilOwner(true);
+          }
+        });
         setUserData(userDataFirestore);
       } else if (userId == userDataFirestore.userId) {
         //Direcionar para o perfil do usuário caso ele esteja logado
-        document.location.href = "/perfil/meuperfil";
       } else {
         console.log(
           `Você está na página de perfil de ${userDataFirestore.name}`
@@ -101,20 +89,93 @@ export default function PerfilPage() {
     });
   }, []);
 
-  //Lista de informações.
-  const names = [
-    "Alessandro",
-    "Maria",
-    "Matheus",
-    "João",
-    "Wesley",
-    "Bernardo",
-    "Luisa",
-    "Luiz",
-    "Pedro",
-  ];
-  let key = 0;
-  const urlFood = "https://source.unsplash.com/featured/400x300?food";
+  useEffect(() => {
+    if (userData) {
+      const observer = new IntersectionObserver((entries) => {
+        const element: any = entries[0];
+        if (element.isIntersecting) {
+          setLatestRecipeSnapshot((currentStateValue: any) => {
+            if (currentStateValue) {
+              setGetMoreRecipes(true);
+              return currentStateValue;
+            }
+            observer.disconnect();
+          });
+        }
+      });
+      getRecipesFirestore().then(() => {
+        const elementToObserve: any = document.querySelector("#observer");
+        if (elementToObserve) {
+          observer.observe(elementToObserve);
+        }
+      });
+      return () => {
+        observer.disconnect();
+      };
+    }
+  }, [userData]);
+
+  useEffect(() => {
+    if (getMoreRecipes) {
+      getRecipesFirestore();
+      setGetMoreRecipes(false);
+    }
+  }, [getMoreRecipes]);
+
+  async function getRecipesFirestore() {
+    let recipeDataFirestore: any = null;
+    if (latestRecipeSnapshot) {
+      console.log("graças a deus caiu aqui");
+      recipeDataFirestore = await getDataWithWhereOrderLimitAndStartAfter(
+        "recipes",
+        9,
+        "createdAt",
+        "desc",
+        "recipeOwnerName",
+        userData.name,
+        latestRecipeSnapshot
+      );
+    } else {
+      recipeDataFirestore = await getDataWithWhereOrderLimitAndStartAfter(
+        "recipes",
+        9,
+        "createdAt",
+        "desc",
+        "recipeOwnerName",
+        userData.name
+      );
+    }
+
+    const lastDoc =
+      recipeDataFirestore.docs[recipeDataFirestore.docs.length - 1];
+
+    setLatestRecipeSnapshot(lastDoc);
+
+    let recipeData: any = recipeDataFirestore.docs.map((doc: any) => ({
+      ...doc.data(),
+      id: doc.id,
+    }));
+
+    await getRecipeImages(recipeData);
+  }
+
+  async function getRecipeImages(arrayOfRecipes?: any) {
+    for (let i = 0; i < arrayOfRecipes.length; i++) {
+      const url = await getImageStorage(arrayOfRecipes[i].imagePath);
+      arrayOfRecipes[i].imagePath = url;
+      if (recipesData) {
+        setRecipeData([...recipesData, ...arrayOfRecipes]);
+      } else {
+        setRecipeData([...arrayOfRecipes]);
+      }
+    }
+  }
+
+  async function changePerfilPhoto() {
+    const endPoint = `imagens/perfil/${userData.name}/fotoDePerfil`;
+    console.log(ownerPhotoFileUrl);
+    console.log(endPoint);
+  }
 
   return (
     <div>
@@ -126,15 +187,51 @@ export default function PerfilPage() {
             boxShadow: "#00000014 0px 9px 20px 10px",
           }}
         >
+          <ModalToPutImage
+            setImageFileUrl={setOwnerPhotoFileUrl}
+            isOpen={modalToChangePhotoOpen}
+            setIsOpen={() => setModalToChangePhotoOpen(false)}
+            text="Deseja trocar sua foto de perfil? Selecione uma imagem e depois clique em confirmar!"
+            title="Trocar foto de perfil"
+            type="informacao"
+            secondButtonFunction={() => {
+              changePerfilPhoto();
+            }}
+            textSecondButton="Confirmar"
+            styleSecondButton={{
+              backgroundColor: "var(--cor3)",
+              cursor: "pointer",
+              padding: "10px 20px",
+              color: "white",
+              borderRadius: "5px",
+            }}
+          />
           <div className={styles.divPerfilInformation}>
             <h1 className={styles.divPerfilTitleUserName}>
               {userData && userData.name}
             </h1>
-            <img
-              className={styles.divPerfilInformationImage}
-              src="https://source.unsplash.com/featured/300x300?person"
-              alt="user image"
-            />
+            {isThePerfilOwner ? (
+              <div className={styles.divPerfilOwnerImage}>
+                <FaPencilAlt
+                  className={styles.pencilEditPerfil}
+                  onClick={() => {
+                    setModalToChangePhotoOpen(true);
+                  }}
+                />
+                <img
+                  className={styles.divPerfilInformationImage}
+                  src="https://source.unsplash.com/featured/300x300?person"
+                  alt="user image"
+                />
+              </div>
+            ) : (
+              <img
+                className={styles.divPerfilInformationImage}
+                src="https://source.unsplash.com/featured/300x300?person"
+                alt="user image"
+              />
+            )}
+
             <h3>
               Receitas postadas:{" "}
               <span className={styles.divPerfilQtdeInformation}>300</span>
@@ -145,20 +242,21 @@ export default function PerfilPage() {
             </h3>
           </div>
           <div className={styles.gridContainerFood}>
-            {recipesData.map((r: any) => {
-              key++;
-              return (
-                <PerfilFoodContainer
-                  authorName={r.recipeOwnerName}
-                  imageFoodUrl={r.imagePath}
-                  likesAmount={r.likes}
-                  recipeName={r.recipeTitle}
-                  recipeUrl={r.recipeUrl}
-                  key={key}
-                />
-              );
-            })}
+            {recipesData &&
+              recipesData.map((r: any) => {
+                return (
+                  <PerfilFoodContainer
+                    authorName={r.recipeOwnerName}
+                    imageFoodUrl={r.imagePath}
+                    likesAmount={r.likes}
+                    recipeName={r.recipeTitle}
+                    recipeUrl={r.recipeUrl}
+                    key={r.id}
+                  />
+                );
+              })}
           </div>
+          <div className={styles.observerIntersection} id="observer"></div>
           {isThePerfilOwner && (
             <div className={styles.ownerFunctionalites}>
               <Link className={styles.linkToCreateRecipe} to="/criar-receita">

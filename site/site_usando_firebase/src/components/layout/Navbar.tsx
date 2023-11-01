@@ -36,17 +36,17 @@ export default function NavBar() {
       </div>
       <ul className={styles.navigationList}>
         <li>
-          <Link className={styles.navigationListItem} to="/">
+          <Link reloadDocument className={styles.navigationListItem} to="/">
             Home
           </Link>
         </li>
         <li>
-          <Link className={styles.navigationListItem} to="/receitas">
+          <Link reloadDocument className={styles.navigationListItem} to="/receitas/1">
             Receitas
           </Link>
         </li>
         <li>
-          <Link className={styles.navigationListItem} to="/noticias">
+          <Link reloadDocument className={styles.navigationListItem} to="/noticias">
             Notícias
           </Link>
         </li>

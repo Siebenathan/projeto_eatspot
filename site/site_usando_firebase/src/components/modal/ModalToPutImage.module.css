@@ -1,0 +1,62 @@
+.backgroundStyle {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgb(0, 0, 0, 0.7);
+  z-index: 1000;
+}
+
+.mainModal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 50%;
+  height: fit-content;
+  background-color: white;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  flex-direction: column;
+  text-align: justify;
+  border-radius: 10px;
+}
+
+.divModalTitle {
+  width: 100%;
+  border-radius: 10px 10px 0px 0px;
+  padding: 20px 0px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.divModalTitle > h2 {
+  width: 90%;
+}
+
+.divModalText {
+  width: 90%;
+  padding: 20px 0px;
+}
+
+.mainModal > p {
+  width: 90%;
+  padding-bottom: 30px;
+}
+
+.divModalButtons {
+  width: 90%;
+  padding-bottom: 30px;
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+  justify-content: flex-end;
+}
+
+.formInsertImage {
+    width: 50%;
+    margin-bottom: 30px;
+}

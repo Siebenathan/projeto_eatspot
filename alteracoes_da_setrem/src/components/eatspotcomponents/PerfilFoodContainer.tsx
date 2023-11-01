@@ -3,12 +3,11 @@ import { FaHeart } from "react-icons/fa";
 import styles from "./PerfilFoodContainer.module.css";
 import { useNavigate } from "react-router-dom";
 
-
-
 interface PerfilFoodContainerProps {
   recipeName: string;
   imageFoodUrl: string;
   authorName: string;
+  recipeUrl: string;
   likesAmount: number;
 }
 
@@ -17,7 +16,7 @@ export default function PefilFoodContainer(props: PerfilFoodContainerProps) {
   const navigate = useNavigate();
 
   function onRecipeClick() {
-    navigate("/{nome da receita}");
+    navigate(`/receita/${props.recipeUrl}`);
   }
 
   return (

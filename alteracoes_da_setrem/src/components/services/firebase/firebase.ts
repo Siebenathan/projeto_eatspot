@@ -2,6 +2,7 @@ import { initializeApp } from "firebase/app";
 // import { getAnalytics } from "firebase/analytics";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
 import { createUserFirestore } from "./firebaseFirestore";
 import { createUserAuth } from "./firebaseAuth";
 
@@ -19,6 +20,7 @@ export const app = initializeApp(firebaseConfig);
 // export const analytics = getAnalytics(app);
 export const auth = getAuth(app);
 export const firestoreDB = getFirestore(app);
+export const storage = getStorage(app, "gs://projetoeatspot.appspot.com");
 
 export interface User {
   userId?: string;
@@ -48,10 +50,9 @@ export async function postUser(usuario: User): Promise<string> {
   usuario.roles = { user: true, admin: false };
 
   const addUserFirestore = await createUserFirestore(usuario);
-  if(addUserFirestore === "Erro: Já existe um usuário com esse nome!") {
+  if (addUserFirestore === "Erro: Já existe um usuário com esse nome!") {
     return addUserFirestore;
   }
   console.log("Documento escrito com o id:", addUserFirestore.id);
   return "Registro realizado com sucesso!";
 }
-

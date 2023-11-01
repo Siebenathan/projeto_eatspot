@@ -1,36 +1,43 @@
 import styles from "./FoodContainerDescription.module.css";
 import { FaHeart } from "react-icons/fa";
-import {useNavigate} from 'react-router-dom';
 import { useEffect, useState } from "react";
 
 interface FoodContainerDescriptionProps {
   recipeName: string;
   recipeDescription: string;
   recipeLikesAmount: string;
-  recipeImageUrl: string;
-  recipeId: string;
   recipeUrl: string;
+  recipeId: string;
 }
 
 export default function FoodContainerDescription(
   props: FoodContainerDescriptionProps
 ) {
-  const [element, setElement] = useState<any>();
-  const navigator = useNavigate();
+  const [element, setElement] = useState<{ width: any; height: any }>();
+  const [descriptionArea, setDescriptionArea] = useState<any>();
+  const recipeUrl = "https://source.unsplash.com/featured/400x350?food";
 
-  // useEffect(() => {
-  //     const element = document.querySelector(`#${props.recipeId}`);
-  //     const recipeDescription = element?.children[2];
-  // }, [])
+  useEffect(() => {
+    const element = document.querySelector(`#${props.recipeId}`);
+    const recipeDescription = element?.children[2];
+    setDescriptionArea({
+      width: recipeDescription?.clientWidth,
+      height: recipeDescription?.clientHeight,
+    });
+  }, []);
 
   return (
-    <div className={styles.recipeDiv} id={props.recipeId}>
+    <div
+      className={styles.recipeDiv}
+      id={props.recipeId}
+      onResize={() => console.log("tamanho alterado")}
+    >
       <div className={styles.recipePhotoDiv}>
         <img
-          src={props.recipeImageUrl}
+          src={recipeUrl}
           alt="recipe photo"
           onClick={() => {
-            navigator(`/receita/${props.recipeUrl}`);
+            //TODO:
           }}
         />
       </div>
@@ -38,7 +45,7 @@ export default function FoodContainerDescription(
       <p className={styles.recipeDescription}>{props.recipeDescription}</p>
       <p className={styles.recipeLikes}>
         <FaHeart className={styles.heartIcon} />
-        {props.recipeLikesAmount}
+        300
       </p>
     </div>
   );

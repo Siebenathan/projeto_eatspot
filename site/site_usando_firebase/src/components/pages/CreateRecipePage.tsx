@@ -22,6 +22,7 @@ import {
   getDataFromCollection,
   updateDocFirestore,
 } from "../services/firebase/firebaseFirestore";
+import { serverTimestamp } from "firebase/firestore";
 
 interface RecipeTimeProps {
   period: string;
@@ -36,7 +37,6 @@ interface RecipePhasesProps {
 
 export default function CreateRecipePage() {
   const [userId, setUserId] = useLocalStorage("userId", "");
-  const [userObject, setUserObject] = useState<any>();
   const navigate = useNavigate();
   const [titleRecipe, setTitleRecipe] = useState<string>("");
   const [imageFile, setImageFile] = useState<any>(undefined);
@@ -245,6 +245,7 @@ export default function CreateRecipePage() {
 
     const recipeData = {
       recipeUrl: recipeUrl,
+      createdAt: serverTimestamp(),
       recipeTitle: titleRecipe,
       imagePath: storageImgURL,
       recipeDescription: recipeDescription,

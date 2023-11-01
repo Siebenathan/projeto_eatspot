@@ -12,9 +12,48 @@
 
 .recipesMainDiv {
   display: flex;
-  align-items: center;
   width: 80%;
   gap: 30px 0px;
-  justify-content: center;
   flex-direction: column;
+  margin-bottom: 30px;
+}
+
+.divButtonBringNewRecipes {
+  background-color: var(--cor6);
+  height: 100px;
+  padding: 10px;
+  width: 80%;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  overflow: hidden;
+  transition: ease-in-out 0.2s;
+  cursor: pointer;
+}
+
+.divButtonBringNewRecipes:hover {
+  overflow: hidden;
+  scale: 0.99;
+}
+
+.divButtonBringNewRecipes > button {
+  border: none;
+  font-size: 2em;
+  overflow: hidden;
+  background-color: inherit;
+  cursor: pointer;
+}
+
+.changePageRecipesLink {
+  text-decoration: none;
+  color: black;
+}
+
+.doubleArrowIcon {
+  font-size: 3.5em;
+}
+
+.singleArrowIcon {
+  font-size: 2em;
 }
