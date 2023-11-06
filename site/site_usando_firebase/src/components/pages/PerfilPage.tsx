@@ -12,9 +12,13 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../services/firebase/firebase";
 import Loading from "../layout/Loading";
 import { Link } from "react-router-dom";
-import { getImageStorage } from "../services/firebase/firebaseStorage";
+import {
+  addItemToStorage,
+  getImageStorage,
+} from "../services/firebase/firebaseStorage";
 import { FaPencilAlt } from "react-icons/fa";
 import ModalToPutImage from "../modal/ModalToPutImage";
+import defaultUserPhoto from "../../img/EatSpot-semfundo.png";
 
 interface objectSearchProps {
   key: string;
@@ -27,7 +31,9 @@ export default function PerfilPage() {
   const [recipesData, setRecipeData] = useState<any>();
   const [getMoreRecipes, setGetMoreRecipes] = useState<any>();
   const [latestRecipeSnapshot, setLatestRecipeSnapshot] = useState<any>();
-  const [ownerPhotoFileUrl, setOwnerPhotoFileUrl] = useState<any>();
+  const [newOwnerPhotoFileUrl, setNewOwnerPhotoFileUrl] = useState<any>();
+  const [userPhoto, setUserPhoto] = useState<any>();
+
   const navigate = useNavigate();
   let { name } = useParams();
   const [modalToChangePhotoOpen, setModalToChangePhotoOpen] =
@@ -65,27 +71,45 @@ export default function PerfilPage() {
         id: doc.id,
       }))[0];
 
-      if (userId == userDataFirestore.userId && name == "meuperfil") {
-        //Deu tudo certo
-        console.log("Você está na sua página de perfil");
-        onAuthStateChanged(auth, (user) => {
-          if (user && name === "meuperfil") {
-            if (user.uid !== userId) {
-              navigate("/");
-              return;
-            }
-            setIsThePerfilOwner(true);
-          }
-        });
-        setUserData(userDataFirestore);
-      } else if (userId == userDataFirestore.userId) {
-        //Direcionar para o perfil do usuário caso ele esteja logado
-      } else {
-        console.log(
-          `Você está na página de perfil de ${userDataFirestore.name}`
-        );
-        setUserData(userDataFirestore);
+      if (userId === userDataFirestore.userId && name !== "meuperfil") {
+        navigate("/perfil/meuperfil");
       }
+
+      onAuthStateChanged(auth, (user) => {
+        if (user && userDataFirestore.userId == userId) {
+          if (user.uid !== userId) {
+            navigate("/");
+            return;
+          }
+          setIsThePerfilOwner(true);
+        }
+      });
+      getUserPhoto(`imagens/perfil/${userDataFirestore.name}/fotoDePerfil`);
+      setUserData(userDataFirestore);
+
+      // if (userId == userDataFirestore.userId && name == "meuperfil") {
+      //   //Deu tudo certo
+      //   console.log("Você está na sua página de perfil");
+      //   onAuthStateChanged(auth, (user) => {
+      //     if (user && name === "meuperfil") {
+      //       if (user.uid !== userId) {
+      //         navigate("/");
+      //         return;
+      //       }
+      //       setIsThePerfilOwner(true);
+      //     }
+      //   });
+      //   getUserPhoto(`imagens/perfil/${userDataFirestore.name}/fotoDePerfil`);
+      //   setUserData(userDataFirestore);
+      // } else if (userId == userDataFirestore.userId) {
+      //   navigate("/perfil/meuperfil");
+      //   //Direcionar para o perfil do usuário caso ele esteja logado
+      // } else {
+      //   console.log(
+      //     `Você está na página de perfil de ${userDataFirestore.name}`
+      //   );
+      //   setUserData(userDataFirestore);
+      // }
     });
   }, []);
 
@@ -159,6 +183,15 @@ export default function PerfilPage() {
     await getRecipeImages(recipeData);
   }
 
+  async function getUserPhoto(url: string) {
+    try {
+      const userPhotoStorage = await getImageStorage(url);
+      setUserPhoto(userPhotoStorage);
+    } catch {
+      setUserPhoto(defaultUserPhoto);
+    }
+  }
+
   async function getRecipeImages(arrayOfRecipes?: any) {
     for (let i = 0; i < arrayOfRecipes.length; i++) {
       const url = await getImageStorage(arrayOfRecipes[i].imagePath);
@@ -173,8 +206,8 @@ export default function PerfilPage() {
 
   async function changePerfilPhoto() {
     const endPoint = `imagens/perfil/${userData.name}/fotoDePerfil`;
-    console.log(ownerPhotoFileUrl);
-    console.log(endPoint);
+    await addItemToStorage(endPoint, newOwnerPhotoFileUrl);
+    document.location.reload();
   }
 
   return (
@@ -188,7 +221,7 @@ export default function PerfilPage() {
           }}
         >
           <ModalToPutImage
-            setImageFileUrl={setOwnerPhotoFileUrl}
+            setImageFileUrl={setNewOwnerPhotoFileUrl}
             isOpen={modalToChangePhotoOpen}
             setIsOpen={() => setModalToChangePhotoOpen(false)}
             text="Deseja trocar sua foto de perfil? Selecione uma imagem e depois clique em confirmar!"
@@ -220,14 +253,20 @@ export default function PerfilPage() {
                 />
                 <img
                   className={styles.divPerfilInformationImage}
-                  src="https://source.unsplash.com/featured/300x300?person"
+                  src={userPhoto}
+                  onError={(e: any) => {
+                    e.target.src = defaultUserPhoto;
+                  }}
                   alt="user image"
                 />
               </div>
             ) : (
               <img
                 className={styles.divPerfilInformationImage}
-                src="https://source.unsplash.com/featured/300x300?person"
+                src={userPhoto}
+                onError={(e: any) => {
+                  e.target.src = defaultUserPhoto;
+                }}
                 alt="user image"
               />
             )}

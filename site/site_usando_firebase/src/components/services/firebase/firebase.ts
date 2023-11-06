@@ -32,6 +32,7 @@ export interface User {
   bornDate: string;
   createAccountDate?: string;
   recipesILiked?: [];
+  userPhotoUrl?: string
 }
 
 export interface Roles {
@@ -50,6 +51,7 @@ export async function postUser(usuario: User): Promise<string> {
   usuario.createAccountDate = new Date().toLocaleDateString();
   usuario.roles = { user: true, admin: false };
   usuario.recipesILiked = [];
+  usuario.userPhotoUrl = `imagens/perfil/${usuario.name}/fotoDePerfil`;
 
   const addUserFirestore = await createUserFirestore(usuario);
   if (addUserFirestore === "Erro: Já existe um usuário com esse nome!") {

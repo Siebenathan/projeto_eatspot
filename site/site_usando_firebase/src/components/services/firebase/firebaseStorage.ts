@@ -14,7 +14,7 @@ export async function getImageStorage(url: string) {
     const response = await getDownloadURL(ref(storage, url));
     return response;
   } catch(err) {
-    console.log(err);
+    return "erro imagem nao encontrada";
   }
     
 }

@@ -9,6 +9,10 @@
 }
 
 .divPerfilOwnerImage {
+    height: 200px;
+    width: 200px;
+    background-color: var(--cor6);
+    border-radius: 50%;
     position: relative;
 }   
 

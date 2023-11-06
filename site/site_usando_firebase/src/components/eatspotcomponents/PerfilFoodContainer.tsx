@@ -23,6 +23,7 @@ export default function PefilFoodContainer(props: PerfilFoodContainerProps) {
     <div className={styles.mainContainer}>
       <img
         className={styles.imgFood}
+        loading="lazy"
         src={props.imageFoodUrl}
         alt="Imagem da receita"
         style={stylePhoto}

@@ -7,12 +7,13 @@ import {
   getDataFromCollection,
   setDocAlreadyCreated,
 } from "../services/firebase/firebaseFirestore";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import Loading from "../layout/Loading";
 import { TbChefHat } from "react-icons/tb";
 import { TbMoneybag } from "react-icons/tb";
 import { getImageStorage } from "../services/firebase/firebaseStorage";
 import useLocalStorage from "../hooks/useLocalStorage";
+import NewComment from "../eatspotcomponents/comments/NewComment";
 
 export default function RecipePage() {
   const [recipeData, setRecipeData] = useState<any>();
@@ -29,11 +30,10 @@ export default function RecipePage() {
   const [userId, setUserId] = useLocalStorage("userId", "");
   const { recipeUrl } = useParams();
   const [ownerOfTheRecipe, setOwnerOfTheRecipe] = useState<boolean>(false);
+  const navigate = useNavigate();
 
   const urlFood = "https://source.unsplash.com/featured/800x600?food";
   const urlUser = "https://source.unsplash.com/featured/100x100?person";
-  const listaDeIngredientes = ["Farinha", "Fermento", "Cobertura", "Açucar"];
-  let key = 0;
   const loremIpsum =
     "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ex optio, architecto deleniti quas officiis pariatur aperiam, excepturi amet molestiae aut harum ipsa porro tempora libero quae modi cum illo voluptatibus!";
 
@@ -182,6 +182,10 @@ export default function RecipePage() {
                 className={styles.heartIconButton}
                 style={userLikingState.changeStyleHeart ? { color: "red" } : {}}
                 onClick={() => {
+                  if (!userId) {
+                    navigate("/login");
+                    return;
+                  }
                   if (
                     !userLikingState.updatingDatabase &&
                     !userLikingState.changeStyleHeart
@@ -253,7 +257,9 @@ export default function RecipePage() {
           <p className={styles.recipeCommentsAmount}>
             <span>300</span> comentários
           </p>
+
           <div className={styles.recipeComments}>
+            <NewComment />
             <Comment
               commentDate="12/10/2006"
               userImageUrl={urlFood}
@@ -263,14 +269,24 @@ export default function RecipePage() {
           </div>
           {ownerOfTheRecipe && (
             <div className={styles.recipeOwnerDiv}>
-             <h2>Opções para alterar a receita</h2>
+              <h2>Opções para alterar a receita</h2>
               <div className={styles.divRecipeOwnerButtons}>
-                <button className={styles.recipeOwnerButtonEditRecipe} onClick={() => {
-                  //TODO:
-                }}>Editar</button>
-                <button className={styles.recipeOwnerButtonDeleteRecipe} onClick={() => {
-                  //TODO:
-                }}>Excluir</button>
+                <button
+                  className={styles.recipeOwnerButtonEditRecipe}
+                  onClick={() => {
+                    //TODO:
+                  }}
+                >
+                  Editar
+                </button>
+                <button
+                  className={styles.recipeOwnerButtonDeleteRecipe}
+                  onClick={() => {
+                    //TODO:
+                  }}
+                >
+                  Excluir
+                </button>
               </div>
             </div>
           )}
