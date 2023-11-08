@@ -38,6 +38,7 @@ export async function createUserFirestore(usuario: User): Promise<any> {
     userId: usuario.userId,
     recipesILiked: usuario.recipesILiked,
     userPhotoUrl: usuario.userPhotoUrl,
+    recipeComments: [],
     numberOfRecipes: 0,
   });
 

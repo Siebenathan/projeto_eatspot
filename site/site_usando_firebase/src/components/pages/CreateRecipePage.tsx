@@ -255,8 +255,10 @@ export default function CreateRecipePage() {
       recipeTimes: recipeTimes,
       userId: userId,
       recipeOwnerName: userData.name,
+      userPhotoUrl: userData.userPhotoUrl,
       likes: 0,
       comments: [],
+      peopleThatLikedRecipe: [],
       recipePhasesList: newRecipePhasesList,
     };
 

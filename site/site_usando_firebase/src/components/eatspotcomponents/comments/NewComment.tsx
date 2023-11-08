@@ -1,13 +1,17 @@
 import styles from "./NewComment.module.css";
 import { AiFillStar, AiOutlineStar } from "react-icons/ai";
 import { useEffect, useState } from "react";
+import starFilled from "../../../img/icons8-estrela-100-filled.png";
+import starOutline from "../../../img/icons8-estrela-100-outline.png";
 import TextArea from "../../forms/TextArea";
 import Button from "../../forms/Button";
+import { useNavigate } from "react-router-dom";
 
 interface NewCommentProps {
   userImageUrl: string;
   username: string;
-  commentText: string;
+  isUserLogged: boolean;
+  handleSubmit(commentText: string, avaliationNumber: number): void;
 }
 
 interface StarProps {
@@ -15,31 +19,39 @@ interface StarProps {
   starNumber: number;
 }
 
-export default function NewComment() {
+export default function NewComment(props: NewCommentProps) {
   const [stars, setStars] = useState<StarProps[]>([
-    { marked: false, starNumber: 1 },
+    { marked: true, starNumber: 1 },
     { marked: false, starNumber: 2 },
     { marked: false, starNumber: 3 },
     { marked: false, starNumber: 4 },
     { marked: false, starNumber: 5 },
   ]);
-  const [commentText, setCommentText] = useState<string>();
+  const [commentText, setCommentText] = useState<string>("");
+  const [commentAvaliation, setCommentAvaliation] = useState<number>(1);
 
-  const urlUser = "https://source.unsplash.com/featured/100x100?person";
+  function handleStarClick(e: any) {
+    const commentAvaliationNumber = parseInt(e.target.id);
+    if (commentAvaliationNumber) {
+      setCommentAvaliation(commentAvaliationNumber);
+    }
+
+    const newStars = stars.map((star) => {
+      if (commentAvaliationNumber >= star.starNumber) {
+        star.marked = true;
+      } else if (commentAvaliationNumber <= star.starNumber) {
+        star.marked = false;
+      }
+      return star;
+    });
+    setStars(newStars);
+  }
 
   function handleSubmit(e: any) {
     e.preventDefault();
-    console.log(commentText);
-  }
-
-  function handleStarClick(e: any) {
-    const newStars = stars.map(star => {
-        if(e.target.id == star.starNumber) {
-            star.marked = true;
-        }
-        return star;
-    });
-    setStars(newStars);
+    setTimeout(() => {
+      props.handleSubmit(commentText, commentAvaliation);
+    }, 5000);
   }
 
   return (
@@ -51,7 +63,18 @@ export default function NewComment() {
             {stars.map((star) => {
               if (star.marked) {
                 return (
-                  <AiFillStar
+                  <img
+                    src={starFilled}
+                    className={styles.starIcon}
+                    id={star.starNumber.toString()}
+                    onClick={handleStarClick}
+                    key={star.starNumber}
+                  />
+                );
+              } else {
+                return (
+                  <img
+                    src={starOutline}
                     className={styles.starIcon}
                     id={star.starNumber.toString()}
                     onClick={handleStarClick}
@@ -59,21 +82,13 @@ export default function NewComment() {
                   />
                 );
               }
-              return (
-                <AiOutlineStar
-                  className={styles.starIcon}
-                  id={star.starNumber.toString()}
-                  onClick={handleStarClick}
-                  key={star.starNumber}
-                />
-              );
             })}
           </div>
         </div>
         <div className={styles.divRecipeCommentTextAndUser}>
           <div className={styles.divUserPhotoAndName}>
-            <img src={urlUser} alt="user image" />
-            <p>Cristiano Ronaldo</p>
+            <img src={props.userImageUrl} alt="user image" />
+            <p>{props.username}</p>
           </div>
           <div className={styles.divTextAreaAndSubmitForm}>
             <TextArea

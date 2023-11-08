@@ -14,6 +14,7 @@ import { TbMoneybag } from "react-icons/tb";
 import { getImageStorage } from "../services/firebase/firebaseStorage";
 import useLocalStorage from "../hooks/useLocalStorage";
 import NewComment from "../eatspotcomponents/comments/NewComment";
+import defaultUserPhoto from "../../img/EatSpot-semfundo.png";
 
 export default function RecipePage() {
   const [recipeData, setRecipeData] = useState<any>();
@@ -26,10 +27,12 @@ export default function RecipePage() {
     updatingDatabase: false,
   });
   const [userData, setUserData] = useState<any>();
+  const [userPhoto, setUserPhoto] = useState<any>();
   const [amountOfTime, setAmountOfTime] = useState<any>();
   const [userId, setUserId] = useLocalStorage("userId", "");
   const { recipeUrl } = useParams();
   const [ownerOfTheRecipe, setOwnerOfTheRecipe] = useState<boolean>(false);
+  const [ownerRecipePhoto, setOwnerRecipePhoto] = useState<string>();
   const navigate = useNavigate();
 
   const urlFood = "https://source.unsplash.com/featured/800x600?food";
@@ -39,12 +42,13 @@ export default function RecipePage() {
 
   useEffect(() => {
     if (userId) {
-      getDataFromCollection("users", "userId", userId).then((data) => {
-        const userDataFirestore = data.docs.map((doc) => ({
+      getDataFromCollection("users", "userId", userId).then(async (data) => {
+        const userDataFirestore: any = data.docs.map((doc) => ({
           ...doc.data(),
           id: doc.id,
         }))[0];
         setUserData(userDataFirestore);
+        setUserPhoto(await getImageStorage(userDataFirestore.userPhotoUrl));
       });
     }
 
@@ -89,6 +93,16 @@ export default function RecipePage() {
     }
   }, [recipeData, userData]);
 
+  function handleCommentSubmit(commentText: string, avaliationNumber: number) {
+    recipeData.comments.push({
+      commentText: commentText,
+      avaliationNumber: avaliationNumber,
+      commentatorName: userData.name,
+    });
+    console.log("aaa");
+    // setDocAlreadyCreated("recipes", recipeData.id, recipeData);
+  }
+
   function _setAmoutOfTime() {
     let _amountOfTime: number = 0;
     if (recipeData) {
@@ -127,7 +141,7 @@ export default function RecipePage() {
           </div>
           <div className={styles.divUserAndLikes}>
             <div className={styles.divUser}>
-              <img src={urlUser} alt="food" />
+              <img src={urlUser} alt="Imagem do dono da receita" />
               <p>
                 Por <br />
                 <span>{recipeData.recipeOwnerName}</span>
@@ -259,7 +273,18 @@ export default function RecipePage() {
           </p>
 
           <div className={styles.recipeComments}>
-            <NewComment />
+            {!ownerOfTheRecipe && (
+              <NewComment
+                handleSubmit={handleCommentSubmit}
+                userImageUrl={
+                  userPhoto == "erro imagem nao encontrada"
+                    ? defaultUserPhoto
+                    : userPhoto
+                }
+                isUserLogged={userData ? true : false}
+                username={userData ? userData.name : "EatSpot"}
+              />
+            )}
             <Comment
               commentDate="12/10/2006"
               userImageUrl={urlFood}
