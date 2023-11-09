@@ -1,17 +1,15 @@
 import styles from "./NewComment.module.css";
-import { AiFillStar, AiOutlineStar } from "react-icons/ai";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import starFilled from "../../../img/icons8-estrela-100-filled.png";
 import starOutline from "../../../img/icons8-estrela-100-outline.png";
 import TextArea from "../../forms/TextArea";
 import Button from "../../forms/Button";
-import { useNavigate } from "react-router-dom";
 
 interface NewCommentProps {
   userImageUrl: string;
   username: string;
   isUserLogged: boolean;
-  handleSubmit(commentText: string, avaliationNumber: number): void;
+  handleSubmit(commentText: string, avaliationNumber: number, createCommentDate: string): void;
 }
 
 interface StarProps {
@@ -28,6 +26,7 @@ export default function NewComment(props: NewCommentProps) {
     { marked: false, starNumber: 5 },
   ]);
   const [commentText, setCommentText] = useState<string>("");
+  const [isUpdatingDatabse, setIsUpdatingDatabase] = useState<boolean>(false);
   const [commentAvaliation, setCommentAvaliation] = useState<number>(1);
 
   function handleStarClick(e: any) {
@@ -47,15 +46,36 @@ export default function NewComment(props: NewCommentProps) {
     setStars(newStars);
   }
 
-  function handleSubmit(e: any) {
-    e.preventDefault();
-    setTimeout(() => {
-      props.handleSubmit(commentText, commentAvaliation);
-    }, 5000);
+  function handleSubmit() {
+    const currentDate = new Date();
+
+    let day: any = currentDate.getDate();
+    day < 10 ? day = "0"+day : day = day;
+
+    let month: any = currentDate.getMonth() + 1;
+    month < 10 ? day = "0"+day : month = month;
+
+    let year: any = currentDate.getFullYear();
+    const createCommentDate = `${day}/${month}/${year}`;
+
+    props.handleSubmit(commentText, commentAvaliation, createCommentDate);
   }
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={(e: any) => {
+      e.preventDefault();
+      if(isUpdatingDatabse) { 
+        return;
+      } else {
+        setIsUpdatingDatabase(true);
+        const timeout = setTimeout(() => {
+          handleSubmit();
+          setIsUpdatingDatabase(false);
+          clearTimeout(timeout);
+        }, 5000)
+      }
+
+    }}>
       <div className={styles.mainDivComment}>
         <div className={styles.divRecipeAvaliation}>
           <h3>O que achou da receita?</h3>

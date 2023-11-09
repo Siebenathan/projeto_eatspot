@@ -16,8 +16,6 @@ import {
   getCountFromServer,
 } from "firebase/firestore";
 import { User } from "./firebase";
-import { start } from "repl";
-import { StringMappingType } from "typescript";
 
 export async function createUserFirestore(usuario: User): Promise<any> {
   const userRef = collection(firestoreDB, "users");

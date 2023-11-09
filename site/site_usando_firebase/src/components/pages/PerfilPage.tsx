@@ -86,30 +86,6 @@ export default function PerfilPage() {
       });
       getUserPhoto(`imagens/perfil/${userDataFirestore.name}/fotoDePerfil`);
       setUserData(userDataFirestore);
-
-      // if (userId == userDataFirestore.userId && name == "meuperfil") {
-      //   //Deu tudo certo
-      //   console.log("Você está na sua página de perfil");
-      //   onAuthStateChanged(auth, (user) => {
-      //     if (user && name === "meuperfil") {
-      //       if (user.uid !== userId) {
-      //         navigate("/");
-      //         return;
-      //       }
-      //       setIsThePerfilOwner(true);
-      //     }
-      //   });
-      //   getUserPhoto(`imagens/perfil/${userDataFirestore.name}/fotoDePerfil`);
-      //   setUserData(userDataFirestore);
-      // } else if (userId == userDataFirestore.userId) {
-      //   navigate("/perfil/meuperfil");
-      //   //Direcionar para o perfil do usuário caso ele esteja logado
-      // } else {
-      //   console.log(
-      //     `Você está na página de perfil de ${userDataFirestore.name}`
-      //   );
-      //   setUserData(userDataFirestore);
-      // }
     });
   }, []);
 

@@ -44,8 +44,19 @@
     font-size: 1em;
 }
 
-.divComment > small {
+.divCommentDateAndAvaliation {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+
+.divCommentDateAndAvaliation > small {
     height: 20%;
     font-size: 1em;
     font-weight: bolder;
+}
+
+.starIcon {
+    color: rgb(255, 255, 36);
+    font-size: 1.8em;
 }

@@ -15,6 +15,16 @@ import { getImageStorage } from "../services/firebase/firebaseStorage";
 import useLocalStorage from "../hooks/useLocalStorage";
 import NewComment from "../eatspotcomponents/comments/NewComment";
 import defaultUserPhoto from "../../img/EatSpot-semfundo.png";
+import { v4 as uuidv4 } from "uuid";
+import Button from "../forms/Button";
+
+interface RecipeComment {
+  commentText: string;
+  avaliationNumber: number;
+  commentatorName: string;
+  commentatorPhotoUrl: any;
+  commentDate: string;
+}
 
 export default function RecipePage() {
   const [recipeData, setRecipeData] = useState<any>();
@@ -32,6 +42,8 @@ export default function RecipePage() {
   const [userId, setUserId] = useLocalStorage("userId", "");
   const { recipeUrl } = useParams();
   const [ownerOfTheRecipe, setOwnerOfTheRecipe] = useState<boolean>(false);
+  const [recipeComments, setRecipeComments] = useState<RecipeComment[]>([]);
+  const [startAtComment, setStartAtComment] = useState<number>(0);
   const [ownerRecipePhoto, setOwnerRecipePhoto] = useState<string>();
   const navigate = useNavigate();
 
@@ -48,7 +60,7 @@ export default function RecipePage() {
           id: doc.id,
         }))[0];
         setUserData(userDataFirestore);
-        setUserPhoto(await getImageStorage(userDataFirestore.userPhotoUrl));
+        setUserPhoto(await getUserPhoto(userDataFirestore.userPhotoUrl));
       });
     }
 
@@ -67,40 +79,81 @@ export default function RecipePage() {
   }, []);
 
   useEffect(() => {
-    if (recipeData) {
-      _setAmoutOfTime();
-    }
-  }, [recipeData]);
-
-  useEffect(() => {
     if (userData && recipeData) {
       if (userData.name == recipeData.recipeOwnerName) {
         setOwnerOfTheRecipe(true);
         return;
       }
-      if (!userData.recipesILiked) {
-        return;
-      } else {
-        userData.recipesILiked.forEach((recipe: any) => {
-          if (recipe == recipeData.id) {
-            setUserLikingState({
-              changeStyleHeart: true,
-              updatingDatabase: false,
-            });
-          }
-        });
-      }
+      _setAmoutOfTime();
+      userAlreadyLikedRecipe();
+      getRecipeComments();
     }
   }, [recipeData, userData]);
 
-  function handleCommentSubmit(commentText: string, avaliationNumber: number) {
-    recipeData.comments.push({
-      commentText: commentText,
+  function handleCommentSubmit(
+    commentText: string,
+    avaliationNumber: number,
+    createCommentDate: string
+  ) {
+    const newComment: RecipeComment = {
       avaliationNumber: avaliationNumber,
       commentatorName: userData.name,
-    });
-    console.log("aaa");
-    // setDocAlreadyCreated("recipes", recipeData.id, recipeData);
+      commentatorPhotoUrl: userData.userPhotoUrl,
+      commentText: commentText,
+      commentDate: createCommentDate,
+    };
+    recipeData.comments.push(newComment);
+    setDocAlreadyCreated("recipes", recipeData.id, recipeData);
+  }
+
+  function userAlreadyLikedRecipe() {
+    if (!userData.recipesILiked) {
+      return;
+    } else {
+      userData.recipesILiked.forEach((recipe: any) => {
+        if (recipe == recipeData.id) {
+          setUserLikingState({
+            changeStyleHeart: true,
+            updatingDatabase: false,
+          });
+        }
+      });
+    }
+  }
+
+  function getRecipeComments() {
+    if (recipeData.comments) {
+      let commentsSplit: RecipeComment[] = [];
+      let _startAtComment = startAtComment;
+      for (let i = 0; i <= 2; i++) {
+        if (recipeData.comments[startAtComment]) {
+          commentsSplit[i] = recipeData.comments[_startAtComment];
+          _startAtComment += 1;
+          setStartAtComment(startAtComment + 1);
+        } else {
+          return;
+        }
+      }
+
+      commentsSplit.forEach(async (comment: RecipeComment) => {
+        const userPhotoFormatted = await getUserPhoto(
+          comment.commentatorPhotoUrl
+        );
+        comment.commentatorPhotoUrl = userPhotoFormatted;
+        recipeComments.push(comment);
+        setRecipeComments([...recipeComments]);
+        setStartAtComment(startAtComment + 1);
+      });
+    }
+  }
+
+  async function getUserPhoto(imageUrl: string) {
+    let userPhoto: any = null;
+    userPhoto = await getImageStorage(imageUrl);
+    if (userPhoto == "erro imagem nao encontrada") {
+      userPhoto = defaultUserPhoto;
+    }
+    return userPhoto;
   }
 
   function _setAmoutOfTime() {
@@ -276,21 +329,26 @@ export default function RecipePage() {
             {!ownerOfTheRecipe && (
               <NewComment
                 handleSubmit={handleCommentSubmit}
-                userImageUrl={
-                  userPhoto == "erro imagem nao encontrada"
-                    ? defaultUserPhoto
-                    : userPhoto
-                }
+                userImageUrl={userPhoto}
                 isUserLogged={userData ? true : false}
                 username={userData ? userData.name : "EatSpot"}
               />
             )}
-            <Comment
-              commentDate="12/10/2006"
-              userImageUrl={urlFood}
-              commentText={loremIpsum}
-              username="Cristiano Ronaldo Santos Aveiro"
-            />
+            {recipeComments && (
+              <>
+                {recipeComments.map((comment) => (
+                  <Comment
+                    commentDate={comment.commentDate}
+                    userImageUrl={comment.commentatorPhotoUrl}
+                    commentText={comment.commentText}
+                    username={comment.commentatorName}
+                    avaliationNumber={comment.avaliationNumber}
+                    key={uuidv4()}
+                  />
+                ))}
+                <Button buttonText="Carregar mais comentários" type="button"/>
+              </>
+            )}
           </div>
           {ownerOfTheRecipe && (
             <div className={styles.recipeOwnerDiv}>
