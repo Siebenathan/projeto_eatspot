@@ -1,0 +1,71 @@
+.mainDivComment {
+    background-color: var(--cor1);
+    display: flex;
+    width: 100%;
+    padding: 20px 0px;
+    height: 100%;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.divRecipeAvaliation {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    gap: 20px;
+}
+
+.divRecipeAvaliation > h3 {
+    font-size: 1.5em;
+    color: white;
+}
+
+.divStars {
+    display: flex;
+    gap: 20px;
+}
+
+.starIcon {
+    cursor: pointer;
+    width: 50px;
+    height: 50px;
+    color: yellow;
+}
+
+.divRecipeCommentTextAndUser {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.divUserPhotoAndName {
+    height: 100%;
+    display: flex;
+    width: 25%;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.divUserPhotoAndName > img {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+}
+
+.divUserPhotoAndName > p {
+    color: white;
+    width: 80%;
+    text-align: center;
+    font-size: 1.2em;
+}
+
+.divTextAreaAndSubmitForm {
+    width: 60%;
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+    justify-content: center;
+    flex-direction: column;
+}

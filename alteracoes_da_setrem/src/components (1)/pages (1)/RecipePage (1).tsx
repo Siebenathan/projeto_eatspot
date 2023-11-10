@@ -45,7 +45,6 @@ export default function RecipePage() {
   const [ownerOfTheRecipe, setOwnerOfTheRecipe] = useState<boolean>(false);
   const [recipeComments, setRecipeComments] = useState<RecipeComment[]>([]);
   const [startAtComment, setStartAtComment] = useState<number>(0);
-  const [isUpdatingDatabase, setIsUpdatingDatabase] = useState<boolean>(false);
   const [ownerRecipePhoto, setOwnerRecipePhoto] = useState<string>();
   const navigate = useNavigate();
 
@@ -129,8 +128,7 @@ export default function RecipePage() {
     if (recipeData.comments) {
       const organizeByTime = (a: RecipeComment, b: RecipeComment) =>
         b.exactTime - a.exactTime;
-      let commentsSplitAllSorted: RecipeComment[] =
-        recipeData.comments.sort(organizeByTime);
+      let commentsSplitAllSorted: RecipeComment[] = recipeData.comments.sort(organizeByTime);
       let commentsSplit: RecipeComment[] = [];
       let _startAtComment = startAtComment;
       for (let i = 0; i <= 2; i++) {
@@ -327,35 +325,20 @@ export default function RecipePage() {
           )}
 
           <h2 className={styles.recipeCommentsTitle}>Comentários</h2>
-          
           <p className={styles.recipeCommentsAmount}>
-            {recipeData.comments[0] ? (
-              <span className={styles.spanStyleWithComments}>
-                {recipeData.comments.length}{" "}
-              </span>
-            ) : (
-              <span className={styles.spanStyleWithoutComment}>Não há </span>
-            )}
-            comentários
+            <span>300</span> comentários
           </p>
 
           <div className={styles.recipeComments}>
             {!ownerOfTheRecipe && (
               <NewComment
                 handleSubmit={handleCommentSubmit}
-                isUpdatingDatabase={isUpdatingDatabase}
-                setIsUpdatingDatabase={setIsUpdatingDatabase}
                 userImageUrl={userPhoto}
                 isUserLogged={userData ? true : false}
                 username={userData ? userData.name : "EatSpot"}
               />
             )}
-            {recipeData.comments[0] == undefined && !ownerOfTheRecipe && (
-              <h3 className={styles.beTheFirstToCommentOnThePost}>
-                Seja o primeiro a comentar nessa postagem!
-              </h3>
-            )}
-            {recipeData.comments[0] && (
+            {recipeComments && (
               <>
                 {recipeComments.map((comment) => (
                   <Comment

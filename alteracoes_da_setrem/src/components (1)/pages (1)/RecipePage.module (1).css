@@ -246,19 +246,8 @@
   padding-bottom: 10px;
 }
 
-.spanStyleWithoutComment {
-  color: black;
-}
-
-.spanStyleWithComments {
+.recipeCommentsAmount > span {
   color: var(--cor4);
-}
-
-.beTheFirstToCommentOnThePost {
-  text-align: center;
-  font-weight: 500;
-  color: var(--cor1);
-  padding: 20px 0px;
 }
 
 .recipeComments {

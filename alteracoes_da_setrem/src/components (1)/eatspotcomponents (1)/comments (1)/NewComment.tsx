@@ -15,8 +15,6 @@ interface NewCommentProps {
     createCommentDate: string,
     exactTime: number
   ): void;
-  isUpdatingDatabase: boolean;
-  setIsUpdatingDatabase(trueOrFalse: boolean): void;
 }
 
 interface StarProps {
@@ -33,6 +31,7 @@ export default function NewComment(props: NewCommentProps) {
     { marked: false, starNumber: 5 },
   ]);
   const [commentText, setCommentText] = useState<string>("");
+  const [isUpdatingDatabse, setIsUpdatingDatabase] = useState<boolean>(false);
   const [commentAvaliation, setCommentAvaliation] = useState<number>(1);
 
   function handleStarClick(e: any) {
@@ -64,12 +63,7 @@ export default function NewComment(props: NewCommentProps) {
     let year: any = currentDate.getFullYear();
     const createCommentDate = `${day}/${month}/${year}`;
 
-    props.handleSubmit(
-      commentText,
-      commentAvaliation,
-      createCommentDate,
-      currentDate.getTime()
-    );
+    props.handleSubmit(commentText, commentAvaliation, createCommentDate, currentDate.getTime());
     setCommentText("");
   }
 
@@ -77,13 +71,13 @@ export default function NewComment(props: NewCommentProps) {
     <form
       onSubmit={(e: any) => {
         e.preventDefault();
-        if (props.isUpdatingDatabase) {
+        if (isUpdatingDatabse) {
           return;
         } else {
-          props.setIsUpdatingDatabase(true);
+          setIsUpdatingDatabase(true);
           const timeout = setTimeout(() => {
             handleSubmit();
-            props.setIsUpdatingDatabase(false);
+            setIsUpdatingDatabase(false);
             clearTimeout(timeout);
           }, 5000);
         }
