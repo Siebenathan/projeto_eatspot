@@ -14,8 +14,8 @@ import { TbMoneybag } from "react-icons/tb";
 import { getImageStorage } from "../services/firebase/firebaseStorage";
 import useLocalStorage from "../hooks/useLocalStorage";
 import NewComment from "../eatspotcomponents/comments/NewComment";
-import defaultUserPhoto from "../../img/EatSpot-semfundo.png";
 import { v4 as uuidv4 } from "uuid";
+import defaultUserPhoto from "../../img/EatSpot-semfundo.png";
 import Button from "../forms/Button";
 
 interface RecipeComment {
@@ -75,8 +75,12 @@ export default function RecipePage() {
         ...doc.data(),
         id: doc.id,
       }))[0];
+      recipeDataFirestore.recipePhasesList = orderRecipePhases(
+        recipeDataFirestore.recipePhasesList
+      );
       setRecipeData(recipeDataFirestore);
       setRecipeImage(await getImageStorage(recipeDataFirestore.imagePath));
+      setOwnerRecipePhoto(await getUserPhoto(recipeDataFirestore.userPhotoUrl));
     });
   }, []);
 
@@ -84,15 +88,16 @@ export default function RecipePage() {
     if (userData && recipeData) {
       if (userData.name == recipeData.recipeOwnerName) {
         setOwnerOfTheRecipe(true);
+        _setAmoutOfTime();
+        getRecipeComments();
         return;
       }
-      _setAmoutOfTime();
       userAlreadyLikedRecipe();
       getRecipeComments();
     }
   }, [recipeData, userData]);
 
-  function handleCommentSubmit(
+  async function handleCommentSubmit(
     commentText: string,
     avaliationNumber: number,
     createCommentDate: string,
@@ -107,6 +112,19 @@ export default function RecipePage() {
       exactTime: exactTime,
     };
     recipeData.comments.push(newComment);
+
+    const imagePath = newComment.commentatorPhotoUrl;
+    const imageReadyToGo = await getUserPhoto(imagePath);
+    newComment.commentatorPhotoUrl = imageReadyToGo;
+
+    if (recipeData.comments[0] == undefined) {
+      recipeComments.push(newComment);
+      setRecipeComments([...recipeComments]);
+    } else {
+      recipeComments.unshift(newComment);
+      setRecipeComments([...recipeComments]);
+    }
+
     setDocAlreadyCreated("recipes", recipeData.id, recipeData);
   }
 
@@ -156,6 +174,7 @@ export default function RecipePage() {
   async function getUserPhoto(imageUrl: string) {
     let userPhoto: any = null;
     userPhoto = await getImageStorage(imageUrl);
+    console.log(userPhoto);
     if (userPhoto == "erro imagem nao encontrada") {
       userPhoto = defaultUserPhoto;
     }
@@ -163,13 +182,19 @@ export default function RecipePage() {
   }
 
   function _setAmoutOfTime() {
-    let _amountOfTime: number = 0;
+    let _amountOfTime: number = 10;
     if (recipeData) {
       recipeData.recipeTimes.forEach((item: any) => {
         _amountOfTime += parseInt(item.minutes) + parseInt(item.hours) * 60;
       });
     }
+    console.log("aaaaa");
     setAmountOfTime(_amountOfTime);
+  }
+
+  function orderRecipePhases(recipePhases: any) {
+    const compareOrderPhase = (a: any, b: any) => a.phaseNumber - b.phaseNumber;
+    return recipePhases.sort(compareOrderPhase);
   }
 
   return (
@@ -200,10 +225,16 @@ export default function RecipePage() {
           </div>
           <div className={styles.divUserAndLikes}>
             <div className={styles.divUser}>
-              <img src={urlUser} alt="Imagem do dono da receita" />
+              <img
+                src={ownerRecipePhoto}
+                alt="Imagem do dono da receita"
+                onClick={() => navigate(`/perfil/@${recipeData.recipeOwnerName}`)}
+              />
               <p>
                 Por <br />
-                <span>{recipeData.recipeOwnerName}</span>
+                <span onClick={() => navigate(`/perfil/@${recipeData.recipeOwnerName}`)}>
+                  {recipeData.recipeOwnerName}
+                </span>
               </p>
             </div>
             <div className={styles.divLikes}>
@@ -327,7 +358,7 @@ export default function RecipePage() {
           )}
 
           <h2 className={styles.recipeCommentsTitle}>Comentários</h2>
-          
+
           <p className={styles.recipeCommentsAmount}>
             {recipeData.comments[0] ? (
               <span className={styles.spanStyleWithComments}>
@@ -350,6 +381,14 @@ export default function RecipePage() {
                 username={userData ? userData.name : "EatSpot"}
               />
             )}
+            {isUpdatingDatabase && (
+              <div className={styles.addingNewComment}>
+                <Loading
+                  styleSizeOfTheLoading={{ width: "100px", height: "100px" }}
+                />
+                <p>Adicionando novo comentário...</p>
+              </div>
+            )}
             {recipeData.comments[0] == undefined && !ownerOfTheRecipe && (
               <h3 className={styles.beTheFirstToCommentOnThePost}>
                 Seja o primeiro a comentar nessa postagem!
@@ -367,21 +406,24 @@ export default function RecipePage() {
                     key={uuidv4()}
                   />
                 ))}
-                <Button
-                  buttonText="Carregar mais comentários"
-                  type="button"
-                  style={{
-                    marginTop: "1rem",
-                    backgroundColor: "var(--cor1)",
-                    color: "white",
-                    cursor: "pointer",
-                    fontSize: "2em",
-                    padding: "2rem 3rem",
-                  }}
-                  onClick={() => {
-                    getRecipeComments();
-                  }}
-                />
+                {recipeComments[recipeData.comments.length - 1] ==
+                  undefined && (
+                  <Button
+                    buttonText="Carregar mais comentários"
+                    type="button"
+                    style={{
+                      marginTop: "1rem",
+                      backgroundColor: "var(--cor1)",
+                      color: "white",
+                      cursor: "pointer",
+                      fontSize: "2em",
+                      padding: "2rem 3rem",
+                    }}
+                    onClick={() => {
+                      getRecipeComments();
+                    }}
+                  />
+                )}
               </>
             )}
           </div>

@@ -12,7 +12,6 @@ import {
   updateDoc,
   startAfter,
   startAt,
-  getDoc,
   getCountFromServer,
 } from "firebase/firestore";
 import { User } from "./firebase";
@@ -124,8 +123,8 @@ export async function getDataWithWhereOrderLimitAndStartAfter(
   if (!latestDoc) {
     let queryName = query(
       collectionRef,
-      where(key, "==", search),
       orderBy(orderByField, orderByMode),
+      where(key, ">=", search),
       limit(limitNumber)
     );
     try {
@@ -135,6 +134,48 @@ export async function getDataWithWhereOrderLimitAndStartAfter(
       return err;
     }
   }
+  let queryName = query(
+    collectionRef,
+    where(key, "==", search),
+    orderBy(orderByField, orderByMode),
+    startAfter(latestDoc),
+    limit(limitNumber)
+  );
+  try {
+    const response = await getDocs(queryName);
+    return response;
+  } catch (err) {
+    console.log(err);
+    return err;
+  }
+}
+
+export async function getDocsUsingLikeInAField(
+  collectionString: string,
+  limitNumber: number,
+  orderByField: string,
+  orderByMode: "desc" | "asc",
+  key: string,
+  search: string,
+  latestDoc?: any
+) {
+  const collectionRef = collection(firestoreDB, collectionString);
+
+  if (!latestDoc) {
+    let queryName = query(
+      collectionRef,
+      where(key, ">=", search),
+      where(key, "<", search + "\uf8ff"),
+      limit(limitNumber)
+    );
+    try {
+      const response = await getDocs(queryName);
+      return response;
+    } catch (err) {
+      return err;
+    }
+  }
+
   let queryName = query(
     collectionRef,
     where(key, "==", search),

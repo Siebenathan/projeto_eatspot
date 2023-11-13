@@ -4,6 +4,7 @@ import SearchInput from "../forms/SearchInput";
 import BigFoodContainer from "../eatspotcomponents/BigFoodContainer";
 import SmallFoodContainer from "../eatspotcomponents/SmallFoodContainer";
 import InviteToAction from "../eatspotcomponents/InviteToAction";
+import BigSearchContainer from "../eatspotcomponents/searchRecipes/BigSearchContainer";
 
 export default function HomePage() {
   const listaNomes = [
@@ -24,13 +25,7 @@ export default function HomePage() {
 
   return (
     <main>
-      <div className={styles.heroContainer}>
-        <h1>O que deseja cozinhar hoje?</h1>
-        <SearchInput
-          placeholder="Pesquise alguma receita..."
-          name="searchinput"
-        />
-      </div>
+      <BigSearchContainer />
       <Container customClass="flexMiddleCol">
         <div className={styles.bigFoodContainer}>
           <BigFoodContainer

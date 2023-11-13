@@ -41,7 +41,7 @@ export default function NavBar() {
           </Link>
         </li>
         <li>
-          <Link reloadDocument className={styles.navigationListItem} to="/receitas/1">
+          <Link reloadDocument className={styles.navigationListItem} to="/receitas">
             Receitas
           </Link>
         </li>

@@ -181,7 +181,7 @@ export default function PerfilPage() {
   }
 
   async function changePerfilPhoto() {
-    const endPoint = `imagens/perfil/${userData.name}/fotoDePerfil`;
+    const endPoint = userData.userPhotoUrl;
     await addItemToStorage(endPoint, newOwnerPhotoFileUrl);
     document.location.reload();
   }
@@ -256,6 +256,13 @@ export default function PerfilPage() {
               <span className={styles.divPerfilQtdeInformation}>300</span>
             </h3>
           </div>
+          {isThePerfilOwner && (
+            <div className={styles.ownerFunctionalites}>
+              <Link className={styles.linkToCreateRecipe} to="/criar-receita">
+                Criar uma nova receita
+              </Link>
+            </div>
+          )}
           <div className={styles.gridContainerFood}>
             {recipesData &&
               recipesData.map((r: any) => {
@@ -272,13 +279,6 @@ export default function PerfilPage() {
               })}
           </div>
           <div className={styles.observerIntersection} id="observer"></div>
-          {isThePerfilOwner && (
-            <div className={styles.ownerFunctionalites}>
-              <Link className={styles.linkToCreateRecipe} to="/criar-receita">
-                Criar uma nova receita
-              </Link>
-            </div>
-          )}
         </Container>
       ) : (
         <div className={styles.divLoadingContent}>

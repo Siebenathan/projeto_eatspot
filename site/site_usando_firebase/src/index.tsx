@@ -24,7 +24,9 @@ const browser = createBrowserRouter([
       { path: "/perfil/:name", element: <PerfilPage /> },
       { path: "/criar-receita", element: <CreateRecipePage /> },
       { path: "/receita/:recipeUrl", element: <RecipePage /> },
-      { path: "/receitas/:categoria?", element: <RecipesPage />}
+      { path: "/receitas", element: <RecipesPage />},
+      { path: "/receitas/:nomeReceita", element: <RecipesPage />},
+      { path: "/receitas/categoria/:categoria", element: <RecipesPage />},
     ],
   },  
   {

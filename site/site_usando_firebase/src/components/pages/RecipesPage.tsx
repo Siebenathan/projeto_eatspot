@@ -3,19 +3,26 @@ import styles from "./Recipes.module.css";
 import { useState, useEffect } from "react";
 import Container from "../layout/Container";
 import FoodContainerDescription from "../eatspotcomponents/FoodContainerDescription";
-import { getDataWithOrderLimitAndStartAfter } from "../services/firebase/firebaseFirestore";
+import {
+  getDataWithOrderLimitAndStartAfter,
+  getDataWithWhereOrderLimitAndStartAfter,
+  getDocsUsingLikeInAField,
+} from "../services/firebase/firebaseFirestore";
 import { getImageStorage } from "../services/firebase/firebaseStorage";
+import BigSearchContainer from "./../eatspotcomponents/searchRecipes/BigSearchContainer";
+import InviteToAction from "../eatspotcomponents/InviteToAction";
 
 export default function RecipesPage() {
   const [latestDoc, setLatestDoc] = useState<any>();
   const [recipesData, setRecipesData] = useState<any>([]);
   const [getNewRecipes, setGetNewRecipes] = useState<boolean>(false);
+  const [stillHaveRecipes, setStillHaveRecipes] = useState<boolean>(true);
   const navigator = useNavigate();
 
   const loremIpsum =
     "Lorem ipsum dolor sit amet consectetur adipisicing elit. Perspiciatis aspernatur blanditiis facere odio saepe eius placeat, obcaecati esse maxime, alias est, ipsa iusto dignissimos totam dolore cum dolorem adipisci quidem.";
 
-  const { categoria } = useParams();
+  const { categoria, nomeReceita } = useParams();
 
   const recipesNames = [
     "Bolo de chocolate",
@@ -31,41 +38,109 @@ export default function RecipesPage() {
   ];
 
   useEffect(() => {
-    console.log("aaa");
-    getDataWithOrderLimitAndStartAfter("recipes", 10, "likes", "desc").then(
-      async (data: any) => {
-        const recipeData = data.docs.map((doc: any) => ({
-          ...doc.data(),
-          id: doc.id,
-        }));
-        getRecipeImages(recipeData);
-        setLatestDoc(data.docs[data.docs.length - 1]);
-        console.log(data.docs[data.docs.length - 1]);
-      }
-    );
+    console.log(categoria, nomeReceita);
+    if (nomeReceita) {
+      getRecipesWithName(nomeReceita);
+      return;
+    }
+    getRecipesWithMostLikes();
   }, []);
 
   useEffect(() => {
     if (getNewRecipes && latestDoc) {
-      console.log("caiu aqui");
-      getDataWithOrderLimitAndStartAfter(
+      getRecipesWithMostLikes();
+    }
+  }, [getNewRecipes]);
+
+  async function getRecipesWithName(nomeDaReceita: string) {
+    let recipesData: any = undefined;
+    let recipesDataFirestore: any = undefined;
+    const response = await getDocsUsingLikeInAField(
+      "recipes",
+      10,
+      "likes",
+      "desc",
+      "recipeTitle",
+      nomeDaReceita
+    );
+    console.log(response);
+
+    //   if (latestDoc) {
+    //     recipesDataFirestore = await getDataWithWhereOrderLimitAndStartAfter(
+    //       "recipes",
+    //       10,
+    //       "recipeTitle",
+    //       "desc",
+    //       "recipeTitle",
+    //       nomeReceita ? nomeReceita : "",
+    //       latestDoc
+    //     );
+    //     recipesData = recipesDataFirestore.docs.map((doc: any) => ({
+    //       ...doc.data(),
+    //       id: doc.id,
+    //     }));
+    //   } else {
+    //     recipesDataFirestore = await getDataWithWhereOrderLimitAndStartAfter(
+    //       "recipes",
+    //       10,
+    //       "recipeTitle",
+    //       "desc",
+    //       "recipeTitle",
+    //       nomeReceita ? nomeReceita : ""
+    //     );
+    //     recipesData = recipesDataFirestore.docs.map((doc: any) => ({
+    //       ...doc.data(),
+    //       id: doc.id,
+    //     }));
+    //   }
+
+    //   getRecipeImages(recipesData);
+    //   setLatestDoc(
+    //     recipesDataFirestore.docs[recipesDataFirestore.docs.length - 1]
+    //   );
+    //   console.log(
+    //     recipesDataFirestore.docs[recipesDataFirestore.docs.length - 1]
+    //   );
+  }
+
+  async function getRecipesWithCategory() {}
+
+  async function getRecipesWithMostLikes() {
+    let recipesData: any = undefined;
+    let recipesDataFirestore: any = undefined;
+    if (latestDoc) {
+      recipesDataFirestore = await getDataWithOrderLimitAndStartAfter(
         "recipes",
         10,
         "likes",
         "desc",
         latestDoc
-      ).then(async (newRecipes: any) => {
-        const recipeData = newRecipes.docs.map((doc: any) => ({
-          ...doc.data(),
-          id: doc.id,
-        }));
-        console.log(newRecipes);
-        getRecipeImages(recipeData);
-        setLatestDoc(newRecipes.docs[newRecipes.docs.length - 1]);
-        setGetNewRecipes(false);
-      });
+      );
+      recipesData = recipesDataFirestore.docs.map((doc: any) => ({
+        ...doc.data(),
+        id: doc.id,
+      }));
+    } else {
+      recipesDataFirestore = await getDataWithOrderLimitAndStartAfter(
+        "recipes",
+        10,
+        "likes",
+        "desc"
+      );
+      recipesData = recipesDataFirestore.docs.map((doc: any) => ({
+        ...doc.data(),
+        id: doc.id,
+      }));
     }
-  }, [getNewRecipes]);
+
+    getRecipeImages(recipesData);
+    setLatestDoc(
+      recipesDataFirestore.docs[recipesDataFirestore.docs.length - 1]
+    );
+    console.log(
+      recipesDataFirestore.docs[recipesDataFirestore.docs.length - 1]
+    );
+  }
 
   async function getRecipeImages(arrayOfRecipes?: any) {
     for (let i = 0; i < arrayOfRecipes.length; i++) {
@@ -80,41 +155,48 @@ export default function RecipesPage() {
   }
 
   return (
-    <Container
-      customClass={"flexMiddleCol"}
-      styleContainer={{
-        padding: "50px 0px",
-      }}
-    >
-      <h1 className={styles.recipesMainTitle}>Todas as receitas do EatSpot</h1>
-      <h2 className={styles.recipesWithMostLikesTitle}>
-        RECEITAS COM MAIS CURTIDAS
-      </h2>
-      <div className={styles.recipesMainDiv}>
-        {recipesData &&
-          recipesData.map((recipe: any) => (
-            <div key={recipe.id}>
-              <FoodContainerDescription
-                recipeUrl={recipe.recipeUrl}
-                recipeDescription={recipe.recipeDescription}
-                recipeName={recipe.recipeTitle}
-                recipeLikesAmount={recipe.likes}
-                recipeImageUrl={recipe.imagePath}
-                recipeId={recipe.id}
-                key={recipe.id}
-              />
-            </div>
-          ))}
-      </div>
-      <div className={styles.divButtonBringNewRecipes}>
-        <button
-          onClick={() => {
-            setGetNewRecipes(true);
-          }}
-        >
-          Carregar mais receitas
-        </button>
-      </div>
-    </Container>
+    <main>
+      <BigSearchContainer />
+      <Container
+        customClass={"flexMiddleCol"}
+        styleContainer={{
+          padding: "50px 0px",
+        }}
+      >
+        <h1 className={styles.recipesMainTitle}>
+          Todas as receitas do EatSpot
+        </h1>
+        <h2 className={styles.recipesWithMostLikesTitle}>
+          RECEITAS COM MAIS CURTIDAS
+        </h2>
+        <div className={styles.recipesMainDiv}>
+          {recipesData &&
+            recipesData.map((recipe: any) => (
+              <div key={recipe.id}>
+                <FoodContainerDescription
+                  recipeUrl={recipe.recipeUrl}
+                  recipeDescription={recipe.recipeDescription}
+                  recipeName={recipe.recipeTitle}
+                  recipeLikesAmount={recipe.likes}
+                  recipeImageUrl={recipe.imagePath}
+                  recipeId={recipe.id}
+                  key={recipe.id}
+                />
+              </div>
+            ))}
+        </div>
+        {stillHaveRecipes && (
+          <div className={styles.divButtonBringNewRecipes}>
+            <button
+              onClick={() => {
+                setGetNewRecipes(true);
+              }}
+            >
+              Carregar mais receitas
+            </button>
+          </div>
+        )}
+      </Container>
+    </main>
   );
 }
