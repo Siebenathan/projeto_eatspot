@@ -22,24 +22,12 @@ export default function RecipesPage() {
   const loremIpsum =
     "Lorem ipsum dolor sit amet consectetur adipisicing elit. Perspiciatis aspernatur blanditiis facere odio saepe eius placeat, obcaecati esse maxime, alias est, ipsa iusto dignissimos totam dolore cum dolorem adipisci quidem.";
 
-  const { categoria, nomeReceita } = useParams();
-
-  const recipesNames = [
-    "Bolo de chocolate",
-    "Pizza",
-    "Hamburguer",
-    "Churrasco",
-    "Lasanha",
-    "Salada de Frutas",
-    "Feijão",
-    "Arroz",
-    "Ovo Frito com manteiga",
-    "Frango empanado",
-  ];
+  let { categoria, nomeReceita } = useParams();
 
   useEffect(() => {
     console.log(categoria, nomeReceita);
     if (nomeReceita) {
+      nomeReceita = nomeReceita.toLowerCase();
       getRecipesWithName(nomeReceita);
       return;
     }
@@ -48,6 +36,10 @@ export default function RecipesPage() {
 
   useEffect(() => {
     if (getNewRecipes && latestDoc) {
+      if(nomeReceita) {
+        getRecipesWithName(nomeReceita);
+        return;
+      }
       getRecipesWithMostLikes();
     }
   }, [getNewRecipes]);
@@ -55,55 +47,41 @@ export default function RecipesPage() {
   async function getRecipesWithName(nomeDaReceita: string) {
     let recipesData: any = undefined;
     let recipesDataFirestore: any = undefined;
-    const response = await getDocsUsingLikeInAField(
-      "recipes",
-      10,
-      "likes",
-      "desc",
-      "recipeTitle",
-      nomeDaReceita
+    if (!latestDoc) {
+      recipesDataFirestore = await getDocsUsingLikeInAField(
+        "recipes",
+        4,
+        "recipeTitle",
+        nomeDaReceita,
+      );
+      recipesData = recipesDataFirestore.docs.map((doc: any) => ({
+        ...doc.data(),
+        id: doc.id,
+      }));
+    } else {
+      recipesDataFirestore = await getDocsUsingLikeInAField(
+        "recipes",
+        4,
+        "recipeTitle",
+        nomeDaReceita,
+        latestDoc
+      );
+      recipesData = recipesDataFirestore.docs.map((doc: any) => ({
+        ...doc.data(),
+        id: doc.id,
+      }));
+    }
+
+    getRecipeImages(recipesData);
+    setLatestDoc(
+      recipesDataFirestore.docs[recipesDataFirestore.docs.length - 1]
     );
-    console.log(response);
-
-    //   if (latestDoc) {
-    //     recipesDataFirestore = await getDataWithWhereOrderLimitAndStartAfter(
-    //       "recipes",
-    //       10,
-    //       "recipeTitle",
-    //       "desc",
-    //       "recipeTitle",
-    //       nomeReceita ? nomeReceita : "",
-    //       latestDoc
-    //     );
-    //     recipesData = recipesDataFirestore.docs.map((doc: any) => ({
-    //       ...doc.data(),
-    //       id: doc.id,
-    //     }));
-    //   } else {
-    //     recipesDataFirestore = await getDataWithWhereOrderLimitAndStartAfter(
-    //       "recipes",
-    //       10,
-    //       "recipeTitle",
-    //       "desc",
-    //       "recipeTitle",
-    //       nomeReceita ? nomeReceita : ""
-    //     );
-    //     recipesData = recipesDataFirestore.docs.map((doc: any) => ({
-    //       ...doc.data(),
-    //       id: doc.id,
-    //     }));
-    //   }
-
-    //   getRecipeImages(recipesData);
-    //   setLatestDoc(
-    //     recipesDataFirestore.docs[recipesDataFirestore.docs.length - 1]
-    //   );
-    //   console.log(
-    //     recipesDataFirestore.docs[recipesDataFirestore.docs.length - 1]
-    //   );
+    console.log(
+      recipesDataFirestore.docs[recipesDataFirestore.docs.length - 1]
+    );
   }
 
-  async function getRecipesWithCategory() {}
+  async function getRecipesWithCategory() { }
 
   async function getRecipesWithMostLikes() {
     let recipesData: any = undefined;
@@ -154,6 +132,10 @@ export default function RecipesPage() {
     }
   }
 
+  function capitalizeString(str: string): string {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
   return (
     <main>
       <BigSearchContainer />
@@ -176,7 +158,7 @@ export default function RecipesPage() {
                 <FoodContainerDescription
                   recipeUrl={recipe.recipeUrl}
                   recipeDescription={recipe.recipeDescription}
-                  recipeName={recipe.recipeTitle}
+                  recipeName={capitalizeString(recipe.recipeTitle)}
                   recipeLikesAmount={recipe.likes}
                   recipeImageUrl={recipe.imagePath}
                   recipeId={recipe.id}

@@ -54,6 +54,7 @@ export default function CreateRecipePage() {
     useState<RecipePhasesProps>();
   const [recipePhasesList, setRecipePhasesList] =
     useState<RecipePhasesProps[]>();
+  const [numberOfPorcions, setNumberOfPorcions] = useState<number>(0);
   const [modal, setModal] = useState<ModalProps>({
     isOpen: false,
     text: "",
@@ -239,14 +240,18 @@ export default function CreateRecipePage() {
 
     let id = uuidv4();
     let recipeUrl =
-      id.replaceAll("-", "") + "-" + titleRecipe.replaceAll(" ", "-");
+      id.replaceAll("-", "") +
+      "-" +
+      titleRecipe.toLowerCase().replaceAll(" ", "-");
 
-    const recipeIngredientesFormated = recipeIngredients?.split("\n").filter(item => item != "");
+    const recipeIngredientesFormated = recipeIngredients
+      ?.split("\n")
+      .filter((item) => item != "");
 
     const recipeData = {
       recipeUrl: recipeUrl,
       createdAt: serverTimestamp(),
-      recipeTitle: titleRecipe,
+      recipeTitle: titleRecipe.toLowerCase(),
       imagePath: storageImgURL,
       recipeDescription: recipeDescription,
       recipeIngredients: recipeIngredientesFormated,
@@ -257,8 +262,10 @@ export default function CreateRecipePage() {
       recipeOwnerName: userData.name,
       userPhotoUrl: userData.userPhotoUrl,
       likes: 0,
+      numberOfPorcions: numberOfPorcions,
       comments: [],
       peopleThatLikedRecipe: [],
+
       recipePhasesList: newRecipePhasesList,
     };
 
@@ -321,6 +328,23 @@ export default function CreateRecipePage() {
             name="recipeApresentation"
             required
             placeholder="Insira a descrição da sua receita..."
+          />
+        </div>
+        <div className={styles.divNumberOfPorcions}>
+          <label htmlFor="numberOfPorcions">Insira o número de porções</label>
+          <input
+            name="numberOfPorcions"
+            type="number"
+            id="numberOfPorcions"
+            required
+            value={numberOfPorcions}
+            maxLength={2}
+            min={1}
+            max={30}
+            onChange={(e: any) => {
+              setNumberOfPorcions(e.target.value);
+              console.log(numberOfPorcions);
+            }}
           />
         </div>
         <div className={styles.divInsertIngredients}>

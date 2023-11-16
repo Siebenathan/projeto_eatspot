@@ -1,6 +1,6 @@
 .selectBox {
   display: flex;
-  height: 200px;
+  max-height: 200px;
   flex-direction: column;
   width: 100%;
   box-sizing: border-box;
@@ -21,7 +21,7 @@
 }
 
 .selectBox .optionsContainer.active {
-  max-height: 240px;
+  max-height: 100px;
   opacity: 1;
   overflow-y: scroll;
 }
@@ -80,6 +80,7 @@
 
 .options {
   white-space: nowrap;
+  color: black;
   gap: 2px;
   position: relative;
 }
@@ -93,6 +94,7 @@
 }
 
 .selected {
+  color: black;
   white-space: nowrap;
   background-color: white;
   border-radius: 0.5rem;
@@ -102,4 +104,8 @@
   padding: 1rem 3.5rem 1rem 0.5rem;
   order: 0;
   width: 100%;
+}
+
+.earthIcon {
+  font-size: 1.2em;
 }

@@ -8,6 +8,8 @@ import { useState } from "react";
 import { signIn } from "../services/firebase/firebaseAuth";
 import useLocalStorage from "../hooks/useLocalStorage";
 import Message from "../modal/Message";
+import { FcGoogle } from "react-icons/fc";
+
 
 export default function LoginPage() {
   const buttonSubmitStyle = {
@@ -43,6 +45,7 @@ export default function LoginPage() {
           <Link className={styles.leftDivLoginLink} to="/criar-conta">
             Criar Conta
           </Link>
+          <button><FcGoogle /></button>
         </div>
         <div className={styles.rightDivLogin}>
           <form className={styles.formContainer} onSubmit={handleSubmit}>

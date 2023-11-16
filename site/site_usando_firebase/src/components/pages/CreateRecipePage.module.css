@@ -55,6 +55,26 @@
   padding-bottom: 5px;
 }
 
+.divNumberOfPorcions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  margin-bottom: 40px;
+}
+
+.divNumberOfPorcions > label {
+  color: white;
+  font-size: 2em;
+  padding-bottom: 20px;
+}
+
+.divNumberOfPorcions > input {
+  height: 70px;
+  padding: 20px;
+  font-size: 2em;
+}
+
 .divInsertIngredients {
   display: flex;
   align-items: center;

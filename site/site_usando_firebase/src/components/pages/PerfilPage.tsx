@@ -186,6 +186,10 @@ export default function PerfilPage() {
     document.location.reload();
   }
 
+  function capitalizeString(str: string): string {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
   return (
     <div>
       {userData ? (
@@ -271,7 +275,7 @@ export default function PerfilPage() {
                     authorName={r.recipeOwnerName}
                     imageFoodUrl={r.imagePath}
                     likesAmount={r.likes}
-                    recipeName={r.recipeTitle}
+                    recipeName={capitalizeString(r.recipeTitle)}
                     recipeUrl={r.recipeUrl}
                     key={r.id}
                   />
@@ -279,6 +283,11 @@ export default function PerfilPage() {
               })}
           </div>
           <div className={styles.observerIntersection} id="observer"></div>
+          {isThePerfilOwner && (
+            <div className={styles.ownerFunctionalites}>
+              
+            </div>
+          )}
         </Container>
       ) : (
         <div className={styles.divLoadingContent}>

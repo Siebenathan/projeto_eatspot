@@ -14,6 +14,7 @@ import AdminPage from "./components/pages/adminPages/AdminPage";
 import CreateRecipePage from "./components/pages/CreateRecipePage";
 import RecipePage from "./components/pages/RecipePage";
 import RecipesPage from "./components/pages/RecipesPage";
+import AdditionalUserInfoPage from "./components/pages/AdditioanalUserInfoPage";
 
 const browser = createBrowserRouter([
   {
@@ -36,6 +37,10 @@ const browser = createBrowserRouter([
   {
     path: "/login",
     element: <LoginPage />,
+  },
+  {
+    path: "/criar-conta2",
+    element: <AdditionalUserInfoPage />
   },
   {
     path: "/admin",
