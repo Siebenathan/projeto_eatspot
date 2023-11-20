@@ -10,8 +10,8 @@ export async function createUserAuth(usuario: User): Promise<any> {
   try {
     const createUserAuth = await createUserWithEmailAndPassword(
       auth,
-      usuario.email,
-      usuario.password
+      usuario.email ? usuario.email : "",
+      usuario.password ? usuario.password : ""
     );
     return createUserAuth;
   } catch (e: any) {

@@ -21,7 +21,7 @@
 }
 
 .selectBox .optionsContainer.active {
-  max-height: 100px;
+  max-height: 150px;
   opacity: 1;
   overflow-y: scroll;
 }

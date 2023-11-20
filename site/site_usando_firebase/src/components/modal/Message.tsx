@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import styles from "./Message.module.css";
 
-interface MessageProps {
+export interface MessageProps {
   type: "error" | "success";
   message: string;
 }

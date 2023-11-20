@@ -15,6 +15,7 @@ import CreateRecipePage from "./components/pages/CreateRecipePage";
 import RecipePage from "./components/pages/RecipePage";
 import RecipesPage from "./components/pages/RecipesPage";
 import AdditionalUserInfoPage from "./components/pages/AdditioanalUserInfoPage";
+import ErrorPage from "./components/pages/ErrorPage";
 
 const browser = createBrowserRouter([
   {
@@ -31,16 +32,16 @@ const browser = createBrowserRouter([
     ],
   },  
   {
-    path: "/criar-conta",
-    element: <CreateAccountPage />,
-  },
-  {
     path: "/login",
     element: <LoginPage />,
   },
   {
-    path: "/criar-conta2",
+    path: "/criar-conta",
     element: <AdditionalUserInfoPage />
+  },
+  {
+    path: "/error",
+    element: <ErrorPage />
   },
   {
     path: "/admin",

@@ -1,0 +1,223 @@
+.recipeTitle {
+  font-size: 2.3em;
+  padding-bottom: 30px;
+}
+
+.recipeImageDiv {
+  width: 800px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow-y: hidden;
+  overflow-x: hidden;
+  margin-bottom: 10px;
+  border-radius: 5px;
+}
+
+.recipeImageDiv > img {
+  min-width: 250px;
+  min-height: 150px;
+  width: 800px;
+  height: 500px;
+  border-radius: 5px;
+  transition: ease-in-out 5s;
+}
+
+.recipeImageDiv > img:hover {
+    scale: 1.05;
+}
+
+.recipePreparationTimeDiv {
+  width: 800px;
+  text-align: center;
+  padding: 10px 0px;
+  background-color: var(--cor6);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.recipePreparationTimeDiv > div {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  font-size: 1.3em;
+  justify-content: center;
+}
+
+.clockIcon {
+  color: var(--cor5);
+  font-size: 1.1em;
+}
+
+.divUserAndLikes {
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  width: 600px;
+  background-color: var(--cor2);
+}
+
+.divUser {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.divUser > img {
+  width: 100px;
+  height: 100px;
+  border-radius: 100%;
+}
+
+.divUser > p {
+  text-align: center;
+  font-size: 1.1em;
+}
+
+.divUser > p > span {
+  color: var(--cor4);
+}
+
+.divLikes {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.divLikes > p {
+  text-align: center;
+  font-size: 1.1em;
+}
+
+.divLikes > p > span {
+  color: var(--cor4);
+}
+
+.heartIcon {
+  color: red;
+  width: 90px;
+  height: 90px;
+}
+
+.recipeIngredientsTitle {
+  margin: 40px 0px;
+  font-size: 1.8em;
+  font-weight: bolder;
+}
+
+.divRecipesGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px 20px;
+  width: 600px;
+  height: 100%;
+  margin-bottom: 30px;
+}
+
+.divRecipeIngredient {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.divRecipeIngredient > p {
+  font-size: 1.3em;
+}
+
+.divRecipesPhases {
+  width: 800px;
+  padding: 30px 0px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--cor6);
+  margin-bottom: 50px;
+}
+
+.divRecipesPhases > h2 {
+  font-size: 1.8em;
+  padding-bottom: 20px;
+}
+
+.recipePhase {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+
+.recipePhase > div {
+  background-color: white;
+  width: 50px;
+  height: 50px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  color: var(--cor5);
+  justify-content: center;
+  border-radius: 100%;
+  box-shadow: -1px 7px 10px #0000002e;
+}
+
+.recipePhase > p {
+  width: 90%;
+}
+
+.mainDivPhases {
+  width: 80%;
+  display: flex;
+  gap: 20px;
+  flex-direction: column;
+}
+
+.recipeCommentsTitle {
+  font-size: 1.8em;
+  padding-bottom: 10px;
+}
+
+.recipeCommentsAmount {
+  font-size: 1.3em;
+  padding-bottom: 10px;
+}
+
+.recipeCommentsAmount > span {
+  color: var(--cor4);
+}
+
+.recipeComments {
+  width: 800px;
+  display: flex;
+  justify-content: space-around;
+  gap: 10px;
+  flex-direction: column;
+}
+
+.divLoadingContent {
+  padding: 25px 0px;
+  gap: 20px;
+  height: 100%;
+  width: 100%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.chefHatIcon {
+  font-size: 1.3em;
+  color: var(--cor5);
+}
+
+.moneyStackIcon {
+    font-size: 1.3em;
+    color: var(--cor5);
+}

@@ -80,3 +80,20 @@
     height: 80px;
     width: 45%;
 }
+
+.buttonToLogInWithGoogle {
+    border: none;
+    border-radius: 10px;
+    padding: 1rem 2rem;
+    font-size: 1.1em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+    wrap: nowrap;
+}
+
+.googleIcon {
+    font-size: 1.3em;
+}

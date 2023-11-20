@@ -6,12 +6,14 @@ interface TextAreaProps {
   placeholder?: string;
   defaultValue: any;
   handleChange(value: any): void;
+  maxLength?: number;
 }
 
 export default function TextArea(props: TextAreaProps) {
   return (
     <textarea
       className={styles.textAreaStyle}
+      maxLength={props.maxLength ? props.maxLength : 2500}
       name={props.name}
       id={props.name}
       required={props.required}

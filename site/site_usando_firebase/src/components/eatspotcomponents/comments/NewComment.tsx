@@ -34,6 +34,7 @@ export default function NewComment(props: NewCommentProps) {
   ]);
   const [commentText, setCommentText] = useState<string>("");
   const [commentAvaliation, setCommentAvaliation] = useState<number>(1);
+  const charLimit = 500;
 
   function handleStarClick(e: any) {
     const commentAvaliationNumber = parseInt(e.target.id);
@@ -130,6 +131,7 @@ export default function NewComment(props: NewCommentProps) {
               name="commentText"
               placeholder="Digite o que achou da receita..."
               required
+              maxLength={charLimit}
             />
             <Button
               buttonText="Enviar"

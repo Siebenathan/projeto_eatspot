@@ -17,6 +17,9 @@ import NewComment from "../eatspotcomponents/comments/NewComment";
 import { v4 as uuidv4 } from "uuid";
 import defaultUserPhoto from "../../img/EatSpot-semfundo.png";
 import Button from "../forms/Button";
+import Modal from "../modal/Modal";
+import { ModalProps } from "../modal/Modal";
+import { deleteDocument } from "../services/firebase/firebaseFirestore";
 
 interface RecipeComment {
   commentText: string;
@@ -25,6 +28,7 @@ interface RecipeComment {
   commentatorPhotoUrl: any;
   commentDate: string;
   exactTime: number;
+  isTheOwnerOfPost?: boolean;
 }
 
 export default function RecipePage() {
@@ -37,6 +41,7 @@ export default function RecipePage() {
     changeStyleHeart: false,
     updatingDatabase: false,
   });
+  const [recipeId, setRecipeId] = useState<string>();
   const [userData, setUserData] = useState<any>();
   const [userPhoto, setUserPhoto] = useState<any>();
   const [amountOfTime, setAmountOfTime] = useState<any>();
@@ -47,12 +52,25 @@ export default function RecipePage() {
   const [startAtComment, setStartAtComment] = useState<number>(0);
   const [isUpdatingDatabase, setIsUpdatingDatabase] = useState<boolean>(false);
   const [ownerRecipePhoto, setOwnerRecipePhoto] = useState<string>();
+  const [modal, setModal] = useState<ModalProps>({
+    isOpen: false,
+    text: "",
+    type: "erro",
+    title: "",
+    setIsOpen() {
+      setModal({
+        isOpen: false,
+        setIsOpen() {},
+        text: "",
+        type: "erro",
+        title: "",
+      });
+    },
+    textSecondButton: undefined,
+    secondButtonFunction: undefined,
+    styleSecondButton: undefined,
+  });
   const navigate = useNavigate();
-
-  const urlFood = "https://source.unsplash.com/featured/800x600?food";
-  const urlUser = "https://source.unsplash.com/featured/100x100?person";
-  const loremIpsum =
-    "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ex optio, architecto deleniti quas officiis pariatur aperiam, excepturi amet molestiae aut harum ipsa porro tempora libero quae modi cum illo voluptatibus!";
 
   useEffect(() => {
     if (userId) {
@@ -75,12 +93,27 @@ export default function RecipePage() {
         ...doc.data(),
         id: doc.id,
       }))[0];
-      recipeDataFirestore.recipePhasesList = orderRecipePhases(
-        recipeDataFirestore.recipePhasesList
-      );
-      setRecipeData(recipeDataFirestore);
-      setRecipeImage(await getImageStorage(recipeDataFirestore.imagePath));
-      setOwnerRecipePhoto(await getUserPhoto(recipeDataFirestore.userPhotoUrl));
+      if (!data.empty) {
+        recipeDataFirestore.recipePhasesList = orderRecipePhases(
+          recipeDataFirestore.recipePhasesList
+        );
+        const recipeIdString = data.docs[0].id ? data.docs[0].id : "";
+        setRecipeId(recipeIdString);
+        setRecipeData(recipeDataFirestore);
+        setRecipeImage(await getImageStorage(recipeDataFirestore.imagePath));
+        setOwnerRecipePhoto(
+          await getUserPhoto(recipeDataFirestore.userPhotoUrl)
+        );
+      } else {
+        navigate("/error", {
+          state: {
+            errorType: 404,
+            message:
+              "Erro a receita que você estava buscando não foi encontrada 😭",
+          },
+        });
+        return;
+      }
     });
   }, []);
 
@@ -92,6 +125,7 @@ export default function RecipePage() {
         getRecipeComments();
         return;
       }
+      _setAmoutOfTime();
       userAlreadyLikedRecipe();
       getRecipeComments();
     }
@@ -113,9 +147,10 @@ export default function RecipePage() {
     };
     recipeData.comments.push(newComment);
 
-    const imagePath = newComment.commentatorPhotoUrl;
+    const imagePath = userData.userPhotoUrl;
     const imageReadyToGo = await getUserPhoto(imagePath);
     newComment.commentatorPhotoUrl = imageReadyToGo;
+    newComment.isTheOwnerOfPost = true;
 
     if (recipeData.comments[0] == undefined) {
       recipeComments.push(newComment);
@@ -163,6 +198,10 @@ export default function RecipePage() {
         await getUserPhoto(commentsSplit[i].commentatorPhotoUrl).then(
           (userPhoto) => {
             commentsSplit[i].commentatorPhotoUrl = userPhoto;
+            if (commentsSplit[i].commentatorName == userData.name)
+              commentsSplit[i].isTheOwnerOfPost = true;
+            if (userData.name == recipeData.recipeOwnerName)
+              commentsSplit[i].isTheOwnerOfPost = true;
             recipeComments.push(commentsSplit[i]);
             setRecipeComments([...recipeComments]);
           }
@@ -174,7 +213,6 @@ export default function RecipePage() {
   async function getUserPhoto(imageUrl: string) {
     let userPhoto: any = null;
     userPhoto = await getImageStorage(imageUrl);
-    console.log(userPhoto);
     if (userPhoto == "erro imagem nao encontrada") {
       userPhoto = defaultUserPhoto;
     }
@@ -188,13 +226,65 @@ export default function RecipePage() {
         _amountOfTime += parseInt(item.minutes) + parseInt(item.hours) * 60;
       });
     }
-    console.log("aaaaa");
     setAmountOfTime(_amountOfTime);
   }
 
   function orderRecipePhases(recipePhases: any) {
     const compareOrderPhase = (a: any, b: any) => a.phaseNumber - b.phaseNumber;
     return recipePhases.sort(compareOrderPhase);
+  }
+
+  async function handleDeleteComment(commentExactTime: number): Promise<void> {
+    console.log(commentExactTime);
+    const newRecipeComments = recipeData.comments.filter(
+      (recipe: any) => recipe.exactTime != commentExactTime
+    );
+    setRecipeComments([...newRecipeComments]);
+    console.log(newRecipeComments);
+    recipeData.comments = newRecipeComments;
+    console.log(recipeData.comments);
+    setRecipeData(recipeData);
+    setDocAlreadyCreated("recipes", recipeData.id, recipeData);
+  }
+
+  function deleteRecipeModal() {
+    const settingsModal: ModalProps = {
+      isOpen: true,
+      setIsOpen() {
+        setModal({
+          isOpen: false,
+          setIsOpen() {},
+          text: "",
+          type: "erro",
+          title: "",
+        });
+      },
+      text: `A sua receita ${recipeData.recipeTitle} vai ser permanentemente deletada, os comentários e os likes também.`,
+      title: `Deseja deletar a sua receita?`,
+      type: "informacao",
+      textSecondButton: "Confirmar",
+      secondButtonFunction: handleDeleteRecipe,
+      styleSecondButton: {
+        backgroundColor: "orange",
+        cursor: "pointer",
+        padding: "10px 20px",
+        color: "white",
+        borderRadius: "5px",
+      },
+    };
+    setModal(settingsModal);
+  }
+
+  async function handleDeleteRecipe() {
+    const result = await deleteDocument("recipes", recipeId ?? "");
+    if (!result) {
+      navigate("/perfil/meuperfil", {
+        state: {
+          message: `A sua receita ${recipeData.recipeTitle} foi deletada com sucesso!`,
+          type: "success",
+        },
+      });
+    }
   }
 
   return (
@@ -206,6 +296,16 @@ export default function RecipePage() {
             padding: "50px 0px",
           }}
         >
+          <Modal
+            isOpen={modal.isOpen}
+            setIsOpen={modal.setIsOpen}
+            text={modal.text}
+            title={modal.title}
+            type={modal.type}
+            secondButtonFunction={modal.secondButtonFunction}
+            styleSecondButton={modal.styleSecondButton}
+            textSecondButton={modal.textSecondButton}
+          />
           <h1 className={styles.recipeTitle}>{recipeData.recipeTitle}</h1>
           <div className={styles.recipeImageDiv}>
             <img src={recipeImage} alt="sla" />
@@ -228,11 +328,17 @@ export default function RecipePage() {
               <img
                 src={ownerRecipePhoto}
                 alt="Imagem do dono da receita"
-                onClick={() => navigate(`/perfil/@${recipeData.recipeOwnerName}`)}
+                onClick={() =>
+                  navigate(`/perfil/@${recipeData.recipeOwnerName}`)
+                }
               />
               <p>
                 Por <br />
-                <span onClick={() => navigate(`/perfil/@${recipeData.recipeOwnerName}`)}>
+                <span
+                  onClick={() =>
+                    navigate(`/perfil/@${recipeData.recipeOwnerName}`)
+                  }
+                >
                   {recipeData.recipeOwnerName}
                 </span>
               </p>
@@ -251,7 +357,7 @@ export default function RecipePage() {
             <p>{recipeData.recipeDescription}</p>
           </div>
           <h2 className={styles.recipeIngredientsTitle}>
-            Ingredientes ({"Porções 3"})
+            Ingredientes ({`Porções ${recipeData.numberOfPorcions}`})
           </h2>
           <div className={styles.divRecipesGrid}>
             {recipeData.recipeIngredients.map((ingrediente: any) => (
@@ -299,6 +405,7 @@ export default function RecipePage() {
                       updatingDatabase: true,
                     });
                     recipeData.likes += 1;
+                    recipeData.peopleThatLikedRecipe.push(userData.name);
                     userData.recipesILiked.push(recipeData.id);
                     setUserData(userData);
                     setRecipeData(recipeData);
@@ -324,6 +431,10 @@ export default function RecipePage() {
                       updatingDatabase: true,
                     });
                     recipeData.likes -= 1;
+                    recipeData.peopleThatLikedRecipe =
+                      recipeData.peopleThatLikedRecipe.filter(
+                        (people: any) => people != userData.name
+                      );
                     userData.recipesILiked = userData.recipesILiked.filter(
                       (recipe: any) => recipe != recipeData.id
                     );
@@ -398,12 +509,15 @@ export default function RecipePage() {
               <>
                 {recipeComments.map((comment) => (
                   <Comment
+                    exactTime={comment.exactTime}
                     commentDate={comment.commentDate}
                     userImageUrl={comment.commentatorPhotoUrl}
                     commentText={comment.commentText}
                     username={comment.commentatorName}
                     avaliationNumber={comment.avaliationNumber}
+                    isTheOwnerOfPost={comment.isTheOwnerOfPost}
                     key={uuidv4()}
+                    deleteComment={handleDeleteComment}
                   />
                 ))}
                 {recipeComments[recipeData.comments.length - 1] ==
@@ -442,7 +556,7 @@ export default function RecipePage() {
                 <button
                   className={styles.recipeOwnerButtonDeleteRecipe}
                   onClick={() => {
-                    //TODO:
+                    deleteRecipeModal();
                   }}
                 >
                   Excluir

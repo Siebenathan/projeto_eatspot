@@ -269,7 +269,8 @@ export default function CreateRecipePage() {
       recipePhasesList: newRecipePhasesList,
     };
 
-    addDocument("recipes", recipeData);
+    await addDocument("recipes", recipeData);
+    navigate("/perfil/meuperfil");
   }
 
   return (

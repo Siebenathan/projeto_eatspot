@@ -13,9 +13,17 @@ import {
   startAfter,
   startAt,
   endAt,
+  deleteDoc,
   getCountFromServer,
 } from "firebase/firestore";
 import { User } from "./firebase";
+
+
+export async function deleteDocument(collectionString: string, documentId: string): Promise<unknown> {
+  const docReference = doc(firestoreDB, collectionString, documentId);
+  const result = await deleteDoc(docReference);
+  return result;
+}
 
 export async function createUserFirestore(usuario: User): Promise<any> {
   const userRef = collection(firestoreDB, "users");

@@ -37,7 +37,15 @@
 }
 
 .normalDivForm > input {
-    font-size: 1.5em;
+    font-size: 1.4em;
+    height: 50px;
+    padding: 10px;
+}
+
+.imgLockedUnlocked {
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
 }
 
 .calendarIcon {
@@ -46,4 +54,8 @@
 
 .userDoubtIcon {
     font-size: 2em;
+}
+
+.gmailIcon {
+    font-size: 2.5em;
 }

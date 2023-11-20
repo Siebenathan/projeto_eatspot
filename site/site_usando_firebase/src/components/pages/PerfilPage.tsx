@@ -2,7 +2,7 @@ import styles from "./PerfilPage.module.css";
 import Container from "../layout/Container";
 import PerfilFoodContainer from "../eatspotcomponents/PerfilFoodContainer";
 import { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import {
   getDataFromCollection,
   getDataWithWhereOrderLimitAndStartAfter,
@@ -19,6 +19,8 @@ import {
 import { FaPencilAlt } from "react-icons/fa";
 import ModalToPutImage from "../modal/ModalToPutImage";
 import defaultUserPhoto from "../../img/EatSpot-semfundo.png";
+import Message from "../modal/Message";
+import { MessageProps } from "../modal/Message";
 
 interface objectSearchProps {
   key: string;
@@ -33,6 +35,10 @@ export default function PerfilPage() {
   const [latestRecipeSnapshot, setLatestRecipeSnapshot] = useState<any>();
   const [newOwnerPhotoFileUrl, setNewOwnerPhotoFileUrl] = useState<any>();
   const [userPhoto, setUserPhoto] = useState<any>();
+  const [message, setMessage] = useState<MessageProps>();
+  const location = useLocation();
+  const messageState = location.state?.message;
+  const messageType = location.state?.type;
 
   const navigate = useNavigate();
   let { name } = useParams();
@@ -60,9 +66,7 @@ export default function PerfilPage() {
       objectSearch.searchParameter
     ).then((data) => {
       if (data.empty) {
-        //Mandar para uma página de erro 404 pois nada foi encontrado no banco de dados
-        // navigate("/pagina_de_erro");
-        console.log("deu M");
+        navigate("/error", {state: {message: "Erro o perfil que você estava buscando não foi encontrado 🕵️", errorType: 404}});
         return;
       }
 
@@ -91,6 +95,12 @@ export default function PerfilPage() {
 
   useEffect(() => {
     if (userData) {
+      if(messageState && messageType) {
+        setMessage({
+          message: messageState,
+          type: messageType
+        });
+      }
       const observer = new IntersectionObserver((entries) => {
         const element: any = entries[0];
         if (element.isIntersecting) {
@@ -200,6 +210,9 @@ export default function PerfilPage() {
             boxShadow: "#00000014 0px 9px 20px 10px",
           }}
         >
+          {message && (
+            <Message type={message.type} message={message.message} />
+          )}
           <ModalToPutImage
             setImageFileUrl={setNewOwnerPhotoFileUrl}
             isOpen={modalToChangePhotoOpen}

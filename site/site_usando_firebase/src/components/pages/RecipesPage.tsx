@@ -17,6 +17,7 @@ export default function RecipesPage() {
   const [recipesData, setRecipesData] = useState<any>([]);
   const [getNewRecipes, setGetNewRecipes] = useState<boolean>(false);
   const [stillHaveRecipes, setStillHaveRecipes] = useState<boolean>(true);
+  const [recipeCategory, setRecipeCategory] = useState<string>("");
   const navigator = useNavigate();
 
   const loremIpsum =
@@ -25,10 +26,9 @@ export default function RecipesPage() {
   let { categoria, nomeReceita } = useParams();
 
   useEffect(() => {
-    console.log(categoria, nomeReceita);
     if (nomeReceita) {
-      nomeReceita = nomeReceita.toLowerCase();
-      getRecipesWithName(nomeReceita);
+      setRecipeCategory(`RECEITAS COM A PESQUISA DE "${nomeReceita}"`);
+      getRecipesWithName(nomeReceita.toLowerCase());
       return;
     }
     getRecipesWithMostLikes();
@@ -36,7 +36,7 @@ export default function RecipesPage() {
 
   useEffect(() => {
     if (getNewRecipes && latestDoc) {
-      if(nomeReceita) {
+      if (nomeReceita) {
         getRecipesWithName(nomeReceita);
         return;
       }
@@ -46,14 +46,19 @@ export default function RecipesPage() {
 
   async function getRecipesWithName(nomeDaReceita: string) {
     let recipesData: any = undefined;
+    let stillHaveRecipes: boolean = true;
     let recipesDataFirestore: any = undefined;
     if (!latestDoc) {
       recipesDataFirestore = await getDocsUsingLikeInAField(
         "recipes",
         4,
         "recipeTitle",
-        nomeDaReceita,
+        nomeDaReceita
       );
+      if (recipesDataFirestore.empty) {
+        setStillHaveRecipes(false);
+        return;
+      }
       recipesData = recipesDataFirestore.docs.map((doc: any) => ({
         ...doc.data(),
         id: doc.id,
@@ -66,22 +71,29 @@ export default function RecipesPage() {
         nomeDaReceita,
         latestDoc
       );
+      if (recipesDataFirestore.empty) {
+        setStillHaveRecipes(false);
+        return;
+      }
       recipesData = recipesDataFirestore.docs.map((doc: any) => ({
         ...doc.data(),
         id: doc.id,
       }));
     }
 
-    getRecipeImages(recipesData);
-    setLatestDoc(
-      recipesDataFirestore.docs[recipesDataFirestore.docs.length - 1]
-    );
-    console.log(
-      recipesDataFirestore.docs[recipesDataFirestore.docs.length - 1]
-    );
+    if (stillHaveRecipes) {
+      getRecipeImages(recipesData);
+      setLatestDoc(
+        recipesDataFirestore.docs[recipesDataFirestore.docs.length - 1]
+      );
+      console.log(
+        recipesDataFirestore.docs[recipesDataFirestore.docs.length - 1]
+      );
+      return;
+    }
   }
 
-  async function getRecipesWithCategory() { }
+  async function getRecipesWithCategory() {}
 
   async function getRecipesWithMostLikes() {
     let recipesData: any = undefined;
@@ -149,7 +161,7 @@ export default function RecipesPage() {
           Todas as receitas do EatSpot
         </h1>
         <h2 className={styles.recipesWithMostLikesTitle}>
-          RECEITAS COM MAIS CURTIDAS
+          {recipeCategory ? recipeCategory : "RECEITAS COM MAIS CURTIDAS"}
         </h2>
         <div className={styles.recipesMainDiv}>
           {recipesData &&

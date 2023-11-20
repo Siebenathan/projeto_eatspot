@@ -9,7 +9,9 @@ import { signIn } from "../services/firebase/firebaseAuth";
 import useLocalStorage from "../hooks/useLocalStorage";
 import Message from "../modal/Message";
 import { FcGoogle } from "react-icons/fc";
-
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { auth } from "../services/firebase/firebase";
+import { useNavigate } from "react-router-dom";
 
 export default function LoginPage() {
   const buttonSubmitStyle = {
@@ -18,12 +20,15 @@ export default function LoginPage() {
     cursor: "pointer",
   };
 
+
+
   const location = useLocation();
   const message = location.state?.message;
   const messageType = location.state?.type;
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [value, setValue] = useLocalStorage("userId", "");
+  const navigate = useNavigate();
 
   async function handleSubmit(e: any) {
     e.preventDefault();
@@ -31,10 +36,24 @@ export default function LoginPage() {
     setValue(userUid);
   }
 
+  function handleGoogleSignIn() {
+    const provider = new GoogleAuthProvider();
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        navigate("/criar-conta", {
+          state: {
+            message: "Google SignIn",
+            userUid: result.user.uid,
+          },
+        });
+      })
+      .catch((error) => console.log(error));
+  }
+
   return (
     <div className={styles.loginPageBody}>
       <Header />
-      {message && (<Message message={message} type={messageType}></Message>)}
+      {message && <Message message={message} type={messageType}></Message>}
       <Container customClass="flexForLoginAndRegister">
         <div className={styles.leftDivLogin}>
           <p className={styles.leftDivLoginText}>
@@ -45,7 +64,14 @@ export default function LoginPage() {
           <Link className={styles.leftDivLoginLink} to="/criar-conta">
             Criar Conta
           </Link>
-          <button><FcGoogle /></button>
+          <button
+            className={styles.buttonToLogInWithGoogle}
+            onClick={() => {
+              handleGoogleSignIn();
+            }}
+          >
+            <FcGoogle className={styles.googleIcon} /> Logar Pelo Google
+          </button>
         </div>
         <div className={styles.rightDivLogin}>
           <form className={styles.formContainer} onSubmit={handleSubmit}>

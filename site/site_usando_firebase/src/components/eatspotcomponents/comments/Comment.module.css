@@ -37,20 +37,33 @@
     align-items: start;
     flex-direction: column;
     justify-content: flex-start;
+    overflow-wrap: break-word;
+    text-wrap: wrap;
 }
 
 .divComment > p {
     text-align: justify;
+    white-space: pre;
+
     font-size: 1em;
+    width: 100%;
+    text-wrap: wrap;
 }
 
 .divCommentDateAndAvaliation {
     display: flex;
     align-items: center;
-    gap: 30px;
+    width: 100%;
+    justify-content: space-between;
 }
 
-.divCommentDateAndAvaliation > small {
+.divStars {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.divStars > small {
     height: 20%;
     font-size: 1em;
     font-weight: bolder;
@@ -59,4 +72,27 @@
 .starIcon {
     color: rgb(255, 255, 36);
     font-size: 1.8em;
+}
+
+.divChangeComment {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.divChangeComment > button {
+    cursor: pointer;
+    border: none;
+    background-color: inherit;
+}
+
+.trashcanIcon {
+    color: red;
+    font-size: 1.5em;
+}
+
+.pencilIcon {
+    color: gray;
+    font-size: 1.5em;
 }

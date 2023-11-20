@@ -1,0 +1,36 @@
+.mainDivError {
+    margin-top: 5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.mainDivError > p {
+    margin-top: 30px;
+    font-size: 1.4em;
+}
+
+.divReturnHome {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+}
+
+.divReturnHome > button {
+    cursor: pointer;
+    border: none;
+    background-color: inherit;
+}
+
+.arrowLeftIcon {
+    margin: 30px 30px 15px 30px;
+    font-size: 5em;
+    color: black;
+}
+
+.divReturnHome > p {
+    font-size: 1.2em;
+}
