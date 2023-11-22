@@ -464,6 +464,9 @@ export default function CreateRecipePage() {
             </div>
           ))}
         </div>
+        <div>
+          S
+        </div>
         <div className={styles.divRecipesPhases}>
           <p>Etapas de preparo</p>
           <div className={styles.divRecipePhase}>

@@ -1,0 +1,70 @@
+.mainDiv {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  overflow-x: hidden;
+  position: relative;
+}
+
+.mainDivLeft {
+  background-color: var(--cor7);
+  width: 60%;
+  height: 100%;
+}
+
+.mainDivRight {
+  background-color: var(--cor6);
+  width: 40%;
+  height: 100%;
+}
+
+.loginMainDiv {
+  height: 70%;
+  width: 60%;
+  box-shadow: 3px 3px 15px #00000033;
+  position: absolute;
+  display: flex;
+  background-repeat: no-repeat;
+  background-position: center;
+  backdrop-filter: blur(20px);
+  background-size: cover;
+  align-items: center;
+  background-color: white;
+  justify-content: center;
+  background-image: url(../../img/mesa_cheia_de_comida.jpg);
+  border-radius: 2rem;
+}
+
+.leftLoginDiv {
+  width: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  height: 100%;
+  border-radius: 2rem 0rem 0rem 2rem;
+}
+
+.leftLoginDiv > h1 {
+  font-family: "Bebas Neue";
+  font-size: 3em;
+  color: var(--cor5);
+}
+
+.leftLoginDiv > h1 > span {
+  color: var(--cor4);
+  font-family: "Bebas Neue";
+}
+
+.rightLoginDiv {
+  width: 50%;
+  height: 100%;
+  background-color: white;
+  border-radius: 0rem 2rem 2rem 0rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}

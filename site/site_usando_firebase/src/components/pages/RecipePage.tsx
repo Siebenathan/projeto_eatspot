@@ -18,6 +18,7 @@ import { v4 as uuidv4 } from "uuid";
 import defaultUserPhoto from "../../img/EatSpot-semfundo.png";
 import Button from "../forms/Button";
 import Modal from "../modal/Modal";
+import defaultImageRecipeIngredient from "../../img/vasilha_com_colher_desenho.jpg";
 import { ModalProps } from "../modal/Modal";
 import { deleteDocument } from "../services/firebase/firebaseFirestore";
 
@@ -220,10 +221,19 @@ export default function RecipePage() {
   }
 
   function _setAmoutOfTime() {
-    let _amountOfTime: number = 10;
+    let _amountOfTime: number = 0;
     if (recipeData) {
       recipeData.recipeTimes.forEach((item: any) => {
-        _amountOfTime += parseInt(item.minutes) + parseInt(item.hours) * 60;
+        let hours = 0;
+        let minutes = 0;
+        // _amountOfTime += parseInt(item.minutes) + parseInt(item.hours) * 60;
+        if(item.hours) {
+          hours = parseInt(item.hours) * 60;
+        }
+        if(item.minutes) {
+          minutes = parseInt(item.minutes);
+        }
+        _amountOfTime += hours + minutes;
       });
     }
     setAmountOfTime(_amountOfTime);
@@ -235,14 +245,14 @@ export default function RecipePage() {
   }
 
   async function handleDeleteComment(commentExactTime: number): Promise<void> {
-    console.log(commentExactTime);
+    // console.log(commentExactTime);
     const newRecipeComments = recipeData.comments.filter(
       (recipe: any) => recipe.exactTime != commentExactTime
     );
     setRecipeComments([...newRecipeComments]);
-    console.log(newRecipeComments);
+    // console.log(newRecipeComments);
     recipeData.comments = newRecipeComments;
-    console.log(recipeData.comments);
+    // console.log(recipeData.comments);
     setRecipeData(recipeData);
     setDocAlreadyCreated("recipes", recipeData.id, recipeData);
   }
@@ -285,6 +295,33 @@ export default function RecipePage() {
         },
       });
     }
+  }
+
+  function editRecipeModal() {
+    const settingsModal: ModalProps = {
+      isOpen: true,
+      setIsOpen() {
+        setModal({
+          isOpen: false,
+          setIsOpen() {},
+          text: "",
+          type: "erro",
+          title: "",
+        });
+      },
+      text: `A sua receita ${recipeData.recipeTitle} vai ser permanentemente deletada, os comentários e os likes também.`,
+      title: `Deseja deletar a sua receita?`,
+      type: "informacao",
+      textSecondButton: "Confirmar",
+      secondButtonFunction: handleDeleteRecipe,
+      styleSecondButton: {
+        backgroundColor: "orange",
+        cursor: "pointer",
+        padding: "10px 20px",
+        color: "white",
+        borderRadius: "5px",
+      },
+    };
   }
 
   return (
@@ -363,7 +400,7 @@ export default function RecipePage() {
             {recipeData.recipeIngredients.map((ingrediente: any) => (
               <div className={styles.divRecipeIngredient} key={ingrediente}>
                 <img
-                  src="https://source.unsplash.com/featured/100x100?food"
+                  src={defaultImageRecipeIngredient}
                   alt="food"
                 />
                 <p>{ingrediente}</p>

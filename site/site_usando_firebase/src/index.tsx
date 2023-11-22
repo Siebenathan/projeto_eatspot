@@ -2,7 +2,11 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
 import reportWebVitals from "./reportWebVitals";
-import { createBrowserRouter, RouterProvider, useNavigate } from "react-router-dom";
+import {
+  createBrowserRouter,
+  RouterProvider,
+  useNavigate,
+} from "react-router-dom";
 import { useEffect } from "react";
 import LoginPage from "./components/pages/LoginPage";
 import HomePage from "./components/pages/HomePage";
@@ -16,6 +20,7 @@ import RecipePage from "./components/pages/RecipePage";
 import RecipesPage from "./components/pages/RecipesPage";
 import AdditionalUserInfoPage from "./components/pages/AdditioanalUserInfoPage";
 import ErrorPage from "./components/pages/ErrorPage";
+import LoginPageTest from "./components/pages/LoginPageTest";
 
 const browser = createBrowserRouter([
   {
@@ -26,22 +31,26 @@ const browser = createBrowserRouter([
       { path: "/perfil/:name", element: <PerfilPage /> },
       { path: "/criar-receita", element: <CreateRecipePage /> },
       { path: "/receita/:recipeUrl", element: <RecipePage /> },
-      { path: "/receitas", element: <RecipesPage />},
-      { path: "/receitas/:nomeReceita", element: <RecipesPage />},
-      { path: "/receitas/categoria/:categoria", element: <RecipesPage />},
+      { path: "/receitas", element: <RecipesPage /> },
+      { path: "/receitas/:nomeReceita", element: <RecipesPage /> },
+      { path: "/receitas/categoria/:categoria", element: <RecipesPage /> },
     ],
-  },  
+  },
   {
     path: "/login",
     element: <LoginPage />,
   },
   {
     path: "/criar-conta",
-    element: <AdditionalUserInfoPage />
+    element: <AdditionalUserInfoPage />,
+  },
+  {
+    path: "/login2",
+    element: <LoginPageTest />,
   },
   {
     path: "/error",
-    element: <ErrorPage />
+    element: <ErrorPage />,
   },
   {
     path: "/admin",

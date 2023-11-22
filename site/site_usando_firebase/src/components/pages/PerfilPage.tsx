@@ -21,6 +21,7 @@ import ModalToPutImage from "../modal/ModalToPutImage";
 import defaultUserPhoto from "../../img/EatSpot-semfundo.png";
 import Message from "../modal/Message";
 import { MessageProps } from "../modal/Message";
+import Button from "../forms/Button";
 
 interface objectSearchProps {
   key: string;
@@ -66,7 +67,13 @@ export default function PerfilPage() {
       objectSearch.searchParameter
     ).then((data) => {
       if (data.empty) {
-        navigate("/error", {state: {message: "Erro o perfil que você estava buscando não foi encontrado 🕵️", errorType: 404}});
+        navigate("/error", {
+          state: {
+            message:
+              "Erro o perfil que você estava buscando não foi encontrado 🕵️",
+            errorType: 404,
+          },
+        });
         return;
       }
 
@@ -88,17 +95,17 @@ export default function PerfilPage() {
           setIsThePerfilOwner(true);
         }
       });
-      getUserPhoto(`imagens/perfil/${userDataFirestore.name}/fotoDePerfil`);
+      getUserPhoto(`images/perfil/${userDataFirestore.name}/fotoDePerfil`);
       setUserData(userDataFirestore);
     });
   }, []);
 
   useEffect(() => {
     if (userData) {
-      if(messageState && messageType) {
+      if (messageState && messageType) {
         setMessage({
           message: messageState,
-          type: messageType
+          type: messageType,
         });
       }
       const observer = new IntersectionObserver((entries) => {
@@ -210,9 +217,7 @@ export default function PerfilPage() {
             boxShadow: "#00000014 0px 9px 20px 10px",
           }}
         >
-          {message && (
-            <Message type={message.type} message={message.message} />
-          )}
+          {message && <Message type={message.type} message={message.message} />}
           <ModalToPutImage
             setImageFileUrl={setNewOwnerPhotoFileUrl}
             isOpen={modalToChangePhotoOpen}
@@ -298,7 +303,32 @@ export default function PerfilPage() {
           <div className={styles.observerIntersection} id="observer"></div>
           {isThePerfilOwner && (
             <div className={styles.ownerFunctionalites}>
-              
+              <Button
+                buttonText="Deletar minha conta"
+                type="button"
+                onClick={() => {}}
+                style={{
+                  width: "fit-content",
+                  backgroundColor: "var(--cor4)",
+                  color: "white",
+                  cursor: "pointer",
+                  padding: "2rem 2rem",
+                  fontSize: "1.3em",
+                }}
+              />
+              <Button
+                buttonText="Editar minha conta"
+                type="button"
+                onClick={() => {}}
+                style={{
+                  width: "fit-content",
+                  backgroundColor: "orange",
+                  color: "white",
+                  cursor: "pointer",
+                  padding: "2rem 2rem",
+                  fontSize: "1.3em",
+                }}
+              />
             </div>
           )}
         </Container>
