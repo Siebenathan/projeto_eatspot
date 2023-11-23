@@ -1,0 +1,17 @@
+div.inputIconMainDiv {
+    border: 3px solid black;
+    border-radius: 10px;
+    display: flex;
+    width: 70%;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+    height: 8vh;
+}
+
+input.inputStyle {
+    border: none;
+    font-size: 1.5em;
+    height: 100%;
+    width: 95%;
+}

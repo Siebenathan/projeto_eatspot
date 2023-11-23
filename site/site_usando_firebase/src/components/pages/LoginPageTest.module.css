@@ -33,7 +33,7 @@
   align-items: center;
   background-color: white;
   justify-content: center;
-  background-image: url(../../img/mesa_cheia_de_comida.jpg);
+  background-image: url(../../img/bolo-mousse-chocolate-650x650.png);
   border-radius: 2rem;
 }
 
@@ -45,6 +45,11 @@
   flex-direction: column;
   height: 100%;
   border-radius: 2rem 0rem 0rem 2rem;
+}
+
+.leftLoginDiv > img {
+  width: 20vw;
+  height: 40vh
 }
 
 .leftLoginDiv > h1 {
@@ -60,6 +65,7 @@
 
 .rightLoginDiv {
   width: 50%;
+  gap: 1rem;
   height: 100%;
   background-color: white;
   border-radius: 0rem 2rem 2rem 0rem;
@@ -67,4 +73,8 @@
   align-items: center;
   justify-content: center;
   flex-direction: column;
+}
+
+.mailIcon {
+  font-size: 2em;
 }
