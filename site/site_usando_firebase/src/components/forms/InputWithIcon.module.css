@@ -1,10 +1,11 @@
 div.inputIconMainDiv {
-    border: 3px solid black;
+    /* border: 3px solid black;s */
     border-radius: 10px;
     display: flex;
-    width: 70%;
+    width: 100%;
     align-items: center;
     justify-content: center;
+    background-color: var(--cor6);
     padding: 5px;
     height: 8vh;
 }
@@ -14,4 +15,10 @@ input.inputStyle {
     font-size: 1.5em;
     height: 100%;
     width: 95%;
+    outline: none;
+    background-color: var(--cor6);
+}
+
+input.inputStyle::placeholder {
+    font-size: 0.8em;
 }

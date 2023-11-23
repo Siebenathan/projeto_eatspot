@@ -65,7 +65,7 @@
 
 .rightLoginDiv {
   width: 50%;
-  gap: 1rem;
+  gap: 2rem;
   height: 100%;
   background-color: white;
   border-radius: 0rem 2rem 2rem 0rem;
@@ -75,6 +75,91 @@
   flex-direction: column;
 }
 
+.rightLoginDiv > form {
+  display: flex;
+  gap: 2rem;
+  width: 45%;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
 .mailIcon {
   font-size: 2em;
+}
+
+.divGreetings {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.divButtonsServicesLogin {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 0.8rem;
+  justify-content: center;
+}
+
+.divButtonsServicesLogin > p {
+  font-size: 1.2em;
+}
+
+.servicesIconsDiv {
+  display: flex;
+  align-items: center;
+  border: none;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.servicesIconsDiv > button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  font-size: 1em;
+  border: none;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.forgetPasswordButton {
+  border: none;
+  font-size: 1em;
+  background-color: white;
+  cursor: pointer;
+  position: relative;
+}
+
+.forgetPasswordButton::after {
+  content: " ";
+  width: 0%;
+  height: 4px;
+  position: absolute;
+  background-color: black;
+  bottom: -5px;
+  left: 0;
+  transition: 0.5s ease-in-out;
+}
+
+.forgetPasswordButton:hover::after {
+  width: 100%;
+}
+
+.googleIcon {
+  font-size: 2.5em;
+  background-color: white;
+}
+
+.facebookIcon {
+  font-size: 2.5em;
+  color: blue;
+}
+
+.twitterXIcon {
+  font-size: 2.5em;
 }
