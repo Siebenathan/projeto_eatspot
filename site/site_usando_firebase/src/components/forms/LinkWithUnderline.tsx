@@ -5,12 +5,15 @@ interface LinkWithUnderlineProps {
   linkText: string;
   to: string;
   navigationState?: unknown;
+  underlineColor?: "colorBlue";
+  linkStyle?: {fontSize?: string, color?: string, fontWeight?: string};
 }
 
 export default function LinkWithUnderline(props: LinkWithUnderlineProps) {
   return (
     <Link
-      className={styles.linkStyle}
+      className={`${styles.linkStyle} ${styles[props.underlineColor ?? ""]}`}
+      style={props.linkStyle}
       to={props.to}
       state={props.navigationState}
     >

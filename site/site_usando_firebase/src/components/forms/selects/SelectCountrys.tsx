@@ -1,5 +1,5 @@
 import { useState } from "react";
-import styles from "./Select.module.css";
+import styles from "./SelectCountry.module.css";
 import { FcGlobe } from "react-icons/fc";
 
 interface SelectProps {

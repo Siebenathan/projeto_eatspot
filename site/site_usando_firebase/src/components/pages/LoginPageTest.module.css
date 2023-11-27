@@ -54,7 +54,7 @@
 
 .leftLoginDiv > h1 {
   font-family: "Bebas Neue";
-  font-size: 3em;
+  font-size: 4em;
   color: var(--cor5);
 }
 
@@ -79,6 +79,7 @@
   display: flex;
   gap: 2rem;
   width: 45%;
+  height: 30%;
   align-items: center;
   justify-content: center;
   flex-direction: column;
@@ -144,6 +145,14 @@
   bottom: -5px;
   left: 0;
   transition: 0.5s ease-in-out;
+}
+
+.divBottomLoginLiks {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 15px;
 }
 
 .forgetPasswordButton:hover::after {

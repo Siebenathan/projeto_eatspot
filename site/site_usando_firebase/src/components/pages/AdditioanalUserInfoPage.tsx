@@ -1,7 +1,7 @@
 import styles from "./AdditioanalUserInfoPage.module.css";
 import { FcCalendar, FcDecision } from "react-icons/fc";
-import Button from "../forms/Button";
-import SelectCountrys from "../forms/SelectCountrys";
+import Button from "../forms/buttons/Button";
+import SelectCountrys from "../forms/selects/SelectCountrys";
 import Header from "../layout/Header";
 import Container from "../layout/Container";
 import { useState, useEffect } from "react";

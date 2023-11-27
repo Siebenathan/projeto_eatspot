@@ -16,11 +16,12 @@ import useLocalStorage from "../hooks/useLocalStorage";
 import NewComment from "../eatspotcomponents/comments/NewComment";
 import { v4 as uuidv4 } from "uuid";
 import defaultUserPhoto from "../../img/EatSpot-semfundo.png";
-import Button from "../forms/Button";
+import Button from "../forms/buttons/Button";
 import Modal from "../modal/Modal";
 import defaultImageRecipeIngredient from "../../img/vasilha_com_colher_desenho.jpg";
 import { ModalProps } from "../modal/Modal";
 import { deleteDocument } from "../services/firebase/firebaseFirestore";
+import { updateDocFirestore } from "../services/firebase/firebaseFirestore";
 
 interface RecipeComment {
   commentText: string;
@@ -286,6 +287,9 @@ export default function RecipePage() {
   }
 
   async function handleDeleteRecipe() {
+    const {numberOfRecipes, ...rest} = userData;
+    rest["numberOfRecipes"] = numberOfRecipes - 1;
+    await updateDocFirestore("users", userData.userId, rest);
     const result = await deleteDocument("recipes", recipeId ?? "");
     if (!result) {
       navigate("/perfil/meuperfil", {
@@ -324,6 +328,11 @@ export default function RecipePage() {
     };
   }
 
+  function capitalizeString(str: string): string {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
+
   return (
     <div>
       {recipeData ? (
@@ -343,7 +352,7 @@ export default function RecipePage() {
             styleSecondButton={modal.styleSecondButton}
             textSecondButton={modal.textSecondButton}
           />
-          <h1 className={styles.recipeTitle}>{recipeData.recipeTitle}</h1>
+          <h1 className={styles.recipeTitle}>{capitalizeString(recipeData.recipeTitle)}</h1>
           <div className={styles.recipeImageDiv}>
             <img src={recipeImage} alt="sla" />
           </div>

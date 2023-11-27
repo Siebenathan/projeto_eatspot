@@ -19,19 +19,19 @@ export async function createUserAuth(usuario: User): Promise<any> {
   }
 }
 
-export function signOutUser() {
+export async function signOutUser() {
   signOut(auth);
-  localStorage.clear();
+  await localStorage.clear();
   console.log("Logout realizado com sucesso!");
 }
 
 export let userAuth: any = null;
 
 export async function signIn(password: string, email: string) {
-  const singInUser = await signInWithEmailAndPassword(
-    auth,
-    email,
-    password
-  ).catch((err) => console.log(err));
-  return singInUser?.user.uid;
+  try {
+    const singInUser = await signInWithEmailAndPassword(auth, email, password);
+    return singInUser;
+  } catch(err) {
+    return "erro";
+  }
 }

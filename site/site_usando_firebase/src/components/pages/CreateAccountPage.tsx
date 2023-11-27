@@ -1,61 +1,53 @@
 import styles from "./CreateAccountPage.module.css";
-import { useNavigate } from "react-router-dom";
-import Container from "../layout/Container";
-import Input from "../forms/Input";
-import Button from "../forms/Button";
-import Header from "../layout/Header";
-import { Link } from "react-router-dom";
-import { FormEvent, useEffect, useState } from "react";
-import SelectCountrys from "./../forms/SelectCountrys";
-import { postUser } from "../services/firebase/firebase";
+import eatSpotLogo from "../../img/EatSpot-semfundo.png";
+import LinkWithUnderline from "../forms/LinkWithUnderline";
+import InputWithLabelInside from "../forms/inputs/InputWithLabelInside";
+import { useState, useEffect } from "react";
+import useLocalStorage from "../hooks/useLocalStorage";
+import { useNavigate, useLocation } from "react-router-dom";
+import SelectWithSearch from "../forms/selects/SelectWithSearch";
+import ButtonSlide from "../forms/buttons/ButtonSlide";
+import ButtonBeating from "../forms/buttons/ButtonBeating";
+import { ModalProps } from "../modal/Modal";
+import {
+  postUser,
+  postUserWhithUserAuthCreated,
+} from "../services/firebase/firebase";
+import Modal from "../modal/Modal";
 
 export default function CreateAccountPage() {
-  const submitButtonStyle = {
-    backgroundColor: "var(--cor3)",
-    fontSize: "1.5em",
-    cursor: "pointer",
-  };
-
-  const labelStyle = {
-    fontSize: "1.2em",
-  };
-
-  const navigate = useNavigate();
+  const location = useLocation();
+  const [listNations, setListNations] = useState<any>([]);
+  const message = location.state?.message;
+  const usernameGoogle = location.state?.username;
+  const userUid = location.state?.userUid;
+  const [loginWithOtherService, setLoginWithOtherService] = useState<boolean>();
+  const [value, setValue] = useLocalStorage("userId", "");
   const [email, setEmail] = useState<string>("");
+  const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [rptPassword, setRptPassword] = useState<string>("");
-  const [username, setUsername] = useState<string>("");
-  const [dataNasc, setDataNasc] = useState<any>("");
-  const [nacionality, setNacionality] = useState<string>(
-    "Selecione sua nacionalidade..."
-  );
-  const [listNations, setListNations] = useState([]);
-
-  async function handleSubmit(e: FormEvent) {
-    e.preventDefault();
-
-    //TODO: Fazer um Regex para verificar o nível de segurança da senha
-
-    const response = await postUser({
-      name: username,
-      bornDate: dataNasc,
-      email: email,
-      nacionality: nacionality,
-      password: password,
-    });
-
-    if (response === "Registro realizado com sucesso!") {
-      navigate("/login", {
-        state: {
-          message:
-            "Registro realizado com sucesso! Para acessar sua conta faça o seu login.",
-          type: "success"
-        },
+  const [bornDate, setBornDate] = useState<string>("");
+  const [selectedCountry, setSelectedCountry] = useState<string>("");
+  const [modal, setModal] = useState<ModalProps>({
+    isOpen: false,
+    text: "",
+    type: "erro",
+    title: "",
+    setIsOpen() {
+      setModal({
+        isOpen: false,
+        setIsOpen() {},
+        text: "",
+        type: "erro",
+        title: "",
       });
-    } else {
-      console.log(response);
-    }
-  }
+    },
+    textSecondButton: undefined,
+    secondButtonFunction: undefined,
+    styleSecondButton: undefined,
+  });
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetch("https://restcountries.com/v3.1/all")
@@ -74,139 +66,220 @@ export default function CreateAccountPage() {
 
           return 0;
         });
-        data = data.filter((nation: any) => {
-          return nation.name.common.length < 30;
+        const contryNames: string[] = [];
+        data.forEach((country: any) => {
+          contryNames.push(country.name.common);
         });
-        setListNations(data);
+        setListNations(contryNames);
       })
       .catch((err) => console.log(err));
+
+    if (userUid) {
+      setLoginWithOtherService(true);
+    }
   }, []);
 
+  async function handleFormSubmit(e: any) {
+    e.preventDefault();
+    const settingsModal: ModalProps = {
+      isOpen: true,
+      setIsOpen() {
+        setModal({
+          isOpen: false,
+          setIsOpen() {},
+          text: "",
+          type: "erro",
+          title: "",
+        });
+      },
+      text: "",
+      title: "",
+      type: "erro",
+    };
+
+    let response: string = "";
+
+    if (email) {
+      if (password != rptPassword) {
+        settingsModal.isOpen = true;
+        settingsModal.text = "As senhas estão diferentes uma da outra!";
+        settingsModal.title = "ERRO";
+        settingsModal.type = "erro";
+        setModal(settingsModal);
+        return;
+      }
+      response = await postUser({
+        name: username,
+        bornDate: bornDate,
+        email: email,
+        nacionality: selectedCountry,
+        password: password,
+      });
+
+      if (response === "Registro realizado com sucesso!") {
+        const timeout = setTimeout(() => {
+          navigate("/login");
+          clearTimeout(timeout);
+        }, 100);
+      }
+    } else {
+      response = await postUserWhithUserAuthCreated({
+        bornDate: bornDate,
+        userId: userUid,
+        name: username,
+        nacionality: selectedCountry,
+      });
+
+      setValue(userUid);
+
+      if (response === "Registro realizado com sucesso!") {
+        const timeout = setTimeout(() => {
+          navigate("/perfil/meuperfil");
+          clearTimeout(timeout);
+        }, 100);
+      }
+    }
+  }
+
   return (
-    <>
-      <Header />
-      <Container customClass="flexForLoginAndRegister">
-        <div className={styles.leftDivCreateAcc}>
-          <form className={styles.formContainer} onSubmit={handleSubmit}>
-            <h1 className={styles.leftCreateAccTitle}>Criar Conta</h1>
-            <div className={styles.leftFormContainer}>
-              <div className={styles.inputContainer}>
-                <Input
+    <div className={styles.mainDiv}>
+      <Modal
+        type={modal.type}
+        isOpen={modal.isOpen}
+        setIsOpen={modal.setIsOpen}
+        text={modal.text}
+        title={modal.title}
+        textSecondButton={modal.textSecondButton}
+        secondButtonFunction={modal.secondButtonFunction}
+        styleSecondButton={modal.styleSecondButton}
+      ></Modal>
+      <div className={styles.loginMainDiv}>
+        <div className={styles.leftLoginDiv}>
+          <div className={styles.divGreetings}>
+            <h1>
+              {loginWithOtherService
+                ? `Conclua a sua conta ${usernameGoogle}`
+                : `Crie sua conta`}
+            </h1>
+            <p>Insira suas informações nos campos abaixo</p>
+          </div>
+          <form onSubmit={handleFormSubmit}>
+            <div className={styles.formInputRow}>
+              {!loginWithOtherService && (
+                <InputWithLabelInside
+                  labelText="Email"
                   type="email"
-                  name="email"
-                  styleLabel={labelStyle}
-                  labelText="Email: "
-                  placeholder="Insira seu email..."
+                  nameAndId="email"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  setValue={setEmail}
                   required
-                  stylePlaceholder={{
-                    fontSize: "1em",
-                  }}
-                  customClass={"placeholderFormat"}
                 />
-              </div>
-              <div className={styles.inputContainer}>
-                <Input
-                  type="password"
-                  name="password"
-                  autocomplete={true}
-                  labelText="Senha: "
-                  placeholder="Insira sua senha..."
-                  value={password}
-                  styleLabel={labelStyle}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  stylePlaceholder={{
-                    fontSize: "1em",
-                  }}
-                  customClass={"placeholderFormat"}
-                />
-              </div>
-              <div className={styles.inputContainer}>
-                <Input
-                  type="password"
-                  autocomplete={true}
-                  name="rptpassword"
-                  labelText="Repita sua senha: "
-                  placeholder="Insira novamente sua senha..."
-                  value={rptPassword}
-                  styleLabel={labelStyle}
-                  onChange={(e) => setRptPassword(e.target.value)}
-                  required
-                  stylePlaceholder={{
-                    fontSize: "1em",
-                  }}
-                  customClass={"placeholderFormat"}
-                />
-              </div>
-            </div>
-            <div className={styles.rightFormContainer}>
-              <div className={styles.inputContainer}>
-                <Input
-                  type="date"
-                  name="dateNasc"
-                  labelText="Data de nascimento: "
-                  styleLabel={labelStyle}
-                  placeholder="Insira sua data de nascimento..."
-                  value={dataNasc}
-                  onChange={(e) => setDataNasc(e.target.value)}
-                  required
-                  stylePlaceholder={{
-                    fontSize: "1.2em",
-                  }}
-                  customClass={"placeholderFormat"}
-                />
-              </div>
-              <div className={styles.selectContainer}>
-                <SelectCountrys
-                  name="nacionality"
-                  labelText="Nacionalidade: "
-                  optionsList={listNations}
-                  labelStyle={{
-                    fontSize: "1.2em",
-                    color: "white",
-                  }}
-                  selectedValue={nacionality}
-                  setSelectedValue={setNacionality}
-                  styleLabel={labelStyle}
-                />
-              </div>
-              <div className={styles.inputContainer}>
-                <Input
-                  type="text"
-                  name="username"
-                  labelText="Nome de usuário: "
-                  placeholder="Insira seu nome de usuário..."
-                  value={username}
-                  styleLabel={labelStyle}
-                  onChange={(e) => setUsername(e.target.value)}
-                  required
-                  stylePlaceholder={{
-                    fontSize: "1em",
-                  }}
-                  customClass={"placeholderFormat"}
-                />
-              </div>
-            </div>
-            <div className={styles.divButton}>
-              <Button
-                type="submit"
-                buttonText="Criar conta"
-                style={submitButtonStyle}
+              )}
+              <InputWithLabelInside
+                labelText="Nome de usuário"
+                type="text"
+                nameAndId="username"
+                value={username}
+                setValue={setUsername}
+                required
               />
             </div>
+            {!loginWithOtherService && (
+              <div className={styles.formInputRow}>
+                <InputWithLabelInside
+                  labelText="Senha"
+                  type="password"
+                  nameAndId="password"
+                  value={password}
+                  setValue={setPassword}
+                  required
+                />
+                <InputWithLabelInside
+                  labelText="Repita a senha"
+                  type="password"
+                  nameAndId="rptPassword"
+                  value={rptPassword}
+                  setValue={setRptPassword}
+                  lockIconForPassword
+                  required
+                />
+              </div>
+            )}
+
+            <div className={styles.formInputRow}>
+              <InputWithLabelInside
+                labelText="Data de nascimento"
+                type="date"
+                nameAndId="bornDate"
+                value={bornDate}
+                setValue={setBornDate}
+                required
+              />
+              <SelectWithSearch
+                options={listNations}
+                value={selectedCountry}
+                setValue={setSelectedCountry}
+                labelText="Nacionalidade"
+                labelColorWhenSelected="cornflowerblue"
+                labelStyle={{
+                  fontSize: "0.8em",
+                  color: "var(--cor7)",
+                  paddingBottom: "5px",
+                  display: "block",
+                }}
+              />
+            </div>
+            <ButtonSlide
+              buttonText={
+                loginWithOtherService ? "Filalizar conta" : "Criar conta"
+              }
+              nameAndId="createaccount"
+              slideDirection="leftDirection"
+              type="submit"
+              beforeColor="greenColor"
+            />
           </form>
+          {!loginWithOtherService && (
+            <div className={styles.divBottom}>
+              <ul className={styles.divBottomLoginLiks}>
+                <li>
+                  <LinkWithUnderline
+                    underlineColor="colorBlue"
+                    linkText="Já tenho conta"
+                    to="/login"
+                    linkStyle={{ fontSize: "1em" }}
+                  />
+                </li>
+              </ul>
+            </div>
+          )}
+          <div className={styles.divTermsOfService}>
+            <p>
+              Antes de {loginWithOtherService ? "finalizar" : "criar"} sua conta
+              clique{" "}
+              <LinkWithUnderline
+                underlineColor="colorBlue"
+                linkText="aqui"
+                to="/termos-de-servico"
+                linkStyle={{
+                  fontSize: "1em",
+                  color: "cornflowerblue",
+                  fontWeight: "bolder",
+                }}
+              />{" "}
+              para ler os termos do site.
+            </p>
+          </div>
         </div>
-        <div className={styles.rightDivCreateAcc}>
-          <p className={styles.rightDivText}>
-            Se já possui uma conta, faça o seu <br /> login
-          </p>
-          <Link className={styles.rightDivLink} to="/login">
-            Login
-          </Link>
+        <div className={styles.rightLoginDiv}>
+          <img src={eatSpotLogo} alt="" />
+          <h1>
+            <span>Eat</span>Spot
+          </h1>
         </div>
-      </Container>
-    </>
+      </div>
+      <div className={styles.mainDivLeft}></div>
+      <div className={styles.mainDivRight}></div>
+    </div>
   );
 }

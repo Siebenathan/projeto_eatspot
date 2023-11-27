@@ -21,7 +21,7 @@ import ModalToPutImage from "../modal/ModalToPutImage";
 import defaultUserPhoto from "../../img/EatSpot-semfundo.png";
 import Message from "../modal/Message";
 import { MessageProps } from "../modal/Message";
-import Button from "../forms/Button";
+import Button from "../forms/buttons/Button";
 
 interface objectSearchProps {
   key: string;
@@ -51,9 +51,12 @@ export default function PerfilPage() {
     const objectSearch: objectSearchProps = { key: "", searchParameter: "" };
 
     if (name === "meuperfil") {
-      if (userId) {
+      if (userId && userId != "") {
         objectSearch.key = "userId";
         objectSearch.searchParameter = userId;
+      } else {
+        console.log("deu merda");
+        return;
       }
     } else {
       name = name?.replace("@", "");
@@ -89,7 +92,7 @@ export default function PerfilPage() {
       onAuthStateChanged(auth, (user) => {
         if (user && userDataFirestore.userId == userId) {
           if (user.uid !== userId) {
-            navigate("/");
+            // navigate("/");
             return;
           }
           setIsThePerfilOwner(true);
@@ -271,12 +274,9 @@ export default function PerfilPage() {
 
             <h3>
               Receitas postadas:{" "}
-              <span className={styles.divPerfilQtdeInformation}>300</span>
+              <span className={styles.divPerfilQtdeInformation}>{userData.numberOfRecipes}</span>
             </h3>
-            <h3>
-              Curtidas no perfil:{" "}
-              <span className={styles.divPerfilQtdeInformation}>300</span>
-            </h3>
+
           </div>
           {isThePerfilOwner && (
             <div className={styles.ownerFunctionalites}>

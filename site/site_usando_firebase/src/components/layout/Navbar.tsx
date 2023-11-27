@@ -15,14 +15,14 @@ export default function NavBar() {
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
-      if(user?.uid === userId) {
+      if (user?.uid === userId) {
         setIsUserLogged(true);
       } else {
         setIsUserLogged(false);
       }
     });
-  }, [])
-  
+  }, []);
+
   const navigate = useNavigate();
   const [active, setActive] = useState<boolean>(false);
 
@@ -41,42 +41,61 @@ export default function NavBar() {
           </Link>
         </li>
         <li>
-          <Link reloadDocument className={styles.navigationListItem} to="/receitas">
+          <Link
+            reloadDocument
+            className={styles.navigationListItem}
+            to="/receitas"
+          >
             Receitas
           </Link>
         </li>
         <li>
-          <Link reloadDocument className={styles.navigationListItem} to="/noticias">
+          <Link
+            reloadDocument
+            className={styles.navigationListItem}
+            to="/noticias"
+          >
             Notícias
           </Link>
         </li>
       </ul>
       <div className={styles.userContainer}>
         {isUserLogged === false ? (
-          <div className={styles.mainContainerDropDown} onClick={() => {navigate("/login")}}>
+          <div
+            className={styles.mainContainerDropDown}
+            onClick={() => {
+              navigate("/login");
+            }}
+          >
             <FaUserSlash className={styles.userIcon} />
             <span className={styles.dropDownSpan}>Usuário</span>
           </div>
-          
         ) : (
           <div
-          className={styles.mainContainerDropDown}
-          onClick={() => {
-            setActive(!active);
-          }}
-        >
-          <FaUserCheck className={styles.userIcon} />
-          <span className={styles.dropDownSpan}>Usuário</span>
-          <button className={styles.buttonDropDown}>
-            <BsFillArrowDownCircleFill className={styles.dropDownIcon} />
-          </button>
-          {active && (
-            <ul className={styles.dropDownOptions}>
-              <li onClick={() => navigate("/perfil/meuperfil")}>Perfil</li>
-              <li onClick={() => {signOutUser()}}>Logout</li>
-            </ul>
-          )}
-        </div>
+            className={styles.mainContainerDropDown}
+            onClick={() => {
+              setActive(!active);
+            }}
+          >
+            <FaUserCheck className={styles.userIcon} />
+            <span className={styles.dropDownSpan}>Usuário</span>
+            <button className={styles.buttonDropDown}>
+              <BsFillArrowDownCircleFill className={styles.dropDownIcon} />
+            </button>
+            {active && (
+              <ul className={styles.dropDownOptions}>
+                <li onClick={() => navigate("/perfil/meuperfil")}>Perfil</li>
+                <li
+                  onClick={() => {
+                    localStorage.removeItem("userId");
+                    signOutUser();
+                  }}
+                >
+                  Logout
+                </li>
+              </ul>
+            )}
+          </div>
         )}
       </div>
     </nav>

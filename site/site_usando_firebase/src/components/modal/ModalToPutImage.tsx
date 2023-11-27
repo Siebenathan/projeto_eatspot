@@ -1,7 +1,7 @@
 import styles from "./ModalToPutImage.module.css";
 import { useEffect, useState } from "react";
-import Button from "../forms/Button";
-import InputFileWithPreview from "./../forms/InputFileWithPreview";
+import Button from "../forms/buttons/Button";
+import InputFileWithPreview from "../forms/inputs/InputFileWithPreview";
 
 export interface ModalToPutImageProps {
   title: string;

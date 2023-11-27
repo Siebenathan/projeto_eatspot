@@ -1,5 +1,5 @@
 import styles from "./Modal.module.css";
-import Button from "../forms/Button";
+import Button from "../forms/buttons/Button";
 import { useState, useEffect } from "react";
 
 export interface ModalProps {

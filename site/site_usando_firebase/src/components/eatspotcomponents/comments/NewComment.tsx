@@ -3,7 +3,7 @@ import { useState } from "react";
 import starFilled from "../../../img/icons8-estrela-100-filled.png";
 import starOutline from "../../../img/icons8-estrela-100-outline.png";
 import TextArea from "../../forms/TextArea";
-import Button from "../../forms/Button";
+import Button from "../../forms/buttons/Button";
 
 interface NewCommentProps {
   userImageUrl: string;

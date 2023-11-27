@@ -5,9 +5,7 @@ import reportWebVitals from "./reportWebVitals";
 import {
   createBrowserRouter,
   RouterProvider,
-  useNavigate,
 } from "react-router-dom";
-import { useEffect } from "react";
 import LoginPage from "./components/pages/LoginPage";
 import HomePage from "./components/pages/HomePage";
 import PerfilPage from "./components/pages/PerfilPage";
@@ -18,7 +16,6 @@ import AdminPage from "./components/pages/adminPages/AdminPage";
 import CreateRecipePage from "./components/pages/CreateRecipePage";
 import RecipePage from "./components/pages/RecipePage";
 import RecipesPage from "./components/pages/RecipesPage";
-import AdditionalUserInfoPage from "./components/pages/AdditioanalUserInfoPage";
 import ErrorPage from "./components/pages/ErrorPage";
 import LoginPageTest from "./components/pages/LoginPageTest";
 
@@ -37,15 +34,15 @@ const browser = createBrowserRouter([
     ],
   },
   {
-    path: "/login",
+    path: "/login2",
     element: <LoginPage />,
   },
   {
     path: "/criar-conta",
-    element: <AdditionalUserInfoPage />,
+    element: <CreateAccountPage />,
   },
   {
-    path: "/login2",
+    path: "/login",
     element: <LoginPageTest />,
   },
   {
@@ -74,7 +71,4 @@ root.render(
   </React.StrictMode>
 );
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
