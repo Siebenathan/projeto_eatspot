@@ -2,18 +2,31 @@
 
 .navContainer {
     display: flex;
+    /* top: 0;
+    left: 0; */
     background-color: var(--cor1);
     width: 100%;
     justify-content: space-around;
     align-items: center;
-    height: 100px;
+    height: 10%;
+    position: fixed;
+    z-index: 999;
 }
 
 .titleContainer {
+    cursor: pointer;
+    text-decoration: none;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 0.4rem;
+    width: 15%;
+    height: 100%;
+}
+
+.titleContainer > img {
+    height: 90%;
+    width: fit-content;
 }
 
 .titleContainerTitle {

@@ -18,6 +18,7 @@ import RecipePage from "./components/pages/RecipePage";
 import RecipesPage from "./components/pages/RecipesPage";
 import ErrorPage from "./components/pages/ErrorPage";
 import LoginPageTest from "./components/pages/LoginPageTest";
+import UserConfigurationPage from "./components/pages/UserConfigurationPage";
 
 const browser = createBrowserRouter([
   {
@@ -48,6 +49,10 @@ const browser = createBrowserRouter([
   {
     path: "/error",
     element: <ErrorPage />,
+  },
+  {
+    path: "/configuracao-de-conta",
+    element: <UserConfigurationPage />,
   },
   {
     path: "/admin",

@@ -1,10 +1,13 @@
 import { useState } from "react";
 import styles from "./SearchInput.module.css";
 import { useNavigate } from "react-router-dom";
+import { FaSearch } from "react-icons/fa";
 
 interface SearchInputProps {
   placeholder: string;
   name: string;
+  formStyle?: any;
+  iconSearchStyle?: any;
 }
 
 export default function SearchInput(props: SearchInputProps) {
@@ -18,7 +21,7 @@ export default function SearchInput(props: SearchInputProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className={styles.searchContainer}>
+    <form onSubmit={handleSubmit} className={styles.searchContainer} style={props.formStyle}>
       <input
         className={styles.searchingInput}
         type="text"
@@ -29,7 +32,7 @@ export default function SearchInput(props: SearchInputProps) {
         value={search}
         onChange={(e) => setSearch(e.target.value)}
       />
-      <button className={styles.buttonSearch} type="submit"></button>
+      <button className={styles.buttonSearch} type="submit"><FaSearch className={styles.searchIcon} style={props.iconSearchStyle} /></button>
     </form>
   );
 }

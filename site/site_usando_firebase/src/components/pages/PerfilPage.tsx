@@ -211,11 +211,12 @@ export default function PerfilPage() {
   }
 
   return (
-    <div>
+    <div className={styles.mainPerfilDiv}>
       {userData ? (
         <Container
           customClass={"flexMiddleCol"}
           styleContainer={{
+            paddingTop: "4%",
             background: "var(--cor2)",
             boxShadow: "#00000014 0px 9px 20px 10px",
           }}
@@ -334,7 +335,7 @@ export default function PerfilPage() {
         </Container>
       ) : (
         <div className={styles.divLoadingContent}>
-          <Loading />
+          <Loading styleSizeOfTheLoading={{}} />
           <h1>Carregando conteúdo</h1>
         </div>
       )}

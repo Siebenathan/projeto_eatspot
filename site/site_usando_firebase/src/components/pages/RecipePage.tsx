@@ -22,6 +22,7 @@ import defaultImageRecipeIngredient from "../../img/vasilha_com_colher_desenho.j
 import { ModalProps } from "../modal/Modal";
 import { deleteDocument } from "../services/firebase/firebaseFirestore";
 import { updateDocFirestore } from "../services/firebase/firebaseFirestore";
+import ButtonBeating from "../forms/buttons/ButtonBeating";
 
 interface RecipeComment {
   commentText: string;
@@ -339,7 +340,7 @@ export default function RecipePage() {
         <Container
           customClass={"flexMiddleCol"}
           styleContainer={{
-            padding: "50px 0px",
+            padding: "100px 0px 70px 0px",
           }}
         >
           <Modal
@@ -591,22 +592,19 @@ export default function RecipePage() {
             <div className={styles.recipeOwnerDiv}>
               <h2>Opções para alterar a receita</h2>
               <div className={styles.divRecipeOwnerButtons}>
-                <button
-                  className={styles.recipeOwnerButtonEditRecipe}
-                  onClick={() => {
-                    //TODO:
-                  }}
-                >
-                  Editar
-                </button>
-                <button
-                  className={styles.recipeOwnerButtonDeleteRecipe}
+                <ButtonBeating
+                  buttonText="Editar"
+                  nameAndId="editRecipeButton"
+                  buttonStyle={{height: "100%", width: "50%", backgroundColor: "var(--cor5)"}}
+                />
+                <ButtonBeating
+                  buttonText="Excluir"
                   onClick={() => {
                     deleteRecipeModal();
                   }}
-                >
-                  Excluir
-                </button>
+                  nameAndId="editRecipeButton"
+                  buttonStyle={{height: "100%", width: "50%", backgroundColor: "red"}}
+                />
               </div>
             </div>
           )}
@@ -620,3 +618,5 @@ export default function RecipePage() {
     </div>
   );
 }
+
+

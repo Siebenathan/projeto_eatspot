@@ -21,7 +21,7 @@
 }
 
 .loginMainDiv {
-  height: 70%;
+  height: 80%;
   width: 60%;
   box-shadow: 3px 3px 15px #00000033;
   position: absolute;
@@ -171,4 +171,36 @@
 
 .twitterXIcon {
   font-size: 2.5em;
+}
+
+@media only screen and (max-width: 1200px) {
+  .loginMainDiv {
+    height: 90%;
+    width: 90%;
+  }
+
+  .leftLoginDiv > img {
+    width: 35vw;
+    height: 50vh
+  }
+}
+
+@media only screen and (max-width: 750px) {
+  .loginMainDiv {
+    height: 100%;
+    width: 100%;
+    background-image: none;
+  }
+
+  .leftLoginDiv {
+    display: none;
+  }
+
+  .mainDivLeft {
+    display: none;
+  }
+  
+  .mainDivRight {
+    display: none;
+  }
 }
