@@ -9,6 +9,8 @@ interface InputWithLabelInsideProps {
   labelText: string;
   value: any;
   setValue(value: any): void;
+  errorText?: string;
+  setErrorText?(inputErros: any): void;
   required?: boolean;
   lockIconForPassword?: boolean;
 }
@@ -19,7 +21,6 @@ export default function InputWithLabelInside(props: InputWithLabelInsideProps) {
   const [isPasswordLocked, setIsPasswordLocked] = useState<boolean>(true);
 
   useEffect(() => {
-    console.log(props.type);
     if (props.type == "date") {
       setLabelStyle({
         transform: "translateY(-24px)",
@@ -27,16 +28,27 @@ export default function InputWithLabelInside(props: InputWithLabelInsideProps) {
         color: "var(--cor7)",
       });
     }
+    if (props.value) {
+      setLabelStyle({
+        transform: "translateY(-24px)",
+        fontSize: "0.8em",
+        color: "cornflowerblue",
+      });
+      setInputStyle({
+        borderBottom: "2px solid cornflowerblue",
+      });
+    }
   }, []);
 
   return (
-    <>
-      <div className={styles.divInputWithLabelInside}>
+    <div className={styles.divInputWithLabelInside}>
+      <div className={styles.divInputAndLabel}>
         <input
           required={props.required}
           style={inputStyle}
           type={isPasswordLocked ? props.type : "text"}
           name={props.nameAndId}
+          value={props.value}
           id={props.nameAndId}
           className={`${styles.inputWithLabelInside} ${
             props.lockIconForPassword ? styles.width85percent : ""
@@ -91,6 +103,7 @@ export default function InputWithLabelInside(props: InputWithLabelInsideProps) {
           </button>
         )}
       </div>
-    </>
+      {props.errorText != "" && props.errorText != undefined && <span className={styles.errorSpan}>{props.errorText}</span>}
+    </div>
   );
 }

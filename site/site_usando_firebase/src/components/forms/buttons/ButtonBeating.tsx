@@ -4,10 +4,12 @@ interface ButtonBeatingProps {
   buttonText: string;
   nameAndId: string;
   buttonStyle?: {
-    fontSize: string;
-    color: string;
-    backgroundColor: string;
-    padding: string;
+    fontSize?: string;
+    color?: string;
+    backgroundColor?: string;
+    padding?: string;
+    height?: string;
+    width?: string;
   };
   onClick?(): any;
 }

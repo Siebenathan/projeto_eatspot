@@ -1,5 +1,7 @@
 .backgroundStyle {
   position: fixed;
+  width: 100%;
+  height: 100%;
   top: 0;
   bottom: 0;
   left: 0;
@@ -12,18 +14,17 @@
     position: fixed;
     top: 50%;
     left: 50%;
+    transform: translate(-50%, -50%);
     width: 50%;
     height: fit-content;
     background-color: white;
-    transform: translate(-50%, -50%);
     display: flex;
     align-items: center;
     justify-content: space-around;
     flex-direction: column;
     text-align: justify;
-    border-radius: 10px;
+    border-radius: 10px;   
 }
-
 
 .divModalTitle {
     width: 100%;
@@ -55,6 +56,19 @@
     gap: 10px;
     align-items: flex-end;
     justify-content: flex-end;
+}
+
+.mainModal {
+	animation: scale-in 0.5s;			
+}
+
+@keyframes scale-in {
+    0% {
+        transform: translate(-50%, -50%) scale(0);
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+    }
 }
 
 

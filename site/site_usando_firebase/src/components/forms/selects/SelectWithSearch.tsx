@@ -1,6 +1,5 @@
 import styles from "./SelectWithSearch.module.css";
 import { useState, useEffect } from "react";
-import SearchInput from "./../SearchInput";
 
 interface SelectWithSearchProps {
   value: string;
@@ -17,8 +16,14 @@ export default function SelectWithSearch(props: SelectWithSearchProps) {
   const [labelStyle, setLabelStyle] = useState<any>();
 
   useEffect(() => {
+    if(props.value) {
+      const {color, ...rest} = props.labelStyle;
+      rest["color"] = props.labelColorWhenSelected;
+      setLabelStyle(rest);
+      return;
+    }
     setLabelStyle(props.labelStyle);
-  }, [])
+  }, []);
 
   return (
     <div
@@ -27,12 +32,9 @@ export default function SelectWithSearch(props: SelectWithSearchProps) {
           ? `${styles.mainSelectBox} ${styles.active}`
           : styles.mainSelectBox
       }
-    > 
+    >
       {labelStyle && (
-        <label  
-          style={labelStyle}
-          htmlFor="soValue"
-        >
+        <label style={labelStyle} htmlFor="soValue">
           {props.labelText}
         </label>
       )}
@@ -70,8 +72,11 @@ export default function SelectWithSearch(props: SelectWithSearchProps) {
                     return (
                       <li
                         onClick={() => {
-                          const {color, ...rest} = labelStyle;
-                          setLabelStyle({...rest, color: props.labelColorWhenSelected});
+                          const { color, ...rest } = labelStyle;
+                          setLabelStyle({
+                            ...rest,
+                            color: props.labelColorWhenSelected,
+                          });
                           props.setValue(item);
                         }}
                         key={item}
@@ -86,8 +91,11 @@ export default function SelectWithSearch(props: SelectWithSearchProps) {
               : props.options.map((item) => (
                   <li
                     onClick={() => {
-                      const {color, ...rest} = labelStyle;
-                      setLabelStyle({...rest, color: props.labelColorWhenSelected});
+                      const { color, ...rest } = labelStyle;
+                      setLabelStyle({
+                        ...rest,
+                        color: props.labelColorWhenSelected,
+                      });
                       props.setValue(item);
                     }}
                     key={item}

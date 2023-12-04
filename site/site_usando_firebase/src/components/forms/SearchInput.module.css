@@ -1,9 +1,9 @@
 .searchContainer {
     display: flex;
     align-items: center;
-    height: 122px;
-    width: 1024px;
-    
+    min-height: 122px;
+    height: 10%;
+    width: 80%;
 }
 
 .searchingInput {
@@ -28,11 +28,12 @@
     background-color: var(--cor1);
     width: 13%;
     border-radius: 0px 20px 20px 0px;
-    height: 122px;
+    height: 100%;
     cursor: pointer;
-    background-image: url(../../img/icones/icons8-searching-48-branco.png);
-    background-repeat: no-repeat;
-    display: inline-block;
-    background-position: center center;
     box-shadow: 7px 4px 12px rgba(0, 0, 0, 0.334);
+}
+
+.searchIcon {
+    color: white;
+    font-size: 2em;
 }

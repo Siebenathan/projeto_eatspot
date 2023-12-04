@@ -29,6 +29,10 @@
   background-color: var(--cor3);
 }
 
+.mainButton.redColor.mainButton::before {
+  background-color: var(--cor4);
+}
+
 .mainButton:hover::before {
     transform: scaleX(1);
     border-radius: inherit;

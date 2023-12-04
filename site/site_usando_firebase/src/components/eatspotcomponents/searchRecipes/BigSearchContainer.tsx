@@ -8,6 +8,7 @@ export default function BigSearchContainer() {
     <SearchInput
       placeholder="Pesquise alguma receita..."
       name="searchinput"
+      iconSearchStyle={{fontSize: "3em"}}
     />
   </div>
   );

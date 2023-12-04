@@ -279,7 +279,7 @@ export default function CreateRecipePage() {
       styleContainer={{
         background: "var(--cor4)",
         boxShadow: "#00000014 0px 9px 20px 10px",
-        padding: "30px 0px",
+        paddingTop: "8%",
       }}
     >
       <Modal
@@ -463,9 +463,6 @@ export default function CreateRecipePage() {
               </label>
             </div>
           ))}
-        </div>
-        <div>
-          S
         </div>
         <div className={styles.divRecipesPhases}>
           <p>Etapas de preparo</p>

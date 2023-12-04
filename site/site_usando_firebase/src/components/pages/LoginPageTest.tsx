@@ -50,7 +50,7 @@ export default function LoginPageTest() {
     const provider = new GoogleAuthProvider();
     const result = await signInWithPopup(auth, provider);
     const userHasAcc = await verifyUserInFirestore(result.user.uid);
-    if (userHasAcc == "Não criou a conta ainda!") {
+    if(userHasAcc == "Não criou a conta ainda!") {
       navigate("/criar-conta", {
         state: {
           message: "Google SignIn",
@@ -58,7 +58,7 @@ export default function LoginPageTest() {
           userUid: result.user.uid,
         },
       });
-    } else if ("Já tem conta criada!") {
+    } else if("Já tem conta criada!") {
       setValue(result.user.uid);
       const timeout = setTimeout(() => {
         navigate("/perfil/meuperfil");
@@ -77,12 +77,6 @@ export default function LoginPageTest() {
           </h1>
         </div>
         <div className={styles.rightLoginDiv}>
-          <div className={styles.topRightLoginLogo}>
-            <img src={eatSpotLogo} alt="" />
-            <h1>
-              <span>Eat</span>Spot
-            </h1>
-          </div>
           <div className={styles.divGreetings}>
             <h1>Seja bem vindo</h1>
             <p>Estamos felizes de ver você de volta</p>
@@ -105,13 +99,7 @@ export default function LoginPageTest() {
               setValue={setPassword}
               lockIconForPassword
             />
-            <ButtonSlide
-              type="submit"
-              buttonText="Login"
-              nameAndId="Login"
-              beforeColor="greenColor"
-              slideDirection="leftDirection"
-            />
+            <ButtonSlide type="submit" buttonText="Login" nameAndId="Login" beforeColor="greenColor" slideDirection="leftDirection"/>
           </form>
           <div className={styles.divButtonsServicesLogin}>
             <p>Entrar com:</p>

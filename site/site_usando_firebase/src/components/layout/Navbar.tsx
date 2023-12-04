@@ -7,7 +7,9 @@ import useLocalStorage from "../hooks/useLocalStorage";
 import { auth } from "../services/firebase/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { useState, useEffect } from "react";
+import SearchInput from "../forms/SearchInput";
 import { signOutUser } from "../services/firebase/firebaseAuth";
+import LinkWithUnderline from "../forms/LinkWithUnderline";
 
 export default function NavBar() {
   const [userId, setUserId] = useLocalStorage("userId", "");
@@ -28,37 +30,17 @@ export default function NavBar() {
 
   return (
     <nav className={styles.navContainer}>
-      <div className={styles.titleContainer}>
+      <Link className={styles.titleContainer} to="/">
         <img src={logo} alt="logo" />
         <h1 className={styles.titleContainerTitle}>
           Eat<span>Spot</span>
         </h1>
-      </div>
-      <ul className={styles.navigationList}>
-        <li>
-          <Link reloadDocument className={styles.navigationListItem} to="/">
-            Home
-          </Link>
-        </li>
-        <li>
-          <Link
-            reloadDocument
-            className={styles.navigationListItem}
-            to="/receitas"
-          >
-            Receitas
-          </Link>
-        </li>
-        <li>
-          <Link
-            reloadDocument
-            className={styles.navigationListItem}
-            to="/noticias"
-          >
-            Notícias
-          </Link>
-        </li>
-      </ul>
+      </Link>
+      <SearchInput
+        placeholder={"Pesquise alguma receita..."}
+        name={"searchInput"}
+        formStyle={{ minHeight: "65%", width: "50%", fontSize: "0.5em" }}
+      />
       <div className={styles.userContainer}>
         {isUserLogged === false ? (
           <div
@@ -84,7 +66,21 @@ export default function NavBar() {
             </button>
             {active && (
               <ul className={styles.dropDownOptions}>
-                <li onClick={() => navigate("/perfil/meuperfil")}>Perfil</li>
+                <li>
+                  <LinkWithUnderline
+                    to="/perfil/meuperfil"
+                    linkText="Perfil"
+                    underlineColor="colorBlue"
+                  />
+                </li>
+                <li>
+                  <LinkWithUnderline
+                    to="/configuracao-de-conta"
+                    linkText="Configurações"
+                    underlineColor="colorBlue"
+                    navigationState={{userId: userId}}
+                  />
+                </li>
                 <li
                   onClick={() => {
                     localStorage.removeItem("userId");
@@ -100,4 +96,45 @@ export default function NavBar() {
       </div>
     </nav>
   );
+}
+
+{
+  /* <ul className={styles.navigationList}>
+<li>
+  <Link reloadDocument className={styles.navigationListItem} to="/">
+    Home
+  </Link>
+</li>
+<li>
+  <Link
+    reloadDocument
+    className={styles.navigationListItem}
+    to="/receitas"
+  >
+    Receitas
+  </Link>
+</li>
+<li>
+  <Link
+    reloadDocument
+    className={styles.navigationListItem}
+    to="/noticias"
+  >
+    Notícias
+  </Link>
+</li>
+</ul> */
+}
+
+{
+  /* <li onClick={() => navigate("/perfil/meuperfil")}>Perfil</li>
+<li>Configurações</li>
+<li
+  onClick={() => {
+    localStorage.removeItem("userId");
+    signOutUser();
+  }}
+>
+  Logout
+</li> */
 }

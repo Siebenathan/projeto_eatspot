@@ -5,7 +5,7 @@ interface ButtonSlideProps {
   type: "button" | "reset" | "submit";
   buttonText: string;
   buttonStyle?: any;
-  beforeColor?: "greenColor";
+  beforeColor?: "greenColor" | "redColor";
   slideDirection:
     | "leftDirection"
     | "rigthDirection"

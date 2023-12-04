@@ -19,6 +19,13 @@
     height: 90vh;
 }
 
+.flexForUserConfigurationPage {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+
 .additionalUserInfo {
     display: flex;
     flex-direction: column;

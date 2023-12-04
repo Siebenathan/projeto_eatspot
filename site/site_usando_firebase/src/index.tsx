@@ -2,10 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
 import reportWebVitals from "./reportWebVitals";
-import {
-  createBrowserRouter,
-  RouterProvider,
-} from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import LoginPage from "./components/pages/LoginPage";
 import HomePage from "./components/pages/HomePage";
 import PerfilPage from "./components/pages/PerfilPage";
@@ -18,6 +15,8 @@ import RecipePage from "./components/pages/RecipePage";
 import RecipesPage from "./components/pages/RecipesPage";
 import ErrorPage from "./components/pages/ErrorPage";
 import LoginPageTest from "./components/pages/LoginPageTest";
+import UserConfigurationPage from "./components/pages/userConfiguration/UserConfigurationPage";
+import TermsOfServicePage from "./components/pages/TermsOfServicePage";
 
 const browser = createBrowserRouter([
   {
@@ -29,8 +28,11 @@ const browser = createBrowserRouter([
       { path: "/criar-receita", element: <CreateRecipePage /> },
       { path: "/receita/:recipeUrl", element: <RecipePage /> },
       { path: "/receitas", element: <RecipesPage /> },
+      { path: "/configuracao-de-conta", element: <UserConfigurationPage /> },
       { path: "/receitas/:nomeReceita", element: <RecipesPage /> },
       { path: "/receitas/categoria/:categoria", element: <RecipesPage /> },
+      { path: "/termos-de-servico", element: <TermsOfServicePage />,
+      },
     ],
   },
   {

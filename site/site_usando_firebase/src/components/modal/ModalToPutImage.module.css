@@ -60,3 +60,16 @@
     width: 50%;
     margin-bottom: 30px;
 }
+
+.mainModal {
+  animation: scale-in 0.5s;	
+}
+
+@keyframes scale-in {
+  0% {
+      transform: translate(-50%, -50%) scale(0);
+  }
+  100% {
+      transform: translate(-50%, -50%) scale(1);
+  }
+}
