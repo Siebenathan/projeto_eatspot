@@ -12,6 +12,9 @@ import {
 } from "../../services/firebase/firebaseFirestore";
 import { verifyUserName } from "../../rules/bussinesRoles";
 import { verifyIfNameExist } from "../../rules/bussinesRoles";
+import { verifyDate } from "../../rules/bussinesRoles";
+import { yearsLimit } from "../../rules/bussinesRoles";
+import { minimumYear } from "../../rules/bussinesRoles";
 
 interface ProfileConfigurationProps {
   userData: any;
@@ -75,9 +78,8 @@ export default function ProfileConfigurationPage(
       return;
     }
 
-    const inputsAreOk = await verifyFormErrors();
+    const inputsAreOk = verifyFormErrors();
     if (!inputsAreOk) {
-      console.log("aaaa");
       return;
     }
 
@@ -219,20 +221,37 @@ export default function ProfileConfigurationPage(
   }
 
   async function verifyFormErrors() {
+    let newInputErrors: FormErrosProps = { username: "", bornDate: "" };
+    // const resetInputErros: FormErrosProps = { bornDate: "", username: "" };
+    setInputErrors(newInputErrors);
+
+    let dontHaveErrors = true;
     const userVerify = verifyUserName(changeUsername);
     console.log(userVerify);
     if (
       userVerify == "O nome de usuário deve ter no minimo 10 caracteres" ||
       userVerify == "O nome de usuário deve ter no máximo 30 caracteres"
     ) {
-      const { bornDate } = inputErrors;
-      const newInputErrors: FormErrosProps = { bornDate, username: userVerify };
-      setInputErrors(newInputErrors);
-      return false;
+      newInputErrors.username = userVerify;
+      dontHaveErrors = false;
     }
-    const resetInputErros: FormErrosProps = {bornDate: "", username: ""}
-    setInputErrors(resetInputErros);
-    return true;
+
+    const dateVerify = verifyDate(newBornDate);
+    const currentYear = new Date().getFullYear();
+    if (
+      dateVerify == `O ano está acima de ${currentYear}` ||
+      dateVerify ==
+        `O ano precisa estar acima de ${currentYear + yearsLimit}` ||
+      dateVerify ==
+        `O ano precisa estar abaixo ou igual a ${currentYear + minimumYear}`
+    ) {
+      newInputErrors.bornDate = dateVerify;
+      dontHaveErrors = false;
+    }
+
+    setInputErrors(newInputErrors);
+
+    return dontHaveErrors;
   }
 
   return (

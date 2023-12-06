@@ -53,10 +53,11 @@
 .formContainer {
     display: flex;
     flex-direction: column;
+    justify-content: flex-start;
     align-items: center;
-    justify-content: space-evenly;
-    height: 100%;
-    box-sizing: border-box;
+    height: 1%;
+    line-height: 1em;
+    /* box-sizing: border-box; */
     width: 100%;
 }
 

@@ -1,5 +1,8 @@
 import { getDataFromCollection } from "../services/firebase/firebaseFirestore";
 
+export const yearsLimit = -120;
+export const minimumYear = -10;
+
 export function verifyUserName(username: string) : "O nome de usuário deve ter no minimo 10 caracteres" | "O nome de usuário deve ter no máximo 30 caracteres" | "Certo" {
   if(username.length < 10) {
     return "O nome de usuário deve ter no minimo 10 caracteres";
@@ -20,6 +23,7 @@ export async function verifyIfNameExist(username: string) : Promise<"Um usuário
   if (!verifyIfNameExist.empty) {
     return "Um usuário já possui este nome";
   }
+
   return "Certo";
 }
 
@@ -38,4 +42,27 @@ export function verifyPassword(password: string) {
   if (!hasSpecialChar.test(password)) {
     return "A senha precisa ter um caracter especial";
   }
+  return "Certo";
+}
+
+export function verifyDate(dateString: string): string {
+
+  const dateSplit = dateString.split("-").reverse();
+  const year = parseInt(dateSplit[2]);
+
+  const currentYear = new Date().getFullYear();
+
+  if(year > currentYear) {
+    return `O ano está acima de ${currentYear}`;
+  }
+
+  if(year < currentYear + yearsLimit) {
+    return `O ano precisa estar acima de ${currentYear + yearsLimit}`;
+  }
+
+  if(year > currentYear + minimumYear) {
+    return `O ano precisa estar abaixo ou igual a ${currentYear + minimumYear}`;
+  }
+
+  return "Certo";
 }

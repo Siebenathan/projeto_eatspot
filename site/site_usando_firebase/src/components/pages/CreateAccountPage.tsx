@@ -14,6 +14,13 @@ import {
   postUserWhithUserAuthCreated,
 } from "../services/firebase/firebase";
 import Modal from "../modal/Modal";
+import { verifyUserName, verifyIfNameExist, verifyDate, verifyPassword } from "../rules/bussinesRoles";
+
+interface InputErrorsProps {
+  username: string;
+  password: string;
+  bornDate: string;
+}
 
 export default function CreateAccountPage() {
   const location = useLocation();
@@ -46,6 +53,11 @@ export default function CreateAccountPage() {
     textSecondButton: undefined,
     secondButtonFunction: undefined,
     styleSecondButton: undefined,
+  });
+  const [inputErrors, setInputErrors] = useState<InputErrorsProps>({
+    username: "",
+    bornDate: "",
+    password: "",
   });
   const navigate = useNavigate();
 
@@ -81,6 +93,7 @@ export default function CreateAccountPage() {
 
   async function handleFormSubmit(e: any) {
     e.preventDefault();
+    const newInputErrors: InputErrorsProps = {username: "", password: "", bornDate: ""}; 
     const settingsModal: ModalProps = {
       isOpen: true,
       setIsOpen() {
@@ -97,17 +110,14 @@ export default function CreateAccountPage() {
       type: "erro",
     };
 
+    let formDontHaveErrors = await verifyFormErrors();
+    if(!formDontHaveErrors) {
+      return;
+    }
+
     let response: string = "";
 
     if (email) {
-      if (password != rptPassword) {
-        settingsModal.isOpen = true;
-        settingsModal.text = "As senhas estão diferentes uma da outra!";
-        settingsModal.title = "ERRO";
-        settingsModal.type = "erro";
-        setModal(settingsModal);
-        return;
-      }
       response = await postUser({
         name: username,
         bornDate: bornDate,
@@ -141,6 +151,44 @@ export default function CreateAccountPage() {
     }
   }
 
+  async function verifyFormErrors() {
+    let newInputErrors: InputErrorsProps = { username: "", bornDate: "", password: "" };
+    let dontHaveErrors = true;
+
+    const verifyPasswordResult = verifyPassword(password);
+    if(verifyPasswordResult != "Certo") {
+      newInputErrors.password = verifyPasswordResult;
+      dontHaveErrors = false;
+    }
+
+    const userVerify = verifyUserName(username);
+    if (
+      userVerify != "Certo"
+    ) {
+      newInputErrors.username = userVerify;
+      dontHaveErrors = false;
+    }
+
+    if (password != rptPassword) {
+      newInputErrors.password = "As senhas estão diferentes uma da outra!"; 
+      dontHaveErrors = false;
+      // settingsModal.isOpen = true;
+      // settingsModal.text = "As senhas estão diferentes uma da outra!";
+      // settingsModal.title = "ERRO";
+      // settingsModal.type = "erro";
+      // setModal(settingsModal);
+    }
+    
+    const verifyIfNameExistBool = await verifyIfNameExist(username);
+    if(verifyIfNameExistBool == "Um usuário já possui este nome") {
+      newInputErrors.username = verifyIfNameExistBool;
+      dontHaveErrors = false;
+    }
+
+    setInputErrors(newInputErrors);
+    return dontHaveErrors;
+  }
+
   return (
     <div className={styles.mainDiv}>
       <Modal
@@ -163,75 +211,79 @@ export default function CreateAccountPage() {
             </h1>
             <p>Insira suas informações nos campos abaixo</p>
           </div>
-          <form onSubmit={handleFormSubmit}>
-            <div className={styles.formInputRow}>
-              {!loginWithOtherService && (
-                <InputWithLabelInside
-                  labelText="Email"
-                  type="email"
-                  nameAndId="email"
-                  value={email}
-                  setValue={setEmail}
-                  required
-                />
-              )}
-              <InputWithLabelInside
-                labelText="Nome de usuário"
-                type="text"
-                nameAndId="username"
-                value={username}
-                setValue={setUsername}
-                required
-              />
-            </div>
-            {!loginWithOtherService && (
+          <form onSubmit={handleFormSubmit} className={styles.createAccountForm}>
+            <div className={styles.formInputs}>
               <div className={styles.formInputRow}>
+                {!loginWithOtherService && (
+                  <InputWithLabelInside
+                    labelText="Email"
+                    type="email"
+                    nameAndId="email"
+                    value={email}
+                    setValue={setEmail}
+                    required
+                  />
+                )}
                 <InputWithLabelInside
-                  labelText="Senha"
-                  type="password"
-                  nameAndId="password"
-                  value={password}
-                  setValue={setPassword}
+                  labelText="Nome de usuário"
+                  type="text"
+                  nameAndId="username"
+                  value={username}
+                  setValue={setUsername}
                   required
-                />
-                <InputWithLabelInside
-                  labelText="Repita a senha"
-                  type="password"
-                  nameAndId="rptPassword"
-                  value={rptPassword}
-                  setValue={setRptPassword}
-                  lockIconForPassword
-                  required
+                  errorText={inputErrors.username}
                 />
               </div>
-            )}
-
-            <div className={styles.formInputRow}>
-              <InputWithLabelInside
-                labelText="Data de nascimento"
-                type="date"
-                nameAndId="bornDate"
-                value={bornDate}
-                setValue={setBornDate}
-                required
-              />
-              <SelectWithSearch
-                options={listNations}
-                value={selectedCountry}
-                setValue={setSelectedCountry}
-                labelText="Nacionalidade"
-                labelColorWhenSelected="cornflowerblue"
-                labelStyle={{
-                  fontSize: "0.8em",
-                  color: "var(--cor7)",
-                  paddingBottom: "5px",
-                  display: "block",
-                }}
-              />
+              {!loginWithOtherService && (
+                <div className={styles.formInputRow}>
+                  <InputWithLabelInside
+                    labelText="Senha"
+                    type="password"
+                    nameAndId="password"
+                    value={password}
+                    setValue={setPassword}
+                    required
+                    errorText={inputErrors.password}
+                  />
+                  <InputWithLabelInside
+                    labelText="Repita a senha"
+                    type="password"
+                    nameAndId="rptPassword"
+                    value={rptPassword}
+                    setValue={setRptPassword}
+                    lockIconForPassword
+                    required
+                  />
+                </div>
+              )}
+              <div className={styles.formInputRowSelect}>
+                <InputWithLabelInside
+                  labelText="Data de nascimento"
+                  type="date"
+                  nameAndId="bornDate"
+                  value={bornDate}
+                  setValue={setBornDate}
+                  required
+                  errorText={inputErrors.bornDate}
+                />
+                <SelectWithSearch
+                  options={listNations}
+                  value={selectedCountry}
+                  setValue={setSelectedCountry}
+                  labelText="Nacionalidade"
+                  labelColorWhenSelected="cornflowerblue"
+                  labelStyle={{
+                    fontSize: "0.8em",
+                    color: "var(--cor7)",
+                    paddingBottom: "5px",
+                    display: "block",
+                  }}
+                />
+              </div>
             </div>
             <ButtonSlide
               buttonText={
-                loginWithOtherService ? "Filalizar conta" : "Criar conta"
+                loginWithOtherService ? "Finalizar conta" : "Criar conta"
               }
               nameAndId="createaccount"
               slideDirection="leftDirection"

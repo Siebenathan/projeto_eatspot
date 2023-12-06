@@ -1,3 +1,4 @@
+import { unescape } from "querystring";
 import styles from "./InputWithLabelInside.module.css";
 import { useState, useEffect } from "react";
 import { IoIosLock } from "react-icons/io";
@@ -16,6 +17,7 @@ interface InputWithLabelInsideProps {
 }
 
 export default function InputWithLabelInside(props: InputWithLabelInsideProps) {
+  type typeUndefined = "" | undefined;
   const [labelStyle, setLabelStyle] = useState<any>({});
   const [inputStyle, setInputStyle] = useState<any>({});
   const [isPasswordLocked, setIsPasswordLocked] = useState<boolean>(true);
@@ -23,10 +25,11 @@ export default function InputWithLabelInside(props: InputWithLabelInsideProps) {
   useEffect(() => {
     if (props.type == "date") {
       setLabelStyle({
-        transform: "translateY(-24px)",
+        transform: "translateY(-29px)",
         fontSize: "0.8em",
         color: "var(--cor7)",
       });
+      return;
     }
     if (props.value) {
       setLabelStyle({
@@ -55,6 +58,15 @@ export default function InputWithLabelInside(props: InputWithLabelInsideProps) {
           }`}
           onChange={(e: any) => props.setValue(e.target.value)}
           onFocus={() => {
+            if (props.type == "date") {
+              setInputStyle({ borderBottom: "2px solid cornflowerblue" });
+              setLabelStyle({
+                transform: "translateY(-29px)",
+                fontSize: "0.8em",
+                color: "cornflowerblue",
+              });
+              return;
+            }
             setLabelStyle({
               transform: "translateY(-24px)",
               fontSize: "0.8em",
@@ -67,11 +79,11 @@ export default function InputWithLabelInside(props: InputWithLabelInsideProps) {
           onBlur={() => {
             if (!props.value) {
               if (props.type == "date") {
-                setInputStyle({});
+                setInputStyle({ borderBottom: "2px solid cornflowerblue" });
                 setLabelStyle({
-                  transform: "translateY(-24px)",
+                  transform: "translateY(-29px)",
                   fontSize: "0.8em",
-                  color: "black",
+                  color: "cornflowerblue",
                 });
                 return;
               }
@@ -103,7 +115,9 @@ export default function InputWithLabelInside(props: InputWithLabelInsideProps) {
           </button>
         )}
       </div>
-      {props.errorText != "" && props.errorText != undefined && <span className={styles.errorSpan}>{props.errorText}</span>}
+      {props.errorText != "" && props.errorText != undefined && (
+        <div className={styles.divError}><span className={styles.errorSpan}>{props.errorText}</span></div>
+      )}
     </div>
   );
 }
