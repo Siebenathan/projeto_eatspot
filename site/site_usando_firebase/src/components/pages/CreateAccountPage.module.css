@@ -80,7 +80,7 @@
     align-items: center;
     justify-content: flex-start;
     flex-direction: column;
-    gap: 2rem;
+    gap: 2.5rem;
     width: 80%;
     height: fit-content;
   }

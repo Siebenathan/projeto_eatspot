@@ -14,12 +14,18 @@ import {
   postUserWhithUserAuthCreated,
 } from "../services/firebase/firebase";
 import Modal from "../modal/Modal";
-import { verifyUserName, verifyIfNameExist, verifyDate, verifyPassword } from "../rules/bussinesRoles";
+import {
+  verifyUserName,
+  verifyIfNameExist,
+  verifyDate,
+  verifyPassword,
+} from "../rules/bussinesRoles";
 
 interface InputErrorsProps {
   username: string;
   password: string;
   bornDate: string;
+  email?: string;
 }
 
 export default function CreateAccountPage() {
@@ -28,6 +34,7 @@ export default function CreateAccountPage() {
   const message = location.state?.message;
   const usernameGoogle = location.state?.username;
   const userUid = location.state?.userUid;
+  const emailFromState = location.state?.email;
   const [loginWithOtherService, setLoginWithOtherService] = useState<boolean>();
   const [value, setValue] = useLocalStorage("userId", "");
   const [email, setEmail] = useState<string>("");
@@ -58,6 +65,7 @@ export default function CreateAccountPage() {
     username: "",
     bornDate: "",
     password: "",
+    email: "",
   });
   const navigate = useNavigate();
 
@@ -93,7 +101,6 @@ export default function CreateAccountPage() {
 
   async function handleFormSubmit(e: any) {
     e.preventDefault();
-    const newInputErrors: InputErrorsProps = {username: "", password: "", bornDate: ""}; 
     const settingsModal: ModalProps = {
       isOpen: true,
       setIsOpen() {
@@ -111,7 +118,7 @@ export default function CreateAccountPage() {
     };
 
     let formDontHaveErrors = await verifyFormErrors();
-    if(!formDontHaveErrors) {
+    if (!formDontHaveErrors) {
       return;
     }
 
@@ -124,64 +131,120 @@ export default function CreateAccountPage() {
         email: email,
         nacionality: selectedCountry,
         password: password,
+        registerType: "EmailAndPassword"
       });
 
-      if (response === "Registro realizado com sucesso!") {
+      if (response != "Registro realizado com sucesso!") {
+        let newInputErrors: InputErrorsProps = {
+          username: "",
+          bornDate: "",
+          password: "",
+          email: "",
+        };
+        if (response === "Erro: Já existe uma conta criada com esse email!") {
+          newInputErrors.email = "Já existe uma conta esse email";
+          setInputErrors(newInputErrors);
+        }
+        return;
+      }
+
+      settingsModal.secondButtonFunction = () => {
         const timeout = setTimeout(() => {
           navigate("/login");
           clearTimeout(timeout);
         }, 100);
-      }
+      };
+      settingsModal.textSecondButton = "Confirmar";
+      settingsModal.styleSecondButton = {
+        backgroundColor: "var(--cor5)",
+        cursor: "pointer",
+        padding: "10px 20px",
+        color: "white",
+        borderRadius: "5px",
+      };
+      settingsModal.text =
+        "Sucesso, sua conta foi criada, agora basta para fazer o login para poder acessa-la, clicando em confirmar você será direcionado para a página de login";
+      settingsModal.type = "sucesso";
+      settingsModal.title = "SUCESSO";
+
+      setModal(settingsModal);
     } else {
       response = await postUserWhithUserAuthCreated({
         bornDate: bornDate,
         userId: userUid,
         name: username,
+        email: emailFromState,
         nacionality: selectedCountry,
+        registerType: message,
       });
 
       setValue(userUid);
 
-      if (response === "Registro realizado com sucesso!") {
+      if (response != "Registro realizado com sucesso!") {
+        console.log("caiu aqui");
+        console.log(response);
+        return;
+      }
+
+      settingsModal.secondButtonFunction = () => {
         const timeout = setTimeout(() => {
           navigate("/perfil/meuperfil");
           clearTimeout(timeout);
         }, 100);
-      }
+      };
+      settingsModal.textSecondButton = "Confirmar";
+      settingsModal.styleSecondButton = {
+        backgroundColor: "var(--cor5)",
+        cursor: "pointer",
+        padding: "10px 20px",
+        color: "white",
+        borderRadius: "5px",
+      };
+      settingsModal.text =
+        "Sucesso, sua conta foi criada, clicando em confirmar você será direcionado para a página do seu perfil";
+      settingsModal.type = "sucesso";
+      settingsModal.title = "SUCESSO";
+
+      setModal(settingsModal);
     }
   }
 
   async function verifyFormErrors() {
-    let newInputErrors: InputErrorsProps = { username: "", bornDate: "", password: "" };
+    let newInputErrors: InputErrorsProps = {
+      username: "",
+      bornDate: "",
+      password: "",
+    };
     let dontHaveErrors = true;
 
-    const verifyPasswordResult = verifyPassword(password);
-    if(verifyPasswordResult != "Certo") {
-      newInputErrors.password = verifyPasswordResult;
-      dontHaveErrors = false;
-    }
-
     const userVerify = verifyUserName(username);
-    if (
-      userVerify != "Certo"
-    ) {
+    if (userVerify != "Certo") {
       newInputErrors.username = userVerify;
       dontHaveErrors = false;
     }
 
-    if (password != rptPassword) {
-      newInputErrors.password = "As senhas estão diferentes uma da outra!"; 
-      dontHaveErrors = false;
-      // settingsModal.isOpen = true;
-      // settingsModal.text = "As senhas estão diferentes uma da outra!";
-      // settingsModal.title = "ERRO";
-      // settingsModal.type = "erro";
-      // setModal(settingsModal);
+    if (password != "") {
+      const verifyPasswordResult = verifyPassword(password);
+      if (verifyPasswordResult != "Certo") {
+        newInputErrors.password = verifyPasswordResult;
+        dontHaveErrors = false;
+      }
+
+      if (password != rptPassword) {
+        newInputErrors.password = "As senhas estão diferentes uma da outra!";
+        dontHaveErrors = false;
+      }
     }
-    
+
     const verifyIfNameExistBool = await verifyIfNameExist(username);
-    if(verifyIfNameExistBool == "Um usuário já possui este nome") {
+    if (verifyIfNameExistBool == "Um usuário já possui este nome") {
       newInputErrors.username = verifyIfNameExistBool;
+      dontHaveErrors = false;
+    }
+
+    const verifyDateResult = await verifyDate(bornDate);
+    if (verifyDateResult != "Certo") {
+      newInputErrors.bornDate = verifyDateResult;
       dontHaveErrors = false;
     }
 
@@ -211,7 +274,10 @@ export default function CreateAccountPage() {
             </h1>
             <p>Insira suas informações nos campos abaixo</p>
           </div>
-          <form onSubmit={handleFormSubmit} className={styles.createAccountForm}>
+          <form
+            onSubmit={handleFormSubmit}
+            className={styles.createAccountForm}
+          >
             <div className={styles.formInputs}>
               <div className={styles.formInputRow}>
                 {!loginWithOtherService && (
@@ -222,6 +288,7 @@ export default function CreateAccountPage() {
                     value={email}
                     setValue={setEmail}
                     required
+                    errorText={inputErrors.email}
                   />
                 )}
                 <InputWithLabelInside

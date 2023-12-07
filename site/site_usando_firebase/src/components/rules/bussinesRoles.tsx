@@ -28,8 +28,8 @@ export async function verifyIfNameExist(username: string) : Promise<"Um usuário
 }
 
 export function verifyPassword(password: string) {
-  const hasNumber = new RegExp(/^(?=.*\d)\d{1,}$/);
-  const hasSpecialChar = new RegExp(/^(?=.*\W)\W{1,}$/);
+  const hasNumber = new RegExp(/\d/);
+  const hasSpecialChar = new RegExp(/[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]/);
   if (password.length < 8) {
     return "A senha precisa ter mais de 8 caracteres";
   }

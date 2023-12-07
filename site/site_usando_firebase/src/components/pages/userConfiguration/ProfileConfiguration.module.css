@@ -13,6 +13,25 @@
   gap: 30px;
 }
 
+.divGreetings2 {
+  width: 60%;
+  text-align: center;
+}
+
+.divGreetings2 > h1 {
+  font-size: 1.5em;
+  text-align: center;
+}
+
+.divGreetings2 > h1 > span {
+  padding-top: 50px;
+  color: var(--cor4);
+}
+
+.divGreetings2 > p {
+  padding-top: 10px;
+}
+
 .divGreetings > h1 {
   font-size: 1.5em;
   text-align: center;
@@ -28,7 +47,7 @@
   justify-self: center;
   flex-direction: column;
   width: 70%;
-  gap: 20px;
+  gap: 30px;
   padding-bottom: 20px;
   height: fit-content;
 }

@@ -20,6 +20,7 @@ export default function LoginPageTest() {
   const messageType = location.state?.type;
   const [value, setValue] = useLocalStorage("userId", "");
   const [email, setEmail] = useState<string>("");
+  const [logingWithOAuth, setLogingWithOAuth] = useState<boolean>(false);
   const [password, setPassword] = useState<string>("");
   const navigate = useNavigate();
 
@@ -47,23 +48,33 @@ export default function LoginPageTest() {
   }
 
   async function handleGoogleSignIn() {
-    const provider = new GoogleAuthProvider();
-    const result = await signInWithPopup(auth, provider);
-    const userHasAcc = await verifyUserInFirestore(result.user.uid);
-    if(userHasAcc == "Não criou a conta ainda!") {
-      navigate("/criar-conta", {
-        state: {
-          message: "Google SignIn",
-          username: result.user.displayName,
-          userUid: result.user.uid,
-        },
-      });
-    } else if("Já tem conta criada!") {
-      setValue(result.user.uid);
-      const timeout = setTimeout(() => {
-        navigate("/perfil/meuperfil");
-        clearTimeout(timeout);
-      }, 100);
+    if (!logingWithOAuth) {
+      setLogingWithOAuth(true);
+      const provider = new GoogleAuthProvider();
+      let result: any = undefined;
+      try {
+        result = await signInWithPopup(auth, provider);
+      } catch(err) {
+        setLogingWithOAuth(false);
+        return;
+      }
+      const userHasAcc = await verifyUserInFirestore(result.user.uid);
+      if (userHasAcc == "Não criou a conta ainda!") {
+        navigate("/criar-conta", {
+          state: {
+            message: "Google SignIn",
+            username: result.user.displayName,
+            userUid: result.user.uid,
+            email: result.user.email,
+          },
+        });
+      } else if ("Já tem conta criada!") {
+        setValue(result.user.uid);
+        const timeout = setTimeout(() => {
+          navigate("/perfil/meuperfil");
+          clearTimeout(timeout);
+        }, 100);
+      }
     }
   }
 
@@ -99,7 +110,13 @@ export default function LoginPageTest() {
               setValue={setPassword}
               lockIconForPassword
             />
-            <ButtonSlide type="submit" buttonText="Login" nameAndId="Login" beforeColor="greenColor" slideDirection="leftDirection"/>
+            <ButtonSlide
+              type="submit"
+              buttonText="Login"
+              nameAndId="Login"
+              beforeColor="greenColor"
+              slideDirection="leftDirection"
+            />
           </form>
           <div className={styles.divButtonsServicesLogin}>
             <p>Entrar com:</p>

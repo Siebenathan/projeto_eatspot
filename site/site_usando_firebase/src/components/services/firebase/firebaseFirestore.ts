@@ -27,24 +27,19 @@ export async function deleteDocument(collectionString: string, documentId: strin
 
 export async function createUserFirestore(usuario: User): Promise<any> {
   const userRef = collection(firestoreDB, "users");
-
-  const queryName = query(userRef, where("name", "==", usuario.name));
-  const ifNameExist = await getDocs(queryName);
-
-  if (ifNameExist.docs.length !== 0) {
-    return "Erro: Já existe um usuário com esse nome!";
-  }
-
+  
   const addUserFirestore = await addDoc(userRef, {
     bornDate: usuario.bornDate,
     createAccountDate: usuario.createAccountDate,
     nacionality: usuario.nacionality,
     name: usuario.name,
     roles: usuario.roles,
+    registerType: usuario.registerType,
     userId: usuario.userId,
     recipesILiked: usuario.recipesILiked,
     userPhotoUrl: usuario.userPhotoUrl,
     recipeComments: [],
+    email: usuario.email,
     numberOfRecipes: 0,
   });
 

@@ -3,6 +3,8 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
+  sendPasswordResetEmail,
+  sendEmailVerification,
 } from "firebase/auth";
 import { User } from "./firebase";
 
@@ -33,5 +35,14 @@ export async function signIn(password: string, email: string) {
     return singInUser;
   } catch(err) {
     return "erro";
+  }
+}
+
+export async function recoverPassword(email: string) {
+  try {
+    const recoverPasswordResult = await sendPasswordResetEmail(auth, email);
+    return recoverPasswordResult;
+  } catch(err) {
+    return err;
   }
 }

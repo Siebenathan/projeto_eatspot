@@ -33,6 +33,7 @@ export interface User {
   createAccountDate?: string;
   recipesILiked?: [];
   userPhotoUrl?: string
+  registerType?: string
 }
 
 export interface Roles {
@@ -41,11 +42,16 @@ export interface Roles {
 }
 
 export async function postUser(usuario: User): Promise<string> {
-  const addUserAuth = await createUserAuth(usuario);
-  if (addUserAuth.code === "auth/email-already-in-use") {
+  let docId: string = "";
+  try {
+    const addUserAuth = await createUserAuth(usuario);
+    docId = addUserAuth.user.uid;
+  } catch(err) {
     return "Erro: Já existe uma conta criada com esse email!";
   }
-  const docId = addUserAuth.user.uid;
+  // if (addUserAuth.code === "auth/email-already-in-use") {
+  //   return "Erro: Já existe uma conta criada com esse email!";
+  // }
 
   usuario.userId = docId;
   usuario.createAccountDate = new Date().toLocaleDateString();
@@ -57,7 +63,6 @@ export async function postUser(usuario: User): Promise<string> {
   if (addUserFirestore === "Erro: Já existe um usuário com esse nome!") {
     return addUserFirestore;
   }
-  console.log("Documento escrito com o id:", addUserFirestore.id);
   return "Registro realizado com sucesso!";
 }
 
@@ -68,9 +73,8 @@ export async function postUserWhithUserAuthCreated(usuario: User): Promise<strin
   usuario.userPhotoUrl = `images/perfil/${usuario.name}/fotoDePerfil`;
 
   const addUserFirestore = await createUserFirestore(usuario);
-  if (addUserFirestore === "Erro: Já existe um usuário com esse nome!") {
-    return addUserFirestore;
+  if (addUserFirestore.path) {
+    return "Registro realizado com sucesso!";
   }
-  console.log("Documento escrito com o id:", addUserFirestore.id);
-  return "Registro realizado com sucesso!";
+  return addUserFirestore;
 }

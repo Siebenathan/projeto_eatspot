@@ -13,8 +13,7 @@ import {
 import { verifyUserName } from "../../rules/bussinesRoles";
 import { verifyIfNameExist } from "../../rules/bussinesRoles";
 import { verifyDate } from "../../rules/bussinesRoles";
-import { yearsLimit } from "../../rules/bussinesRoles";
-import { minimumYear } from "../../rules/bussinesRoles";
+import { recoverPassword } from "../../services/firebase/firebaseAuth";
 
 interface ProfileConfigurationProps {
   userData: any;
@@ -27,6 +26,7 @@ interface ProfileConfigurationProps {
 interface FormErrosProps {
   username: string;
   bornDate: string;
+  email: string;
 }
 
 export default function ProfileConfigurationPage(
@@ -49,6 +49,7 @@ export default function ProfileConfigurationPage(
   const [inputErrors, setInputErrors] = useState<FormErrosProps>({
     username: "",
     bornDate: "",
+    email: "",
   });
 
   useEffect(() => {
@@ -78,7 +79,7 @@ export default function ProfileConfigurationPage(
       return;
     }
 
-    const inputsAreOk = verifyFormErrors();
+    const inputsAreOk = await verifyFormErrors();
     if (!inputsAreOk) {
       return;
     }
@@ -116,7 +117,7 @@ export default function ProfileConfigurationPage(
     }
 
     settingsModal.secondButtonFunction = async () => {
-      changeAccount();
+      await changeAccount();
       props.setModal({
         isOpen: false,
         setIsOpen() {},
@@ -140,8 +141,23 @@ export default function ProfileConfigurationPage(
     props.setModal(settingsModal);
   }
 
-  async function handlePasswordFormSubmit(e: any) {
+  async function handlePasswordChangeFormSubmit(e: any) {
     e.preventDefault();
+    const newInputErrors: FormErrosProps = {
+      bornDate: "",
+      email: "",
+      username: "",
+    };
+    if (props.userData.email != email) {
+      newInputErrors.email = "O seu email está incorreto!";
+      setInputErrors(newInputErrors);
+      return;
+    }
+
+    const passwordChangeResult = recoverPassword(props.userData.email);
+    console.log(passwordChangeResult);
+
+    setInputErrors(newInputErrors);
   }
 
   async function handleFormError(errorName: string) {
@@ -221,30 +237,21 @@ export default function ProfileConfigurationPage(
   }
 
   async function verifyFormErrors() {
-    let newInputErrors: FormErrosProps = { username: "", bornDate: "" };
-    // const resetInputErros: FormErrosProps = { bornDate: "", username: "" };
-    setInputErrors(newInputErrors);
+    let newInputErrors: FormErrosProps = {
+      username: "",
+      bornDate: "",
+      email: "",
+    };
 
     let dontHaveErrors = true;
     const userVerify = verifyUserName(changeUsername);
-    console.log(userVerify);
-    if (
-      userVerify == "O nome de usuário deve ter no minimo 10 caracteres" ||
-      userVerify == "O nome de usuário deve ter no máximo 30 caracteres"
-    ) {
+    if (userVerify != "Certo") {
       newInputErrors.username = userVerify;
       dontHaveErrors = false;
     }
 
     const dateVerify = verifyDate(newBornDate);
-    const currentYear = new Date().getFullYear();
-    if (
-      dateVerify == `O ano está acima de ${currentYear}` ||
-      dateVerify ==
-        `O ano precisa estar acima de ${currentYear + yearsLimit}` ||
-      dateVerify ==
-        `O ano precisa estar abaixo ou igual a ${currentYear + minimumYear}`
-    ) {
+    if (dateVerify != "Certo") {
       newInputErrors.bornDate = dateVerify;
       dontHaveErrors = false;
     }
@@ -338,35 +345,43 @@ export default function ProfileConfigurationPage(
             beforeColor="greenColor"
           />
         </form>
-        <div className={styles.divGreetings}>
-          <h1>
-            Troque sua senha <span>{props.userData.name}</span>
-          </h1>
-          <p>Preencha os campos com sua senha atual e com sua senha nova</p>
-        </div>
-        <form
-          onSubmit={handlePasswordFormSubmit}
-          className={styles.formInputsToEdit}
-        >
-          <div className={styles.formRow}>
-            <InputWithLabelInside
-              labelText="Senha Atual"
-              nameAndId="passwordChange"
-              value={email}
-              setValue={setEmail}
-              lockIconForPassword
-              type="email"
-              required
-            />
-          </div>
-          <ButtonSlide
-            buttonText="Trocar senha"
-            nameAndId="editProfile"
-            slideDirection="leftDirection"
-            type="submit"
-            beforeColor="greenColor"
-          />
-        </form>
+        {props.userData.registerType == "EmailAndPassword" && (
+          <>
+            <div className={styles.divGreetings2}>
+              <h1>
+                Troque sua senha <span>{props.userData.name}</span>
+              </h1>
+              <p>
+                Preencha o campo abaixo com o seu email, que você receberá um
+                código de verificação no mesmo
+              </p>
+            </div>
+
+            <form
+              onSubmit={handlePasswordChangeFormSubmit}
+              className={styles.formInputsToEdit}
+            >
+              <div className={styles.formRow}>
+                <InputWithLabelInside
+                  labelText="Email"
+                  nameAndId="emailPasswordChange"
+                  value={email}
+                  setValue={setEmail}
+                  type="email"
+                  required
+                  errorText={inputErrors.email}
+                />
+              </div>
+              <ButtonSlide
+                buttonText="Trocar senha"
+                nameAndId="editProfile"
+                slideDirection="leftDirection"
+                type="submit"
+                beforeColor="greenColor"
+              />
+            </form>
+          </>
+        )}
       </div>
     </div>
   );
