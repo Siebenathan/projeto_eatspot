@@ -1,0 +1,8 @@
+.textAreaStyle {
+    width: 100%;
+    padding: 15px;
+    font-size: 1.2em;
+    aspect-ratio: 16/6.5;
+    background-color: var(--cor6);
+}
+

@@ -1,0 +1,98 @@
+.mainDivComment {
+    background-color: var(--cor6);
+    display: flex;
+    width: 100%;
+    padding: 20px 0px;
+    height: 100%;
+    justify-content: center;
+}
+
+.divUserComment {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 25%;
+    gap: 10px;
+    align-items: center;
+}
+
+.divUserComment > img {
+    width: 100px;
+    height: 100px;
+    border-radius: 100%;
+}
+
+.divUserComment > p {
+    color: var(--cor4);
+    width: 80%;
+    text-align: center;
+}
+
+.divComment {
+    width: 69%;
+    min-height: 100%;
+    height: 100%;
+    display: flex;
+    gap: 10px;
+    align-items: start;
+    flex-direction: column;
+    justify-content: flex-start;
+    overflow-wrap: break-word;
+    text-wrap: wrap;
+}
+
+.divComment > p {
+    text-align: justify;
+    white-space: pre;
+
+    font-size: 1em;
+    width: 100%;
+    text-wrap: wrap;
+}
+
+.divCommentDateAndAvaliation {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.divStars {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.divStars > small {
+    height: 20%;
+    font-size: 1em;
+    font-weight: bolder;
+}
+
+.starIcon {
+    color: rgb(255, 255, 36);
+    font-size: 1.8em;
+}
+
+.divChangeComment {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.divChangeComment > button {
+    cursor: pointer;
+    border: none;
+    background-color: inherit;
+}
+
+.trashcanIcon {
+    color: red;
+    font-size: 1.5em;
+}
+
+.pencilIcon {
+    color: gray;
+    font-size: 1.5em;
+}

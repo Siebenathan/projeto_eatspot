@@ -131,8 +131,9 @@ export default function CreateAccountPage() {
         email: email,
         nacionality: selectedCountry,
         password: password,
-        registerType: "EmailAndPassword"
+        registerType: ["EmailAndPassword"]
       });
+      
 
       if (response != "Registro realizado com sucesso!") {
         let newInputErrors: InputErrorsProps = {
@@ -175,7 +176,7 @@ export default function CreateAccountPage() {
         name: username,
         email: emailFromState,
         nacionality: selectedCountry,
-        registerType: message,
+        registerType: [message],
       });
 
       setValue(userUid);

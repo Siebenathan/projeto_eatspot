@@ -1,0 +1,65 @@
+.mainDiv {
+  width: 100%;
+  height: 100%;
+  overflow-x: auto;
+  line-height: 2em;
+}
+
+.mainDivContent {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.divGreetings {
+  width: 70%;
+  text-align: center;
+}
+
+.divGreetings > h1 {
+  font-size: 1.5em;
+  text-align: center;
+}
+
+.divGreetings > h1 > span {
+  color: var(--cor4);
+}
+
+.divDeleteAccount {
+  text-align: center;
+  width: 70%;
+  line-height: 1.5em;
+  height: fit-content;
+}
+
+.divDeleteAccount > p {
+  font-size: 0.9em;
+  line-height: 1.3em;
+}
+
+.deleteAccForm {
+  padding-top: 20px;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  justify-content: center;
+}
+
+.formRow {
+  display: flex;
+  gap: 20px;
+  width: 70%;
+  align-items: center;
+  flex-direction: column;
+
+  justify-content: center;
+}
+
+.textUsernameWrong {
+    color: red;
+}

@@ -21,6 +21,7 @@ export default function UserConfigurationPage() {
   const [userData, setUserData] = useState<any>();
   const [listNations, setListNations] = useState<any>();
   const [userPhoto, setUserPhoto] = useState<any>();
+  const [userDocId, setUserDocId] = useState<string>("");
   const [currentActive, setCurrentActive] = useState<string>("Usuario");
   const [userId, setUserId] = useLocalStorage("userId", "");
   const [modal, setModal] = useState<ModalProps>({
@@ -59,6 +60,7 @@ export default function UserConfigurationPage() {
         ...doc.data(),
         id: doc.id,
       }))[0];
+      setUserDocId(data.docs[0].id);
       setUserData(userDataFirestore);
       setUserPhoto(await getUserPhoto(userDataFirestore.userPhotoUrl));
     });
@@ -176,6 +178,7 @@ export default function UserConfigurationPage() {
                 userImage={userPhoto}
                 modal={modal}
                 setModal={setModal}
+                userDocId={userDocId}
               />
             )}
             {currentActive == "Configurações" && (

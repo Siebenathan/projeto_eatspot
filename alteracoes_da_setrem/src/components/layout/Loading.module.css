@@ -1,0 +1,17 @@
+.loader_circle {
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  border: 20px solid #555;
+  border-top-color: white;
+  animation: loader_circle 1s linear infinite;
+}
+
+@keyframes loader_circle {
+  0% {
+    transform: rotate(0);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

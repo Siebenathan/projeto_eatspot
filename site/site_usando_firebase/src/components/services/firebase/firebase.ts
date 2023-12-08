@@ -3,7 +3,7 @@ import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
-import { createUserFirestore } from "./firebaseFirestore";
+import { createUserFirestore, deleteDocument } from "./firebaseFirestore";
 import { createUserAuth } from "./firebaseAuth";
 
 const firebaseConfig = {
@@ -33,7 +33,7 @@ export interface User {
   createAccountDate?: string;
   recipesILiked?: [];
   userPhotoUrl?: string
-  registerType?: string
+  registerType?: string[];
 }
 
 export interface Roles {
@@ -78,3 +78,8 @@ export async function postUserWhithUserAuthCreated(usuario: User): Promise<strin
   }
   return addUserFirestore;
 }
+
+export async function deleteAccount() {
+  
+}
+

@@ -1,0 +1,283 @@
+.mainForm {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.divTitleInput {
+  text-align: center;
+  width: 30%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding-bottom: 40px;
+}
+
+.divTitleInput > label {
+  color: white;
+  font-size: 2em;
+  padding-bottom: 5px;
+  display: block;
+}
+
+.divInputInsertImage {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 60%;
+  height: 100%;
+  padding-bottom: 40px;
+}
+
+.divInputInsertImage > .mainInputInsertLabel {
+  color: white;
+  padding-bottom: 10px;
+  font-size: 2em;
+}
+
+.divRecipeApresentation {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  width: 60%;
+  padding-bottom: 40px;
+}
+
+.divRecipeApresentation > label {
+  color: white;
+  font-size: 2em;
+  padding-bottom: 5px;
+}
+
+.divNumberOfPorcions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  margin-bottom: 40px;
+}
+
+.divNumberOfPorcions > label {
+  color: white;
+  font-size: 2em;
+  padding-bottom: 20px;
+}
+
+.divNumberOfPorcions > input {
+  height: 70px;
+  padding: 20px;
+  font-size: 2em;
+}
+
+.divInsertIngredients {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  width: 60%;
+  padding-bottom: 40px;
+  text-align: center;
+}
+
+.divInsertIngredients > label {
+  color: white;
+  font-size: 2em;
+  padding-bottom: 5px;
+}
+
+.divInsertIngredients > label > span {
+  display: block;
+  font-size: 0.5em;
+  color: var(--cor5);
+  font-weight: bolder;
+}
+
+.divInsertIngredients > label > span > strong {
+  font: italic;
+  color: white;
+}
+
+.divLevelOfDificulty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  width: 60%;
+  padding-bottom: 40px;
+}
+
+.divLevelOfDificulty > p {
+  color: white;
+  font-size: 2em;
+  padding-bottom: 20px;
+}
+
+.divLevelOfDificulty > p > span {
+  color: var(--cor5);
+  font-weight: bolder;
+}
+
+.divLevelOfDificultyOptions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  gap: 20px;
+}
+
+.divLevelOfDificultyOptions > label {
+  height: 100px;
+  width: 100px;
+  border-radius: 100%;
+  background-color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.chefHatIcon {
+  width: 90%;
+  height: 90%;
+}
+
+.divLevelOfDificultyOptions input {
+  display: none;
+}
+
+.divRecipeCost {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  width: 60%;
+  padding-bottom: 40px;
+}
+
+.divRecipeCost > p {
+  color: white;
+  font-size: 2em;
+  padding-bottom: 20px;
+}
+
+.divRecipeCost > p > span {
+  font-weight: bolder;
+  color: var(--cor5);
+}
+
+.divRecipeCostOptions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  gap: 20px;
+}
+
+.divRecipeCostOptions > label {
+  width: 100px;
+  height: 100px;
+  border-radius: 100%;
+  background-color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.divRecipeCostOptions > label > input {
+  display: none;
+}
+
+.costIconMoney {
+  width: 75%;
+  height: 75%;
+}
+
+.divRecipeTime {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  width: 50%;
+  padding-bottom: 40px;
+}
+
+.divRecipeTimeOption {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.divRecipeTimeOption > p {
+  color: white;
+  font-size: 1.2em;
+}
+
+.divRecipeTimeOption > label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.1em;
+  gap: 3px;
+}
+
+.divRecipeTimeOption > label > input {
+  display: inline;
+  width: 40%;
+  padding: 10px;
+  font-size: 1.1em;
+  border-radius: 5px;
+  border: none;
+}
+
+.divRecipesPhases {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  width: 60%;
+  padding-bottom: 40px;
+}
+
+.divRecipesPhases > p {
+  color: white;
+  font-size: 2em;
+}
+
+.divRecipePhase {
+  padding-top: 30px;
+  width: 100%;
+}
+
+.divRecipePhase > p {
+  color: white;
+  font-size: 1.3em;
+  padding-bottom: 5px;
+}
+
+.divRecipePhase > textarea {
+  width: 100%;
+  padding: 15px;
+  font-size: 1.2em;
+  aspect-ratio: 16/6.5;
+  background-color: var(--cor6);
+}
+
+.divButtonSubmitForm {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  width: 60%;
+  height: 100%;
+  padding-bottom: 40px;
+}

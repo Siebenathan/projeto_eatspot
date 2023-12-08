@@ -12,7 +12,7 @@ import { auth } from "../services/firebase/firebase";
 import { useNavigate, useLocation } from "react-router-dom";
 import ButtonSlide from "../forms/buttons/ButtonSlide";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { getDataFromCollection } from "../services/firebase/firebaseFirestore";
+import { getDataFromCollection, setDocAlreadyCreated } from "../services/firebase/firebaseFirestore";
 
 export default function LoginPageTest() {
   const location = useLocation();
@@ -26,10 +26,11 @@ export default function LoginPageTest() {
 
   async function verifyUserInFirestore(userUid: string) {
     const result = await getDataFromCollection("users", "userId", userUid);
-    if (result.empty) {
-      return "Não criou a conta ainda!";
+
+    if (!result.empty) {
+      return result;
     } else {
-      return "Já tem conta criada!";
+      return "Não tem conta criada!";
     }
   }
 
@@ -49,6 +50,7 @@ export default function LoginPageTest() {
 
   async function handleGoogleSignIn() {
     if (!logingWithOAuth) {
+      const loginType = "Google SignIn"
       setLogingWithOAuth(true);
       const provider = new GoogleAuthProvider();
       let result: any = undefined;
@@ -58,17 +60,36 @@ export default function LoginPageTest() {
         setLogingWithOAuth(false);
         return;
       }
+      
       const userHasAcc = await verifyUserInFirestore(result.user.uid);
-      if (userHasAcc == "Não criou a conta ainda!") {
+      if (userHasAcc == "Não tem conta criada!") {
         navigate("/criar-conta", {
           state: {
-            message: "Google SignIn",
+            message: loginType,
             username: result.user.displayName,
             userUid: result.user.uid,
             email: result.user.email,
           },
         });
       } else if ("Já tem conta criada!") {
+        const user: any = userHasAcc.docs.map((doc) => ({
+          ...doc.data(),
+          id: doc.id,
+        }))[0];
+        
+        let alreadyHaveType = false;
+        user.registerType.forEach((type: string) => {
+          if(type == loginType) {
+            alreadyHaveType = true;
+            return;
+          }
+        })
+
+        if(!alreadyHaveType) {
+          user.registerType.push(loginType);
+          await setDocAlreadyCreated("users", userHasAcc.docs[0].id, user);
+        }
+
         setValue(result.user.uid);
         const timeout = setTimeout(() => {
           navigate("/perfil/meuperfil");
@@ -77,6 +98,8 @@ export default function LoginPageTest() {
       }
     }
   }
+
+
 
   return (
     <div className={styles.mainDiv}>
@@ -160,3 +183,14 @@ export default function LoginPageTest() {
     </div>
   );
 }
+
+
+        // const user: any = userHasAcc.docs.map((doc) => ({
+        //   ...doc.data(),
+        //   id: doc.id,
+        // }))[0];
+
+        // user.registerType.push(loginType);
+
+
+        // console.log(result);

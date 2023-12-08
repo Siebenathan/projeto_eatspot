@@ -19,6 +19,7 @@ interface ProfileConfigurationProps {
   userData: any;
   userImage: string;
   nations: any;
+  userDocId: string;
   modal: ModalProps;
   setModal(modal: ModalProps): void;
 }
@@ -51,8 +52,14 @@ export default function ProfileConfigurationPage(
     bornDate: "",
     email: "",
   });
+  const [dontHasExternalProvider, setDontHasExternalProvider] = useState<boolean>();
 
   useEffect(() => {
+    props.userData.registerType.forEach((rtype: string) => {
+      if(rtype == "EmailAndPassword") {
+        setDontHasExternalProvider(true);
+      }
+    })
     setImageFile(props.userImage);
   }, []);
 
@@ -204,13 +211,6 @@ export default function ProfileConfigurationPage(
       }
     }
 
-    const userInfo = await getDataFromCollection(
-      "users",
-      "userId",
-      props.userData.userId
-    );
-    const docId = userInfo.docs[0].id;
-
     const { name, nacionality, bornDate, userPhotoUrl, ...rest } =
       props.userData;
     name == changeUsername
@@ -228,7 +228,7 @@ export default function ProfileConfigurationPage(
       await changePerfilPhoto();
     }
 
-    await updateDocFirestore("users", docId, rest);
+    await updateDocFirestore("users", props.userDocId, rest);
   }
 
   async function changePerfilPhoto() {
@@ -345,7 +345,7 @@ export default function ProfileConfigurationPage(
             beforeColor="greenColor"
           />
         </form>
-        {props.userData.registerType == "EmailAndPassword" && (
+        {dontHasExternalProvider && (
           <>
             <div className={styles.divGreetings2}>
               <h1>
