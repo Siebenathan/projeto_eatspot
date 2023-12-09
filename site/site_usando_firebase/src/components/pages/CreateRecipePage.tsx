@@ -225,6 +225,7 @@ export default function CreateRecipePage() {
     };
     updateDocFirestore("users", data.docs[0].id, newUserData);
 
+    // const storageImgURL = `images/receitas/${userData.name + "-" + newNumberOfRecipes + "-imagemPrincipal"}`;
     const storageImgURL = `images/receitas/${userData.name}/${newNumberOfRecipes}/imagemPrincipal`;
     addItemToStorage(storageImgURL, imageUrl);
 

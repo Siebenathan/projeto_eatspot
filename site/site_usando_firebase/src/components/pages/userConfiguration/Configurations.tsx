@@ -7,11 +7,15 @@ import { FcGoogle } from "react-icons/fc";
 import { FaSquareFacebook } from "react-icons/fa6";
 import { FaSquareXTwitter } from "react-icons/fa6";
 import { auth } from "../../services/firebase/firebase";
+import { deleteDocument, getDataFromCollection } from "../../services/firebase/firebaseFirestore";
+import { deleteFile } from "../../services/firebase/firebaseStorage";
+import { signIn } from "../../services/firebase/firebaseAuth";
 import { GoogleAuthProvider, UserCredential, signInWithPopup } from "firebase/auth";
 
 interface ConfigurationProps {
   userData: any;
   modal: ModalProps;
+  userDocId: string;
   setModal(modal: ModalProps): void;
 }
 
@@ -32,7 +36,7 @@ export default function Configuration(props: ConfigurationProps) {
     });
   }, []);
 
-  function handleDeleteFormSubmit(e: any) {
+  async function handleDeleteFormSubmit(e: any) {
     e.preventDefault();
     const settingsModal: ModalProps = {
       isOpen: true,
@@ -50,13 +54,16 @@ export default function Configuration(props: ConfigurationProps) {
       type: "erro",
     };
 
-    if (props.userData.name != username) {
-      handleFormError("userNameWrong");
+    const userCredentials = await signIn(password, email);
+    if(userCredentials == "erro") {
+      alert(userCredentials);
       return;
     }
 
-    settingsModal.secondButtonFunction = () => {
-      deleteAccount();
+    
+
+    settingsModal.secondButtonFunction = async () => {
+      await deleteAccount(userCredentials);
       props.setModal({
         isOpen: false,
         setIsOpen() {},
@@ -77,7 +84,30 @@ export default function Configuration(props: ConfigurationProps) {
     props.setModal(settingsModal);
   }
 
-  function deleteAccount() {}
+  async function deleteAccount(user: any) {
+    const recipesData = await getDataFromCollection("recipes", "userId", props.userData.userId);
+    const imagesUrls: string[] = [];
+
+    if(!recipesData.empty) {
+      await recipesData.docs.map(async (doc) => {
+        const recipeData = doc.data();
+        imagesUrls.push(recipeData.imagePath);
+        await deleteDocument("recipes", doc.id);
+      });
+    }
+
+    if(imagesUrls) {
+      imagesUrls.forEach(async (url: string) => {
+        const result = await deleteFile(url);
+        console.log(result);
+      })
+    }
+    
+    await deleteFile(props.userData.userPhotoUrl);
+
+    await deleteDocument("users", props.userDocId);
+    user.user.delete();
+  }
 
   async function handleFormError(errorName: string) {
     setError(errorName);
@@ -132,7 +162,6 @@ export default function Configuration(props: ConfigurationProps) {
             title: "",
           })
           
-          await result?.user.delete();
         },
         textSecondButton: "Confirmar Exclusão",
         styleSecondButton: {

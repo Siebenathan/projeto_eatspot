@@ -1,9 +1,11 @@
 import { initializeApp } from "firebase/app";
 // import { getAnalytics } from "firebase/analytics";
 import { getAuth } from "firebase/auth";
+import defaultUserImage from "../../../img/EatSpot-semfundo.png";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import { createUserFirestore, deleteDocument } from "./firebaseFirestore";
+import { addItemToStorage } from "./firebaseStorage";
 import { createUserAuth } from "./firebaseAuth";
 
 const firebaseConfig = {
@@ -46,18 +48,22 @@ export async function postUser(usuario: User): Promise<string> {
   try {
     const addUserAuth = await createUserAuth(usuario);
     docId = addUserAuth.user.uid;
-  } catch(err) {
+  } catch (err) {
     return "Erro: Já existe uma conta criada com esse email!";
   }
-  // if (addUserAuth.code === "auth/email-already-in-use") {
-  //   return "Erro: Já existe uma conta criada com esse email!";
-  // }
 
-  usuario.userId = docId;
+
+    // if (addUserAuth.code === "auth/email-already-in-use") {
+    //   return "Erro: Já existe uma conta criada com esse email!";
+    // }
+
+    usuario.userId = docId;
   usuario.createAccountDate = new Date().toLocaleDateString();
   usuario.roles = { user: true, admin: false };
   usuario.recipesILiked = [];
-  usuario.userPhotoUrl = `images/perfil/${usuario.name}/fotoDePerfil`;
+  usuario.userPhotoUrl = `images/perfil/${usuario.name}/fotoDePerfil`
+
+  // await addItemToStorage(usuario.userPhotoUrl, defaultUserImage);
 
   const addUserFirestore = await createUserFirestore(usuario);
   if (addUserFirestore === "Erro: Já existe um usuário com esse nome!") {
@@ -72,6 +78,9 @@ export async function postUserWhithUserAuthCreated(usuario: User): Promise<strin
   usuario.recipesILiked = [];
   usuario.userPhotoUrl = `images/perfil/${usuario.name}/fotoDePerfil`;
 
+  const result = await addItemToStorage(usuario.userPhotoUrl, defaultUserImage);
+  console.log(result);
+
   const addUserFirestore = await createUserFirestore(usuario);
   if (addUserFirestore.path) {
     return "Registro realizado com sucesso!";
@@ -80,6 +89,6 @@ export async function postUserWhithUserAuthCreated(usuario: User): Promise<strin
 }
 
 export async function deleteAccount() {
-  
+
 }
 

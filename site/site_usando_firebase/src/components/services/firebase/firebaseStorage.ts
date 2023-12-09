@@ -1,5 +1,5 @@
 import { storage } from "./firebase";
-import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
+import { getDownloadURL, ref, uploadBytesResumable, deleteObject  } from "firebase/storage";
 
 export async function addItemToStorage(url: string, file: any) {
   const storageRef = ref(storage, url);
@@ -16,5 +16,14 @@ export async function getImageStorage(url: string) {
   } catch(err) {
     return "erro imagem nao encontrada";
   }
-    
+}
+
+export async function deleteFile(url: string) {
+  const storageRef = ref(storage, url);
+  try {
+    const deleteFile = await deleteObject(storageRef);
+    return deleteFile;
+  } catch(err) {
+    return err;
+  }
 }

@@ -184,6 +184,7 @@ export default function UserConfigurationPage() {
             {currentActive == "Configurações" && (
               <Configuration
                 userData={userData}
+                userDocId={userDocId}
                 modal={modal}
                 setModal={setModal}
               />

@@ -124,6 +124,8 @@ export default function CreateAccountPage() {
 
     let response: string = "";
 
+
+
     if (email) {
       response = await postUser({
         name: username,
@@ -133,7 +135,6 @@ export default function CreateAccountPage() {
         password: password,
         registerType: ["EmailAndPassword"]
       });
-      
 
       if (response != "Registro realizado com sucesso!") {
         let newInputErrors: InputErrorsProps = {
