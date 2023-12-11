@@ -16,10 +16,13 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../services/firebase/firebase";
 import useLocalStorage from "../hooks/useLocalStorage";
 import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+import { getImageStorage } from "../services/firebase/firebaseStorage";
 import { v4 as uuidv4 } from "uuid";
 import {
   addDocument,
   getDataFromCollection,
+  setDocAlreadyCreated,
   updateDocFirestore,
 } from "../services/firebase/firebaseFirestore";
 import { serverTimestamp } from "firebase/firestore";
@@ -36,6 +39,13 @@ interface RecipePhasesProps {
 }
 
 export default function CreateRecipePage() {
+  const location = useLocation();
+  const recipeUrl = location.state?.recipeUrl;
+  const docId = location.state?.recipeDocId;
+  const recipeData = location.state?.recipeData;
+  const userData = location.state?.userData;
+  const imageStorage = location.state?.recipeImage;
+  const [recipeImage, setRecipeImage] = useState<string>("");
   const [userId, setUserId] = useLocalStorage("userId", "");
   const navigate = useNavigate();
   const [titleRecipe, setTitleRecipe] = useState<string>("");
@@ -51,7 +61,7 @@ export default function CreateRecipePage() {
   const [recipeDifficulty, setRecipeDifficulty] = useState<string>("");
   const [recipeCost, setRecipeCost] = useState<string>("");
   const [requiredRecipePhase, setRequiredRecipePhase] =
-    useState<RecipePhasesProps>();
+    useState<RecipePhasesProps>({ phaseNumber: 1, phaseText: "" });
   const [recipePhasesList, setRecipePhasesList] =
     useState<RecipePhasesProps[]>();
   const [numberOfPorcions, setNumberOfPorcions] = useState<number>(0);
@@ -65,30 +75,64 @@ export default function CreateRecipePage() {
     secondButtonFunction: undefined,
     styleSecondButton: undefined,
   });
-
-  function redirectToLoginPage() {
-    navigate("/login", {
-      state: {
-        message:
-          "Ocorreu um erro na autenticação porfavor faça o seu login novamente!",
-        type: "error",
-      },
-    });
-  }
+  let indexNumber = -1;
 
   useEffect(() => {
     if (userId == "") {
       redirectToLoginPage();
     }
-  }, []);
 
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      if (user.uid != userId) {
-        redirectToLoginPage();
-      }
+    console.log(userData);
+    //Aqui é caso se usuário estiver editando a receita
+    if (recipeData) {
+      setTitleRecipe(recipeData.recipeTitle);
+      setRecipeImage(imageStorage);
+      setRecipeDescription(recipeData.recipeDescription);
+      setNumberOfPorcions(recipeData.numberOfPorcions);
+      const recipeIngredientsFormatted = recipeData.recipeIngredients.reduce(
+        (acc: string, ingredient: string) => {
+          acc += `\n${ingredient}`;
+          return acc;
+        }
+      );
+      setRecipeIngredients(recipeIngredientsFormatted);
+      const optionsQueryDifficulty =
+        document.getElementsByName("difficultyOptions");
+      optionsQueryDifficulty.forEach((element: any) => {
+        if (element.id == recipeData.recipeDifficulty) {
+          element.parentNode.style.backgroundColor = "var(--cor5)";
+        }
+      });
+      setRecipeDifficulty(recipeData.recipeDifficulty);
+      setRecipeCost(recipeData.recipeCost);
+      const optionsQueryCost = document.getElementsByName("recipeCost");
+      optionsQueryCost.forEach((element: any) => {
+        if (element.id == recipeData.recipeCost) {
+          element.parentNode.style.backgroundColor = "var(--cor5)";
+        }
+      });
+      setRecipeTimes([
+        {
+          period: "Tempo de preparo",
+          minutes: recipeData.recipeTimes[0].minutes,
+          hours: recipeData.recipeTimes[0].hours,
+        },
+        {
+          period: "Tempo de cozimento",
+          minutes: recipeData.recipeTimes[1].minutes,
+          hours: recipeData.recipeTimes[1].hours,
+        },
+        {
+          period: "Tempo de espera",
+          minutes: recipeData.recipeTimes[2].minutes,
+          hours: recipeData.recipeTimes[2].hours,
+        },
+      ]);
+      const [requiredPhase, ...rest] = recipeData.recipePhasesList;
+      setRequiredRecipePhase(requiredPhase);
+      setRecipePhasesList(rest ? undefined : rest);
     }
-  });
+  }, []);
 
   const recipeDifficultyList = [
     "Muito fácil",
@@ -118,6 +162,102 @@ export default function CreateRecipePage() {
     { period: "Tempo de cozimento", required: false },
     { period: "Tempo de espera", required: false },
   ];
+
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      if (user.uid != userId) {
+        redirectToLoginPage();
+      }
+    }
+  });
+
+  async function getRecipeImage(url: string) {
+    const imageStorage = await getImageStorage(url);
+    return imageStorage;
+  }
+
+  function redirectToLoginPage() {
+    navigate("/login", {
+      state: {
+        message:
+          "Ocorreu um erro na autenticação porfavor faça o seu login novamente!",
+        type: "error",
+      },
+    });
+  }
+
+  function editRecipeModal(e: any) {
+    e.preventDefault();
+    const settingsModal: ModalProps = {
+      isOpen: true,
+      setIsOpen() {
+        setModal({
+          isOpen: false,
+          setIsOpen() {},
+          text: "",
+          type: "erro",
+          title: "",
+        });
+      },
+      text: `A sua receita ${recipeData.recipeTitle} vai ser editada`,
+      title: `Deseja editar a sua receita?`,
+      type: "informacao",
+      textSecondButton: "Confirmar",
+      secondButtonFunction: editRecipe,
+      styleSecondButton: {
+        backgroundColor: "orange",
+        cursor: "pointer",
+        padding: "10px 20px",
+        color: "white",
+        borderRadius: "5px",
+      },
+    };
+    setModal(settingsModal);
+  }
+
+  async function editRecipe() {
+    if (imageUrl) {
+      addItemToStorage(recipeData.imagePath, imageUrl);
+    }
+
+    const newRecipePhasesList = [];
+    newRecipePhasesList.push(requiredRecipePhase);
+    if (recipePhasesList) {
+      recipePhasesList.forEach((item) => {
+        newRecipePhasesList.push(item);
+      });
+    }
+
+    const formatRecipePhasesList = newRecipePhasesList?.filter(
+      (element) => element.phaseText != ""
+    );
+
+    const recipeIngredientesFormated = recipeIngredients
+      ?.split("\n")
+      .filter((item) => item != "");
+
+    const newRecipeDataFireStore = {
+      recipeUrl: recipeData.recipeUrl,
+      createdAt: recipeData.createdAt,
+      recipeTitle: titleRecipe.toLowerCase(),
+      imagePath: recipeData.imagePath,
+      recipeDescription: recipeDescription,
+      recipeIngredients: recipeIngredientesFormated,
+      recipeDifficulty: recipeDifficulty,
+      recipeCost: recipeCost,
+      recipeTimes: recipeTimes,
+      userId: userId,
+      recipeOwnerName: userData.name,
+      userPhotoUrl: userData.userPhotoUrl,
+      likes: recipeData.likes,
+      numberOfPorcions: numberOfPorcions,
+      comments: recipeData.comments,
+      peopleThatLikedRecipe: recipeData.peopleThatLikedRecipe,
+      recipePhasesList: formatRecipePhasesList,
+    };
+
+    await setDocAlreadyCreated("recipes", docId, newRecipeDataFireStore);
+  }
 
   function handleSubmit(e: any) {
     e.preventDefault();
@@ -266,7 +406,6 @@ export default function CreateRecipePage() {
       numberOfPorcions: numberOfPorcions,
       comments: [],
       peopleThatLikedRecipe: [],
-
       recipePhasesList: newRecipePhasesList,
     };
 
@@ -293,7 +432,16 @@ export default function CreateRecipePage() {
         secondButtonFunction={modal.secondButtonFunction}
         styleSecondButton={modal.styleSecondButton}
       ></Modal>
-      <form className={styles.mainForm} onSubmit={(e: any) => handleSubmit(e)}>
+      <form
+        className={styles.mainForm}
+        onSubmit={(e: any) => {
+          if (recipeData) {
+            editRecipeModal(e);
+            return;
+          }
+          handleSubmit(e);
+        }}
+      >
         <div className={styles.divTitleInput}>
           <label htmlFor="recipeTitle">Título da receita</label>
           <Input
@@ -316,7 +464,7 @@ export default function CreateRecipePage() {
             Insira a imagem de capa da sua receita
           </label>
           <InputFileWithPreview
-            imageFile={imageFile}
+            imageFile={recipeImage != "" ? recipeImage : imageFile}
             setFile={setImageFile}
             spanText="Clique para inserir uma imagem..."
             setImageUrl={setImageUrl}
@@ -423,47 +571,88 @@ export default function CreateRecipePage() {
           </div>
         </div>
         <div className={styles.divRecipeTime}>
-          {recipeTimesList.map((time) => (
-            <div className={styles.divRecipeTimeOption} key={time.period}>
-              <p>{time.period}</p>
-              <label htmlFor={time.period}>
-                Minutos{time.required ? "*" : ""}:
-                <input
-                  type="number"
-                  name={time.period}
-                  max={60}
-                  maxLength={2}
-                  required={time.required}
-                  min={1}
-                  onChange={(e: any) => {
-                    for (let i = 0; i < recipeTimes.length; i++) {
-                      if (recipeTimes[i].period === e.target.name) {
-                        recipeTimes[i].minutes = e.target.value;
-                        setRecipeTimes(recipeTimes);
+          {recipeTimesList.map((time) => {
+            indexNumber++;
+            return (
+              <div className={styles.divRecipeTimeOption} key={time.period}>
+                <p>{time.period}</p>
+                <label htmlFor={time.period}>
+                  Minutos{time.required ? "*" : ""}:
+                  <input
+                    type="number"
+                    name={time.period}
+                    max={60}
+                    value={recipeTimes[indexNumber].minutes}
+                    maxLength={2}
+                    required={time.required}
+                    min={time.required ? 1 : 0}
+                    onChange={(e: any) => {
+                      const [first, second, third] = recipeTimes;
+                      const newRecipeTimes = [
+                        {
+                          period: first.period,
+                          minutes: first.minutes,
+                          hours: first.hours,
+                        },
+                        {
+                          period: second.period,
+                          minutes: second.minutes,
+                          hours: second.hours,
+                        },
+                        {
+                          period: third.period,
+                          minutes: third.minutes,
+                          hours: third.hours,
+                        },
+                      ];
+                      for (let i = 0; i < recipeTimes.length; i++) {
+                        if (recipeTimes[i].period === e.target.name) {
+                          newRecipeTimes[i].minutes = e.target.value;
+                        }
                       }
-                    }
-                  }}
-                />
-              </label>
-              <label htmlFor={time.period}>
-                Horas:
-                <input
-                  type="number"
-                  name={time.period}
-                  maxLength={3}
-                  min={0}
-                  onChange={(e: any) => {
-                    for (let i = 0; i < recipeTimes.length; i++) {
-                      if (recipeTimes[i].period === e.target.name) {
-                        recipeTimes[i].hours = e.target.value;
-                        setRecipeTimes(recipeTimes);
+                      setRecipeTimes(newRecipeTimes);
+                    }}
+                  />
+                </label>
+                <label htmlFor={time.period}>
+                  Horas:
+                  <input
+                    type="number"
+                    name={time.period}
+                    value={recipeTimes[indexNumber].hours}
+                    maxLength={3}
+                    min={0}
+                    onChange={(e: any) => {
+                      const [first, second, third] = recipeTimes;
+                      const newRecipeTimes = [
+                        {
+                          period: first.period,
+                          minutes: first.minutes,
+                          hours: first.hours,
+                        },
+                        {
+                          period: second.period,
+                          minutes: second.minutes,
+                          hours: second.hours,
+                        },
+                        {
+                          period: third.period,
+                          minutes: third.minutes,
+                          hours: third.hours,
+                        },
+                      ];
+                      for (let i = 0; i < recipeTimes.length; i++) {
+                        if (recipeTimes[i].period === e.target.name) {
+                          newRecipeTimes[i].hours = e.target.value;
+                        }
                       }
-                    }
-                  }}
-                />
-              </label>
-            </div>
-          ))}
+                      setRecipeTimes(newRecipeTimes);
+                    }}
+                  />
+                </label>
+              </div>
+            );
+          })}
         </div>
         <div className={styles.divRecipesPhases}>
           <p>Etapas de preparo</p>
@@ -517,7 +706,7 @@ export default function CreateRecipePage() {
         </div>
         <div className={styles.divButtonSubmitForm}>
           <Button
-            buttonText="Enviar receita"
+            buttonText={recipeUrl ? "Editar receita" : "Enviar receita"}
             type="submit"
             style={{
               backgroundColor: "var(--cor3)",

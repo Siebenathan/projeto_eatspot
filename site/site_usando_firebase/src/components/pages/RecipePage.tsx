@@ -229,10 +229,10 @@ export default function RecipePage() {
         let hours = 0;
         let minutes = 0;
         // _amountOfTime += parseInt(item.minutes) + parseInt(item.hours) * 60;
-        if(item.hours) {
+        if (item.hours) {
           hours = parseInt(item.hours) * 60;
         }
-        if(item.minutes) {
+        if (item.minutes) {
           minutes = parseInt(item.minutes);
         }
         _amountOfTime += hours + minutes;
@@ -288,10 +288,14 @@ export default function RecipePage() {
   }
 
   async function handleDeleteRecipe() {
-    const userInfo = await getDataFromCollection("users", "userId", userData.userId);
+    const userInfo = await getDataFromCollection(
+      "users",
+      "userId",
+      userData.userId
+    );
     const docId = userInfo.docs[0].id;
 
-    const {numberOfRecipes, ...rest} = userData;
+    const { numberOfRecipes, ...rest } = userData;
     rest["numberOfRecipes"] = numberOfRecipes - 1;
     await updateDocFirestore("users", docId, rest);
     const result = await deleteDocument("recipes", recipeId ?? "");
@@ -305,37 +309,9 @@ export default function RecipePage() {
     }
   }
 
-  function editRecipeModal() {
-    const settingsModal: ModalProps = {
-      isOpen: true,
-      setIsOpen() {
-        setModal({
-          isOpen: false,
-          setIsOpen() {},
-          text: "",
-          type: "erro",
-          title: "",
-        });
-      },
-      text: `A sua receita ${recipeData.recipeTitle} vai ser permanentemente deletada, os comentários e os likes também.`,
-      title: `Deseja deletar a sua receita?`,
-      type: "informacao",
-      textSecondButton: "Confirmar",
-      secondButtonFunction: handleDeleteRecipe,
-      styleSecondButton: {
-        backgroundColor: "orange",
-        cursor: "pointer",
-        padding: "10px 20px",
-        color: "white",
-        borderRadius: "5px",
-      },
-    };
-  }
-
   function capitalizeString(str: string): string {
     return str.charAt(0).toUpperCase() + str.slice(1);
   }
-
 
   return (
     <div>
@@ -356,7 +332,9 @@ export default function RecipePage() {
             styleSecondButton={modal.styleSecondButton}
             textSecondButton={modal.textSecondButton}
           />
-          <h1 className={styles.recipeTitle}>{capitalizeString(recipeData.recipeTitle)}</h1>
+          <h1 className={styles.recipeTitle}>
+            {capitalizeString(recipeData.recipeTitle)}
+          </h1>
           <div className={styles.recipeImageDiv}>
             <img src={recipeImage} alt="sla" />
           </div>
@@ -412,10 +390,7 @@ export default function RecipePage() {
           <div className={styles.divRecipesGrid}>
             {recipeData.recipeIngredients.map((ingrediente: any) => (
               <div className={styles.divRecipeIngredient} key={ingrediente}>
-                <img
-                  src={defaultImageRecipeIngredient}
-                  alt="food"
-                />
+                <img src={defaultImageRecipeIngredient} alt="food" />
                 <p>{ingrediente}</p>
               </div>
             ))}
@@ -430,6 +405,19 @@ export default function RecipePage() {
                 </div>
               ))}
             </div>
+          </div>
+          <div className={styles.mainDivRecipeTimes}>
+            {recipeData.recipeTimes.map((rtimes: any) => (
+              <div className={styles.divRecipeTimes}>
+                <h4>{rtimes.period}</h4>
+                <p>
+                  Minutos: <span>{rtimes.minutes}</span>
+                </p>
+                <p>
+                  Horas: <span>{rtimes.hours}</span>
+                </p>
+              </div>
+            ))}
           </div>
           {!ownerOfTheRecipe && (
             <div className={styles.divToLikeRecipe}>
@@ -591,14 +579,30 @@ export default function RecipePage() {
               </>
             )}
           </div>
-          {ownerOfTheRecipe && (
+          {ownerOfTheRecipe && userData && (
             <div className={styles.recipeOwnerDiv}>
               <h2>Opções para alterar a receita</h2>
               <div className={styles.divRecipeOwnerButtons}>
                 <ButtonBeating
                   buttonText="Editar"
                   nameAndId="editRecipeButton"
-                  buttonStyle={{height: "100%", width: "50%", backgroundColor: "var(--cor5)"}}
+                  buttonStyle={{
+                    height: "100%",
+                    width: "50%",
+                    backgroundColor: "var(--cor5)",
+                  }}
+                  onClick={() =>
+                    navigate("/editar-receita", {
+                      state: {
+                        recipeUrl: recipeData.recipeUrl,
+                        recipeDocId: recipeId,
+                        recipeData: recipeData,
+                        recipeImage: recipeImage,
+                        userData: userData,
+                      },
+                      preventScrollReset: false
+                    })
+                  }
                 />
                 <ButtonBeating
                   buttonText="Excluir"
@@ -606,7 +610,11 @@ export default function RecipePage() {
                     deleteRecipeModal();
                   }}
                   nameAndId="editRecipeButton"
-                  buttonStyle={{height: "100%", width: "50%", backgroundColor: "red"}}
+                  buttonStyle={{
+                    height: "100%",
+                    width: "50%",
+                    backgroundColor: "red",
+                  }}
                 />
               </div>
             </div>
@@ -621,5 +629,3 @@ export default function RecipePage() {
     </div>
   );
 }
-
-

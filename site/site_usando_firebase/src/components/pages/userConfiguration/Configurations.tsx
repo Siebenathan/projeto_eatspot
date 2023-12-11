@@ -6,7 +6,7 @@ import { ModalProps } from "../../modal/Modal";
 import { FcGoogle } from "react-icons/fc";
 import { FaSquareFacebook } from "react-icons/fa6";
 import { FaSquareXTwitter } from "react-icons/fa6";
-import { auth } from "../../services/firebase/firebase";
+import { auth, deleteAccount } from "../../services/firebase/firebase";
 import { deleteDocument, getDataFromCollection } from "../../services/firebase/firebaseFirestore";
 import { deleteFile } from "../../services/firebase/firebaseStorage";
 import { signIn } from "../../services/firebase/firebaseAuth";
@@ -56,14 +56,14 @@ export default function Configuration(props: ConfigurationProps) {
 
     const userCredentials = await signIn(password, email);
     if(userCredentials == "erro") {
+      console.log(userCredentials);
       alert(userCredentials);
       return;
     }
-
     
 
     settingsModal.secondButtonFunction = async () => {
-      await deleteAccount(userCredentials);
+      await deleteAccount(userCredentials, props.userData, props.userDocId);
       props.setModal({
         isOpen: false,
         setIsOpen() {},
@@ -84,30 +84,30 @@ export default function Configuration(props: ConfigurationProps) {
     props.setModal(settingsModal);
   }
 
-  async function deleteAccount(user: any) {
-    const recipesData = await getDataFromCollection("recipes", "userId", props.userData.userId);
-    const imagesUrls: string[] = [];
+  // async function deleteAccount(user: any) {
+  //   const recipesData = await getDataFromCollection("recipes", "userId", props.userData.userId);
+  //   const imagesUrls: string[] = [];
 
-    if(!recipesData.empty) {
-      await recipesData.docs.map(async (doc) => {
-        const recipeData = doc.data();
-        imagesUrls.push(recipeData.imagePath);
-        await deleteDocument("recipes", doc.id);
-      });
-    }
+  //   if(!recipesData.empty) {
+  //     await recipesData.docs.map(async (doc) => {
+  //       const recipeData = doc.data();
+  //       imagesUrls.push(recipeData.imagePath);
+  //       await deleteDocument("recipes", doc.id);
+  //     });
+  //   }
 
-    if(imagesUrls) {
-      imagesUrls.forEach(async (url: string) => {
-        const result = await deleteFile(url);
-        console.log(result);
-      })
-    }
+  //   if(imagesUrls) {
+  //     imagesUrls.forEach(async (url: string) => {
+  //       const result = await deleteFile(url);
+  //       console.log(result);
+  //     })
+  //   }
     
-    await deleteFile(props.userData.userPhotoUrl);
+  //   await deleteFile(props.userData.userPhotoUrl);
 
-    await deleteDocument("users", props.userDocId);
-    user.user.delete();
-  }
+  //   await deleteDocument("users", props.userDocId);
+  //   user.user.delete();
+  // }
 
   async function handleFormError(errorName: string) {
     setError(errorName);
@@ -152,8 +152,9 @@ export default function Configuration(props: ConfigurationProps) {
         },
         text: "Deseja realmente excluir sua conta? Caso clique em confirmar sua conta será permanentemente deletada!",
         title: "Excluir conta",
-        type: "informacao",
+        type: "erro",
         secondButtonFunction: async () => {
+          await deleteAccount(result, props.userData, props.userDocId);
           props.setModal({
             isOpen: false,
             setIsOpen() {},
@@ -161,7 +162,6 @@ export default function Configuration(props: ConfigurationProps) {
             type: "erro",
             title: "",
           })
-          
         },
         textSecondButton: "Confirmar Exclusão",
         styleSecondButton: {
@@ -173,6 +173,7 @@ export default function Configuration(props: ConfigurationProps) {
         }
       };
       props.setModal(settingsModal);
+      setLogingWithOAuth(false);
     }
   }
 
